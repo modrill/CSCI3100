@@ -1,0 +1,158 @@
+<!-- 
+    购物车模板
+    大致功能模板：一个temple;
+    商品的展示和加入购物车（无数据捏
+    购物车界面
+    加减商品数
+    删除
+    计算总价
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>初始的购物车模板</title>
+    <style>
+        /* 基础样式 */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { display: flex; gap: 30px; }
+        .product-list, .cart { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
+        .product { margin-bottom: 15px; padding: 10px; background: #f5f5f5; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        input[type="number"] { width: 60px; padding: 5px; }
+        button { cursor: pointer; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 商品列表 -->
+        <div class="product-list">
+            <h2>商品列表</h2>
+            <div id="products">
+                <!-- 商品通过JavaScript动态加载 -->
+            </div>
+        </div>
+
+        <!-- 购物车 -->
+        <div class="cart">
+            <h2>购物车</h2>
+            <table id="cart-items">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>单价</th>
+                        <th>数量</th>
+                        <th>小计</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 购物车内容通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+            <p>总价：￥<span id="total-price">0.00</span></p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化商品数据（可替换为从后端API获取）
+        const products = [
+            { id: 1, name: "商品1", price: 10.00 },
+            { id: 2, name: "商品2", price: 20.50 },
+            { id: 3, name: "商品3", price: 15.75 }
+        ];
+
+        // 初始化购物车（从localStorage读取）
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+        // 页面加载时渲染商品列表和购物车
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            renderCart();
+        });
+
+        // 渲染商品列表
+        function renderProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = products.map(product => `
+                <div class="product">
+                    <h3>${product.name}</h3>
+                    <p>价格：￥${product.price.toFixed(2)}</p>
+                    <button onclick="addToCart(${product.id})">加入购物车</button>
+                </div>
+            `).join('');
+        }
+
+        // 添加商品到购物车
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            if (cart[productId]) {
+                cart[productId].quantity += 1;
+            } else {
+                cart[productId] = {
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1
+                };
+            }
+
+            saveCart();
+            renderCart();
+        }
+
+        // 更新购物车商品数量
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) return;
+            cart[productId].quantity = newQuantity;
+            saveCart();
+            renderCart();
+        }
+
+        // 删除购物车商品
+        function removeItem(productId) {
+            delete cart[productId];
+            saveCart();
+            renderCart();
+        }
+
+        // 渲染购物车内容
+        function renderCart() {
+            const tbody = document.querySelector('#cart-items tbody');
+            let total = 0;
+
+            tbody.innerHTML = Object.keys(cart).map(productId => {
+                const item = cart[productId];
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>￥${item.price.toFixed(2)}</td>
+                        <td>
+                            <input type="number" 
+                                   value="${item.quantity}" 
+                                   onchange="updateQuantity(${productId}, this.value)">
+                        </td>
+                        <td>￥${subtotal.toFixed(2)}</td>
+                        <td>
+                            <button onclick="removeItem(${productId})">删除</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('total-price').textContent = total.toFixed(2);
+        }
+
+        // 保存购物车到localStorage
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+    </script>
+</body>
+</html>
