@@ -1,4 +1,5 @@
 <?php
+//init db
 $host = '1234';
 $dbname = 'yythaoye';
 $user = 'taotao';
@@ -22,7 +23,7 @@ function getSessionId() {
 
 <?php
 require '../config/db.php';
-
+//商品
 try {
     $stmt = $pdo->query("SELECT * FROM products");
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -36,3 +37,69 @@ try {
 }
 ?>
 
+
+<?php
+require '../config/db.php';
+
+//往购物车里添加商品
+
+session_start();
+$sessionId = getSessionId();
+
+$data = json_decode(file_get_contents('php://input'), true);
+$productId = filter_var($data['product_id'], FILTER_VALIDATE_INT);
+
+try {
+    // 检查库存
+    $stmt = $pdo->prepare("SELECT stock FROM products WHERE product_id = ?");
+    $stmt->execute([$productId]);
+    $stock = $stmt->fetchColumn();
+    
+    if ($stock < 1) {
+        echo json_encode(['success' => false, 'message' => 'no enough stock']);
+        exit;
+    }
+
+    // 插入或更新购物车
+    $stmt = $pdo->prepare("
+        INSERT INTO carts (session_id, product_id, quantity)
+        VALUES (:session_id, :product_id, 1)
+        ON DUPLICATE KEY UPDATE quantity = quantity + 1
+    ");
+    
+    $stmt->execute([
+        ':session_id' => $sessionId,
+        ':product_id' => $productId
+    ]);
+
+    echo json_encode(['success' => true]);
+    
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'database error']);
+}
+?>
+
+<?php
+require '../config/db.php';
+//购物车里的东西
+$sessionId = getSessionId();
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT p.product_id, p.name, p.price, c.quantity 
+        FROM carts c
+        JOIN products p ON c.product_id = p.product_id
+        WHERE c.session_id = ?
+    ");
+    $stmt->execute([$sessionId]);
+    $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    header('Content-Type: application/json');
+    echo json_encode($cartItems);
+    
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'fail to fetch cart items']);
+}
+?>
