@@ -1,24 +1,27 @@
+CREATE DATABASE IF NOT EXISTS buyzu;
+USE buyzu;
+
 -- Create category table
 CREATE TABLE IF NOT EXISTS table_category (
-    categoryId INT PRIMARY KEY,
-    categoryName VARCHAR(50) NOT NULL
+    CategoryID INT PRIMARY KEY,
+    CategoryName VARCHAR(50) NOT NULL
 );
 
 -- Insert category data
-INSERT INTO table_category (categoryId, categoryName) VALUES
+INSERT INTO Category (CategoryID, CategoryName) VALUES
 (1, 'Headphones'),
 (2, 'Laptops'),
 (3, 'Keyboards'),
 (4, 'Watches');
 
 -- Create brand table
-CREATE TABLE IF NOT EXISTS table_brand (
-    brandId INT PRIMARY KEY,
-    brandName VARCHAR(50) NOT NULL
-);
+CREATE TABLE IF NOT EXISTS Brand (
+    BrandID   INT           PRIMARY KEY,
+    BrandName VARCHAR(50)   NOT NULL
+) ENGINE=InnoDB CHARSET=utf8mb4;
 
 -- Insert brand data
-INSERT INTO table_brand (brandId, brandName) VALUES
+INSERT INTO Brand (BrandID, BrandName) VALUES
 (1, 'Apple'),
 (2, 'Sony'),
 (3, 'Bose'),
@@ -39,26 +42,31 @@ INSERT INTO table_brand (brandId, brandName) VALUES
 (18, 'QCY');
 
 -- Create product table
-CREATE TABLE IF NOT EXISTS table_product (
-    productId INT NOT NULL AUTO_INCREMENT,
-    productName VARCHAR(255) NOT NULL,
-    categoryId INT NOT NULL,
-    brandId INT NOT NULL,
-    body TEXT NOT NULL,
-    price FLOAT(10,2) NOT NULL,
-    image VARCHAR(255) NOT NULL, -- Only store the image filename here
-    type TINYINT NOT NULL DEFAULT '0',
-    stock INT NOT NULL,
-    rate FLOAT NOT NULL,
-    sales INT NOT NULL,
-    PRIMARY KEY (productId),
-    FOREIGN KEY (categoryId) REFERENCES table_category(categoryId),
-    FOREIGN KEY (brandId) REFERENCES table_brand(brandId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS Products (
+    ProductID         CHAR(12)     PRIMARY KEY,
+    ProductName       VARCHAR(100) NOT NULL,
+    Description       TEXT,
+    Price             DECIMAL(10,2) NOT NULL CHECK(Price >= 0.01),
+    CategoryID        INT,
+    BrandID           INT,
+    Image             VARCHAR(255) NOT NULL,
+    Type              TINYINT      NOT NULL DEFAULT 0,
+    InventoryCount    INT          NOT NULL DEFAULT 0 CHECK(InventoryCount >= 0),
+    Rate              FLOAT        NOT NULL,
+    Sales             INT          NOT NULL,
+    CONSTRAINT fk_prod_cat
+        FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_prod_brand
+        FOREIGN KEY (BrandID) REFERENCES Brand(BrandID)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB CHARSET=utf8mb4;
 
 -- Insert product data
-INSERT INTO table_product (
-    productId, productName, categoryId, brandId, body, price, image, type, stock, rate, sales
+INSERT INTO Products (
+    ProductID, ProductName, CategoryID, BrandID,
+    Description, Price, Image, Type,
+    InventoryCount, Rate, Sales
 ) VALUES
 (1, 'Apple AirPods Pro (2nd Generation)', 1, 1, 'Pro-level Active Noise Cancellation with 2x more effectiveness, Adaptive Audio blending ANC/Transparency modes, and Personalized Spatial Audio with dynamic head tracking. Features the H2 chip for immersive sound, clinical-grade Hearing Aid capabilities, and IP54 dust/sweat resistance. Offers up to 6 hours of playback (30h with case) and a MagSafe Charging Case with Find My integration.', 1899, 'p1.jpeg', 1, 2436, 4.9, 23130),
 (2, 'Apple AirPods (4th Generation)', 1, 1, 'Redesigned for all-day comfort with Adaptive EQ and Personalized Spatial Audio. Powered by the H2 chip for improved call clarity (Voice Isolation) and seamless Apple ecosystem integration. Offers up to 5 hours of playback (30h with case), IP54 resistance, and a 10% smaller USB-C charging case. Available with/without Active Noise Cancellation.', 1399, 'p2.jpeg', 1, 2452, 4.92, 17153),
@@ -107,15 +115,15 @@ INSERT INTO table_product (
 (45, 'Shokz OpenDots ONE', 1, 17, 'True wireless open-ear buds with DirectPitch™ sound tech. Ear-hook design (IP54) keeps ears free. Features AI call noise cancellation, 6hr battery (+22hr case), and touch controls.', 1298, 'p45.jpeg', 1, 378, 4.95, 2456);
 
 -- Example query: Validate data integrity for Headphones category
-SELECT 
-    p.productId,
-    p.productName,
-    c.categoryName,
-    b.brandName,
-    p.price,
-    p.stock,
-    CONCAT('/images/products/', p.image) AS imageUrl -- How to construct image URL in application
-FROM table_product p
-JOIN table_category c ON p.categoryId = c.categoryId
-JOIN table_brand b ON p.brandId = b.brandId
-WHERE c.categoryId = 1;
+SELECT
+    p.ProductID,
+    p.ProductName,
+    c.CategoryName,
+    b.BrandName,
+    p.Price,
+    p.InventoryCount,
+    CONCAT('/images/products/', p.Image) AS ImageUrl
+FROM Products p
+JOIN Category c ON p.CategoryID = c.CategoryID
+JOIN Brand    b ON p.BrandID    = b.BrandID
+WHERE c.CategoryID = 1;
