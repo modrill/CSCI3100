@@ -10,3 +10,12 @@ dataset&database相关可以放在database文件夹里，包括前端素材也�
 目前我这边用的是php/html+js
 
 米娜桑加油捏(ง •_•)ง
+
+v1.1.0
+
+我在database文件夹里放了一个包含商品分类，品牌和具体描述外加图片的测试数据库
+图片路径是images/products/$px$.jpeg，$px$对应的是productId，例如productId为33的商品对应的图片是p33.jpeg
+继承使用apache+mysql+php，算法部分我准备用python编写
+大家还有需要的信息我可以再加进去，比如其他的商品类别和商品信息
+
+期末周加油捏(｀･ω･´)ゞ
