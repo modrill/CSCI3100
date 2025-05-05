@@ -1,27 +1,30 @@
+DROP DATABASE IF EXISTS buyzu;
 CREATE DATABASE IF NOT EXISTS buyzu;
 USE buyzu;
 
 -- Create category table
-CREATE TABLE IF NOT EXISTS table_category (
-    CategoryID INT PRIMARY KEY,
-    CategoryName VARCHAR(50) NOT NULL
+DROP TABLE IF EXISTS category;
+CREATE TABLE IF NOT EXISTS category (
+    categoryID INT PRIMARY KEY,
+    categoryName VARCHAR(50) NOT NULL
 );
 
 -- Insert category data
-INSERT INTO Category (CategoryID, CategoryName) VALUES
+INSERT INTO category (categoryID, categoryName) VALUES
 (1, 'Headphones'),
 (2, 'Laptops'),
 (3, 'Keyboards'),
 (4, 'Watches');
 
 -- Create brand table
-CREATE TABLE IF NOT EXISTS Brand (
-    BrandID   INT           PRIMARY KEY,
-    BrandName VARCHAR(50)   NOT NULL
+DROP TABLE IF EXISTS brand;
+CREATE TABLE IF NOT EXISTS brand (
+    brandID   INT           PRIMARY KEY,
+    brandName VARCHAR(50)   NOT NULL
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
 -- Insert brand data
-INSERT INTO Brand (BrandID, BrandName) VALUES
+INSERT INTO brand (brandID, brandName) VALUES
 (1, 'Apple'),
 (2, 'Sony'),
 (3, 'Bose'),
@@ -42,31 +45,32 @@ INSERT INTO Brand (BrandID, BrandName) VALUES
 (18, 'QCY');
 
 -- Create product table
-CREATE TABLE IF NOT EXISTS Products (
-    ProductID         CHAR(12)     PRIMARY KEY,
-    ProductName       VARCHAR(100) NOT NULL,
-    Description       TEXT,
-    Price             DECIMAL(10,2) NOT NULL CHECK(Price >= 0.01),
-    CategoryID        INT,
-    BrandID           INT,
-    Image             VARCHAR(255) NOT NULL,
-    Type              TINYINT      NOT NULL DEFAULT 0,
-    InventoryCount    INT          NOT NULL DEFAULT 0 CHECK(InventoryCount >= 0),
-    Rate              FLOAT        NOT NULL,
-    Sales             INT          NOT NULL,
+DROP TABLE IF EXISTS products;
+CREATE TABLE IF NOT EXISTS products (
+    productID         CHAR(12)     PRIMARY KEY,
+    productName       VARCHAR(100) NOT NULL,
+    descri            TEXT,
+    price             DECIMAL(10,2) NOT NULL CHECK(Price >= 0.01),
+    categoryID        INT,
+    brandID           INT,
+    img               VARCHAR(255) NOT NULL,
+    currentStatus     TINYINT      NOT NULL DEFAULT 0,
+    inventoryCount    INT          NOT NULL DEFAULT 0 CHECK(InventoryCount >= 0),
+    rating              FLOAT        NOT NULL,
+    sales             INT          NOT NULL,
     CONSTRAINT fk_prod_cat
-        FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
+        FOREIGN KEY (categoryID) REFERENCES category(categoryID)
         ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT fk_prod_brand
-        FOREIGN KEY (BrandID) REFERENCES Brand(BrandID)
+        FOREIGN KEY (brandID) REFERENCES brand(brandID)
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
 -- Insert product data
-INSERT INTO Products (
-    ProductID, ProductName, CategoryID, BrandID,
-    Description, Price, Image, Type,
-    InventoryCount, Rate, Sales
+INSERT INTO products (
+    productID, productName, categoryID, brandID,
+    descri, price, img, currentStatus,
+    inventoryCount, rating, sales
 ) VALUES
 (1, 'Apple AirPods Pro (2nd Generation)', 1, 1, 'Pro-level Active Noise Cancellation with 2x more effectiveness, Adaptive Audio blending ANC/Transparency modes, and Personalized Spatial Audio with dynamic head tracking. Features the H2 chip for immersive sound, clinical-grade Hearing Aid capabilities, and IP54 dust/sweat resistance. Offers up to 6 hours of playback (30h with case) and a MagSafe Charging Case with Find My integration.', 1899, 'p1.jpeg', 1, 2436, 4.9, 23130),
 (2, 'Apple AirPods (4th Generation)', 1, 1, 'Redesigned for all-day comfort with Adaptive EQ and Personalized Spatial Audio. Powered by the H2 chip for improved call clarity (Voice Isolation) and seamless Apple ecosystem integration. Offers up to 5 hours of playback (30h with case), IP54 resistance, and a 10% smaller USB-C charging case. Available with/without Active Noise Cancellation.', 1399, 'p2.jpeg', 1, 2452, 4.92, 17153),
@@ -114,16 +118,61 @@ INSERT INTO Products (
 (44, 'Shokz OpenRun Pro 2 S820', 1, 17, 'Premium bone-conduction headphones with TurboPitch™ tech for enhanced bass. Open-ear design (IP55) ensures situational awareness. 10hr battery, dual noise-canceling mics, and titanium frame. 5min charge = 1.5hrs.', 1268, 'p44.jpeg', 1, 1692, 4.95, 10727),
 (45, 'Shokz OpenDots ONE', 1, 17, 'True wireless open-ear buds with DirectPitch™ sound tech. Ear-hook design (IP54) keeps ears free. Features AI call noise cancellation, 6hr battery (+22hr case), and touch controls.', 1298, 'p45.jpeg', 1, 378, 4.95, 2456);
 
+-- Create shopping cart table
+CREATE TABLE IF NOT EXISTS carts (
+    cartID     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    sessionID  VARCHAR(255)  NULL,
+    userID     BIGINT UNSIGNED NULL,
+    productID  CHAR(12)      NOT NULL,
+    quantity   INT UNSIGNED  NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    createdAt  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    /* 生成列：MariaDB 用 VIRTUAL/PERSISTENT */
+    ownerKey VARCHAR(255)
+             GENERATED ALWAYS AS (IFNULL(CAST(userID AS CHAR(20)), sessionID))
+             VIRTUAL,                          -- ← 改这里
+
+    UNIQUE KEY uk_owner_product (ownerKey, productID),
+    INDEX idx_user    (userID),
+    INDEX idx_session (sessionID),
+
+    CONSTRAINT fk_carts_product
+      FOREIGN KEY (productID) REFERENCES products(productID)
+      ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB CHARSET=utf8mb4;
+
+-- Example operation:
+INSERT INTO carts (sessionID, productID, quantity, createdAt)
+VALUES ('sess_abc123', '11', 1, '2024-05-01 10:30:00')
+ON DUPLICATE KEY UPDATE
+        quantity = quantity + VALUES(quantity);
+
+INSERT INTO carts (sessionID, productID, quantity, createdAt)
+VALUES ('sess_abc123', '37', 1, '2024-05-01 11:30:00')
+ON DUPLICATE KEY UPDATE
+        quantity = quantity + VALUES(quantity);
+
+INSERT INTO carts (sessionID, productID, quantity, createdAt)
+VALUES ('sess_abc123', '27', 1, '2024-05-01 12:30:00')
+ON DUPLICATE KEY UPDATE
+        quantity = quantity + VALUES(quantity);
+
+INSERT INTO carts (sessionID, productID, quantity, createdAt)
+VALUES ('sess_abc123', '3', 1, '2024-05-01 13:30:00')
+ON DUPLICATE KEY UPDATE
+        quantity = quantity + VALUES(quantity);
+
+
 -- Example query: Validate data integrity for Headphones category
 SELECT
-    p.ProductID,
-    p.ProductName,
-    c.CategoryName,
-    b.BrandName,
-    p.Price,
-    p.InventoryCount,
-    CONCAT('/images/products/', p.Image) AS ImageUrl
-FROM Products p
-JOIN Category c ON p.CategoryID = c.CategoryID
-JOIN Brand    b ON p.BrandID    = b.BrandID
-WHERE c.CategoryID = 1;
+    p.productID,
+    p.productName,
+    c.categoryName,
+    b.brandName,
+    p.price,
+    p.inventoryCount,
+    CONCAT('/images/products/', p.img) AS ImageUrl
+FROM products p
+JOIN category c ON p.categoryID = c.categoryID
+JOIN brand    b ON p.brandID    = b.brandID
+WHERE c.categoryID = 1;
