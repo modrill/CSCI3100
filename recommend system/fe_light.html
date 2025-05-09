@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BuyZu · 猜你喜欢</title>
+
+<!-- ===== 样式 ===== -->
+<style>
+:root{
+  --bg:#f6f7f9;--card:#fff;--border:#e5e7eb;--primary:#2563eb;
+  --text:#111827;--muted:#6b7280;--radius:12px;
+  --shadow:0 4px 10px rgba(0,0,0,.05);--skeleton:#e0e0e0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+     background:var(--bg);color:var(--text);line-height:1.5}
+
+/* 顶栏 */
+header{display:flex;align-items:center;gap:.6rem;background:var(--card);
+       border-bottom:1px solid var(--border);padding:.8rem 1rem;font-weight:600;font-size:1.15rem}
+header svg{width:28px;height:28px;fill:var(--primary)}
+
+/* 主区域 */
+main{max-width:1080px;margin:1rem auto;padding:0 1rem}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.6rem}
+.section-head h2{font-size:1.05rem;font-weight:700}
+button.refresh{display:inline-flex;align-items:center;gap:4px;background:var(--card);
+               border:1px solid var(--border);border-radius:8px;padding:.35rem .8rem;font-size:.8rem;
+               cursor:pointer;color:var(--muted);transition:background .25s}
+button.refresh:hover{background:#f0f1f3}
+button.refresh svg{width:14px;height:14px;fill:currentColor}
+
+/* 卡片 */
+.cards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);
+      border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+      transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.card img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#fafafa}
+.card-body{flex:1;padding:.6rem;display:flex;flex-direction:column;justify-content:space-between}
+.name{font-size:.85rem;font-weight:600;min-height:2.3em;overflow:hidden;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.brand{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+.price{color:#d9230f;font-weight:700;margin-top:.4rem}
+
+/* Skeleton */
+.fade-in{animation:fade .4s ease-out both}@keyframes fade{0%{opacity:0;transform:translateY(4px)}100%{opacity:1;transform:none}}
+.skel img,.skel .card-body>*{background:var(--skeleton)}
+.skel{position:relative;overflow:hidden}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
+             animation:shimmer 1.2s infinite}@keyframes shimmer{100%{transform:translateX(100%)}}
+.skel .card-body>*{height:.8rem;border-radius:4px}.skel .name{height:1.6rem}
+@media(max-width:480px){.cards{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}}
+</style>
+</head>
+
+<body>
+<header>
+  <svg viewBox="0 0 24 24"><path d="M7 4h-2l-3 7v2h2l2-4h11l1.2 3H20v2h-2l-1-3H8l-1 2H3v-2l3-7zM6 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18z"/></svg>
+  BuyZu 商城
+</header>
+
+<main>
+  <section>
+    <div class="section-head">
+      <h2>猜你喜欢</h2>
+      <button id="btnRefresh" class="refresh" title="重新加载">
+        <svg viewBox="0 0 24 24"><path d="M18 7v4h-4l2-2a6 6 0 1 0 1.71 4.24l2.09.45A8 8 0 1 1 12 4l1.03 2.06A6 6 0 0 0 18 7z"/></svg>
+        换一批
+      </button>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+</main>
+
+<!-- ===== 脚本 ===== -->
+<script>
+/* === 常量 === */
+const API   = '/api/home_reco?k=10';
+const cards = document.getElementById('cards');
+const btnRefresh = document.getElementById('btnRefresh');
+
+/* === Cookie 工具 === */
+function getCookie(name){
+  const m=document.cookie.match('(?:^|; )'+name+'=([^;]+)');return m?decodeURIComponent(m[1]):null;
+}
+function setCookie(name,val,days=365){
+  const exp=new Date(Date.now()+days*864e5).toUTCString();
+  document.cookie=`${name}=${encodeURIComponent(val)}; expires=${exp}; path=/`;
+}
+/* 生成匿名 ID 如 sess_kv9g_8f30 */
+function genAnon(){return 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(16).slice(2,6);}
+
+/* === Skeleton === */
+function renderSkeleton(n=10){
+  cards.innerHTML='';
+  for(let i=0;i<n;i++){
+    cards.insertAdjacentHTML('beforeend',`
+      <div class="card skel fade-in">
+        <img>
+        <div class="card-body">
+          <div class="name"></div>
+          <div class="brand" style="width:65%"></div>
+          <div class="price" style="width:40%;margin-top:.5rem"></div>
+        </div>
+      </div>`);
+  }
+}
+
+/* === 渲染商品 === */
+function renderProducts(list=[]){
+  if(!list.length){
+    cards.innerHTML='<p style="color:var(--muted);padding:.8rem">暂无推荐数据</p>';return;
+  }
+  cards.innerHTML='';
+  list.forEach(p=>{
+    cards.insertAdjacentHTML('beforeend',`
+      <div class="card fade-in">
+        <img src="/images/${p.img}" alt="${p.productName}">
+        <div class="card-body">
+          <div>
+            <p class="name">${p.productName}</p>
+            <p class="brand">${p.brandName||''}</p>
+          </div>
+          <p class="price">￥${(+p.price).toFixed(2)}</p>
+        </div>
+      </div>`);
+  });
+}
+
+/* === 拉取推荐 === */
+async function loadReco(){
+  renderSkeleton();
+  /* 统一获取 / 生成 userKey */
+  let uid = localStorage.getItem('userID') || getCookie('SESSIONID');
+  if(!uid){
+    uid = genAnon();
+    localStorage.setItem('userID',uid);
+    setCookie('SESSIONID',uid);
+  }
+
+  try{
+    const res = await fetch(API,{headers:{'X-UserID':uid}});
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    renderProducts(data.list||[]);
+  }catch(e){
+    console.error('接口错误',e);
+    renderProducts([]);
+  }
+}
+
+/* === 事件绑定 === */
+btnRefresh.onclick = loadReco;
+document.addEventListener('DOMContentLoaded',loadReco);
+</script>
+</body>
+</html>

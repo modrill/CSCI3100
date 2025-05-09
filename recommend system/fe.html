@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BuyZu · 猜你喜欢</title>
+
+<!-- ============ 样式 ============ -->
+<style>
+:root{
+  --bg:#f6f7f9;--card-bg:#fff;--border:#e5e7eb;--primary:#2563eb;
+  --text:#111827;--muted:#6b7280;--radius:18px;          /* 圆角更大 */
+  --shadow:0 4px 12px rgba(0,0,0,.06);--transition:.55s;--skeleton:#e0e0e0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+     background:var(--bg);color:var(--text);line-height:1.5}
+
+/* 顶栏 */
+header{display:flex;align-items:center;gap:.6rem;background:var(--card-bg);
+       border-bottom:1px solid var(--border);padding:.8rem 1rem;font-weight:600;font-size:1.15rem}
+header svg{width:28px;height:28px;fill:var(--primary)}
+
+/* 主区域 */
+main{max-width:520px;margin:1.2rem auto;padding:0 1rem}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.8rem}
+.section-head h2{font-size:1.05rem;font-weight:700}
+button.refresh{display:inline-flex;align-items:center;gap:4px;background:var(--card-bg);
+               border:1px solid var(--border);border-radius:10px;padding:.35rem .8rem;font-size:.8rem;
+               cursor:pointer;color:var(--muted);transition:background .25s}
+button.refresh:hover{background:#f0f1f3}
+button.refresh svg{width:14px;height:14px;fill:currentColor}
+
+/* ===== Carousel ===== */
+.carousel{position:relative;overflow:hidden;width:100%}
+.track{display:flex;justify-content:center}
+.card{flex:0 0 50%;max-width:50%;padding:.3rem}
+.card>div{display:flex;flex-direction:column;background:var(--card-bg);border:1px solid var(--border);
+          border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+          transition:transform .25s,box-shadow .25s}
+.card>div:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.1)}
+.card img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#fafafa}
+.card-body{flex:1;padding:.75rem;display:flex;flex-direction:column;justify-content:space-between}
+.name{font-size:.9rem;font-weight:600;min-height:2.3em;overflow:hidden;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.brand{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+.price{color:#d9230f;font-weight:700;margin-top:.45rem}
+
+/* Skeleton */
+.skel img,.skel .card-body>*{background:var(--skeleton)}
+.skel{position:relative;overflow:hidden}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
+             animation:shimmer 1.2s infinite}@keyframes shimmer{100%{transform:translateX(100%)}}
+.skel .card-body>*{height:.8rem;border-radius:4px}.skel .name{height:1.6rem}
+
+/* 导航箭头 */
+.nav-arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;display:flex;
+           align-items:center;justify-content:center;border-radius:50%;background:rgba(0,0,0,.4);
+           color:#fff;cursor:pointer;z-index:10;transition:background .25s}
+.nav-arrow:hover{background:rgba(0,0,0,.55)}
+.nav-prev{left:72px}.nav-next{right:72px}
+.nav-arrow svg{width:18px;height:18px;fill:currentColor}
+
+/* 进入动画 */
+@keyframes slideFadeIn{
+  0%{opacity:0;transform:translateX(40px) scale(.96)}
+  100%{opacity:1;transform:none}
+}
+.fade-in{animation:slideFadeIn .55s cubic-bezier(.25,.8,.35,1) both}
+
+/* 超小屏再窄一点 */
+@media(max-width:380px){.card{flex-basis:90%;max-width:90%}}
+</style>
+</head>
+
+<body>
+<header>
+  <svg viewBox="0 0 24 24"><path d="M7 4h-2l-3 7v2h2l2-4h11l1.2 3H20v2h-2l-1-3H8l-1 2H3v-2l3-7zM6 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18z"/></svg>
+  BuyZu 商城
+</header>
+
+<main>
+  <section>
+    <div class="section-head">
+      <h2>猜你喜欢</h2>
+      <button class="refresh" id="btnBatch">
+        <svg viewBox="0 0 24 24"><path d="M18 7v4h-4l2-2a6 6 0 1 0 1.71 4.24l2.09.45A8 8 0 1 1 12 4l1.03 2.06A6 6 0 0 0 18 7z"/></svg>
+        换一批
+      </button>
+    </div>
+
+    <div class="carousel" id="carousel">
+      <div class="nav-arrow nav-prev" id="btnPrev" title="上一张">
+        <svg viewBox="0 0 24 24"><path d="M15.4 5 14 3.6 6.6 11l7.4 7.4 1.4-1.4L9.4 11z"/></svg>
+      </div>
+      <div class="nav-arrow nav-next" id="btnNext" title="下一张">
+        <svg viewBox="0 0 24 24"><path d="m9 3.6-1.4 1.4 7.4 7.4-7.4 7.4L9 21l8.4-8.4z"/></svg>
+      </div>
+
+      <div class="track" id="track"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ 脚本 ============ -->
+<script>
+/* ---------- 常量 ---------- */
+const API       = '/api/home_reco?k=8';
+const perBatch  = 4;
+const autoGap   = 6000;            // 6 秒
+const track     = document.getElementById('track');
+const btnPrev   = document.getElementById('btnPrev');
+const btnNext   = document.getElementById('btnNext');
+const btnBatch  = document.getElementById('btnBatch');
+
+let uid, rawList = [], batchIdx = 0, slideIdx = 0, timer;
+
+/* ---------- Cookie ---------- */
+function getCookie(n){const m=document.cookie.match('(?:^|; )'+n+'=([^;]+)');return m?decodeURIComponent(m[1]):null;}
+function setCookie(n,v,d=365){document.cookie=`${n}=${encodeURIComponent(v)}; expires=${new Date(Date.now()+d*864e5).toUTCString()}; path=/`;}
+function genAnon(){return 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(16).slice(2,6);}
+
+/* ---------- Skeleton ---------- */
+function renderSkeleton(){
+  track.innerHTML='<div class="card"><div class="skel"><img><div class="card-body"><div class="name"></div><div class="brand" style="width:60%"></div><div class="price" style="width:40%;margin-top:.5rem"></div></div></div></div>';
+}
+
+/* ---------- 渲染当前卡片 ---------- */
+function renderCurrent(){
+  const start = batchIdx*perBatch;
+  const p = rawList[start+slideIdx];
+  if(!p){track.innerHTML='<p style="color:var(--muted);padding:.5rem">暂无数据</p>';return;}
+  track.innerHTML=`<div class="card fade-in"><div>
+      <img src="/images/${p.img}" alt="${p.productName}">
+      <div class="card-body">
+        <div><p class="name">${p.productName}</p><p class="brand">${p.brandName||''}</p></div>
+        <p class="price">￥${(+p.price).toFixed(2)}</p>
+      </div>
+    </div></div>`;
+}
+
+/* ---------- 自动轮播 ---------- */
+function startAuto(){ clearInterval(timer); timer=setInterval(nextSlide,autoGap); }
+
+/* ---------- Slide 操作 ---------- */
+function nextSlide(){ slideIdx=(slideIdx+1)%perBatch; renderCurrent(); }
+function prevSlide(){ slideIdx=(slideIdx-1+perBatch)%perBatch; renderCurrent(); }
+
+/* ---------- 换批 ---------- */
+function switchBatch(){ batchIdx=(batchIdx+1)%Math.ceil(rawList.length/perBatch); slideIdx=0; renderCurrent(); startAuto(); }
+
+/* ---------- 获取数据 ---------- */
+async function loadReco(){
+  renderSkeleton();
+  uid=localStorage.getItem('userID')||getCookie('SESSIONID'); if(!uid){uid=genAnon();localStorage.setItem('userID',uid);setCookie('SESSIONID',uid);}
+  try{
+    const res=await fetch(API,{headers:{'X-UserID':uid}});
+    if(!res.ok)throw new Error(res.status);
+    rawList=(await res.json()).list||[];
+    batchIdx=0; slideIdx=0;
+    renderCurrent();
+    startAuto();
+  }catch(e){
+    console.warn(e);
+    track.innerHTML='<p style="color:var(--muted);padding:.5rem">暂无数据</p>';
+  }
+}
+
+/* ---------- 事件绑定 ---------- */
+btnPrev.onclick=()=>{prevSlide();startAuto();};
+btnNext.onclick=()=>{nextSlide();startAuto();};
+btnBatch.onclick=switchBatch;
+document.addEventListener('visibilitychange',()=>document.visibilityState==='visible'?startAuto():clearInterval(timer));
+document.addEventListener('DOMContentLoaded',loadReco);
+</script>
+</body>
+</html>
