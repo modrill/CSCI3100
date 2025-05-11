@@ -11,6 +11,7 @@
 
 
 from flask import Flask, jsonify, request, make_response
+from flask import send_from_directory
 import mysql.connector
 import os
 import secrets
@@ -63,6 +64,12 @@ def db_handler(func):
             if 'conn' in locals():
                 conn.close()
     return wrapper
+
+
+
+@app.route('/')
+def home():
+    return send_from_directory('.', 'shoppingCart.html')
 
 @app.route('/api/products', methods=['GET'])
 @db_handler
