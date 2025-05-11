@@ -63,3 +63,12 @@ eg:
     )
 
 请注意：operations中的操作有引用get_connection(). 会进行连接
+
+另：DB_CONFIG = {
+    'host': os.environ.get('DB_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER', 'taotao'),
+    'password': os.environ.get('DB_PASSWORD', '123456'),
+    'database': os.environ.get('DB_NAME', 'buyzu'),
+    'charset': 'utf8mb4'
+}
+这是我自己的配置。如果你要换记得改一改捏
