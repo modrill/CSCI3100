@@ -469,14 +469,14 @@ function checkout() {
     return;
   }
   
-  if (isDemo) {
-    alert('演示模式：这里将跳转到结算页面');
-    return;
-  }
+   // 将选中的商品保存到 localStorage
+   localStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
   
-  // 这里应该跳转到结算页面
-  window.location.href = '/checkout?items=' + selectedItems.map(item => item.product_id).join(',');
-}
+   // 跳转到结算页面
+   window.location.href = 'checkout.html'; //checkout的路径捏
+
+ }
+
 
 /* ---------- 初始化 ---------- */
 document.addEventListener('DOMContentLoaded', loadCart);

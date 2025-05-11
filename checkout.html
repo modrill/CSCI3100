@@ -166,6 +166,15 @@
   </footer>
 
   <script>
+    // 页面加载时检查购物车
+    document.addEventListener('DOMContentLoaded', function() {
+      const cart = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
+      if (cart.length === 0) {
+        alert('购物车为空，请先选择商品');
+        window.location.href = 'shoppingCart.html';
+      }
+    });
+    
     // Tab switching
     const tabs = document.querySelectorAll('.tab-btn');
     const sections = document.querySelectorAll('.checkout-section');
@@ -178,18 +187,18 @@
 
     // Render order summary from localStorage cart
     function renderSummary() {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cart = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
       const tbody = document.getElementById('summary-body');
       tbody.innerHTML = '';
       let total = 0;
       cart.forEach(item => {
-        const sub = item.price * item.qty;
+        const sub = item.price * item.quantity;
         total += sub;
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><img src="/images/${item.img}" alt="" width="50" height="50"></td>
+          <td><img src="${item.img || '/images/default.jpg'}" alt="" width="50" height="50"></td>
           <td>${item.name}</td>
-          <td>${item.qty}</td>
+          <td>${item.quantity}</td>
           <td>HK$${sub.toFixed(2)}</td>
         `;
         tbody.appendChild(tr);
@@ -199,11 +208,17 @@
 
     // Place order action
     function placeOrder() {
+      const cart = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
+      if (cart.length === 0) {
+        alert('购物车为空，请先选择商品');
+        window.location.href = 'shoppingCart.html';
+        return;
+      }
+      
       alert('Your order has been placed. Thank you!');
-      localStorage.removeItem('cart');
-      window.location.href = 'index.html';
+      localStorage.removeItem('checkoutItems');
+      window.location.href = '../index.html';
     }
-
   </script>
 </body>
 </html>
