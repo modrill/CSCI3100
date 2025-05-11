@@ -16,6 +16,7 @@ Connection:
         with get_connection() as (conn, cursor):
             if conn and conn.is_connected():
                 print("成功捏！")
+                ->操作
             else:
                 print("gg!")
         
