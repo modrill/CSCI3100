@@ -30,5 +30,5 @@ v1.1.2
 数据库字段名用了更规范的驼峰命名法，详情参见database/buyzu_item.sql里面的具体定义
 
 v1.1.3
-
+   lib/database - >database 包，提供数据库操作函数。使用说明在database方法说明.txt
   
