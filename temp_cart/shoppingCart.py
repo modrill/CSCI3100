@@ -17,20 +17,15 @@ import os
 import secrets
 from functools import wraps
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from lib.database import execute_query, execute_update, execute_batch, execute_transaction
+from lib.database.exception import DatabaseError
+
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# 数据库配置
-db_config = {
-    'host': 'localhost',
-    'user': 'taotao',
-    'password': '123456',
-    'database': 'buyzu',  # 修改为正确的数据库名称
-    'charset': 'utf8mb4'
-}
-
-def get_db_connection():
-    return mysql.connector.connect(**db_config)
 
 def get_session_id():
     # 首先从请求头获取
@@ -48,23 +43,16 @@ def get_session_id():
         return session_id, resp
     return session_id, None
 
-def db_handler(func):
+def handle_exceptions(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            result = func(conn, cursor, *args, **kwargs)
-            return result
+            return func(*args, **kwargs)
+        except DatabaseError as e:
+            return jsonify({'success': False, 'message': str(e)}), 500
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-        finally:
-            if 'cursor' in locals():
-                cursor.close()
-            if 'conn' in locals():
-                conn.close()
     return wrapper
-
 
 
 @app.route('/')
@@ -72,9 +60,9 @@ def home():
     return send_from_directory('.', 'shoppingCart.html')
 
 @app.route('/api/products', methods=['GET'])
-@db_handler
-def get_products(conn, cursor):
-    cursor.execute("""
+@handle_exceptions
+def get_products():
+    query = """
         SELECT 
             p.productID as product_id, 
             p.productName as name, 
@@ -87,18 +75,18 @@ def get_products(conn, cursor):
         WHERE p.currentStatus = 1
         ORDER BY p.sales DESC
         LIMIT 50
-    """)
-    products = cursor.fetchall()
+    """
+    products = execute_query(query)
     return jsonify(products)
 
 @app.route('/api/cart', methods=['GET'])
-@db_handler
-def get_cart(conn, cursor):
+@handle_exceptions
+def get_cart():
     session_id, resp = get_session_id()
     if resp:
         return resp
     
-    cursor.execute("""
+    query = """
         SELECT 
             c.productID as product_id, 
             p.productName as name, 
@@ -110,15 +98,15 @@ def get_cart(conn, cursor):
         JOIN products p ON c.productID = p.productID
         LEFT JOIN brand b ON p.brandID = b.brandID
         WHERE c.sessionID = %s
-    """, (session_id,))
-    cart_items = cursor.fetchall()
+    """
+    cart_items = execute_query(query, (session_id,))
     
     response = jsonify(cart_items)
     return response
 
 @app.route('/api/cart', methods=['POST'])
-@db_handler
-def add_to_cart(conn, cursor):
+@handle_exceptions
+def add_to_cart():
     session_id, resp = get_session_id()
     if resp:
         # 需要设置新cookie
@@ -132,8 +120,8 @@ def add_to_cart(conn, cursor):
     quantity = data.get('quantity', 1)
     
     # 检查商品是否存在
-    cursor.execute("SELECT productID, inventoryCount FROM products WHERE productID = %s", (product_id,))
-    product = cursor.fetchone()
+    query = "SELECT productID, inventoryCount FROM products WHERE productID = %s"
+    product = execute_query(query, (product_id,), fetch_one=True)
     
     if not product:
         return jsonify({'success': False, 'message': '商品不存在'}), 404
@@ -143,24 +131,20 @@ def add_to_cart(conn, cursor):
         return jsonify({'success': False, 'message': '库存不足'}), 400
     
     # 更新购物车
-    try:
-        cursor.execute("""
-            INSERT INTO carts (sessionID, productID, quantity, createdAt)
-            VALUES (%s, %s, %s, NOW())
-            ON DUPLICATE KEY UPDATE 
-                quantity = quantity + VALUES(quantity),
-                createdAt = NOW()
-        """, (session_id, product_id, quantity))
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+    query = """
+        INSERT INTO carts (sessionID, productID, quantity, createdAt)
+        VALUES (%s, %s, %s, NOW())
+        ON DUPLICATE KEY UPDATE 
+            quantity = quantity + VALUES(quantity),
+            createdAt = NOW()
+    """
+    execute_update(query, (session_id, product_id, quantity))
     
     return response
 
 @app.route('/api/cart/<product_id>', methods=['PUT'])
-@db_handler
-def update_cart_item(conn, cursor, product_id):
+@handle_exceptions
+def update_cart_item(product_id):
     session_id, _ = get_session_id()
     data = request.get_json()
     quantity = data.get('quantity')
@@ -169,8 +153,8 @@ def update_cart_item(conn, cursor, product_id):
         return jsonify({'success': False, 'message': '数量必须大于0'}), 400
     
     # 检查库存
-    cursor.execute("SELECT inventoryCount FROM products WHERE productID = %s", (product_id,))
-    product = cursor.fetchone()
+    query = "SELECT inventoryCount FROM products WHERE productID = %s"
+    product = execute_query(query, (product_id,), fetch_one=True)
     
     if not product:
         return jsonify({'success': False, 'message': '商品不存在'}), 404
@@ -179,45 +163,37 @@ def update_cart_item(conn, cursor, product_id):
         return jsonify({'success': False, 'message': '库存不足'}), 400
     
     # 更新购物车
-    try:
-        cursor.execute("""
-            UPDATE carts 
-            SET quantity = %s 
-            WHERE sessionID = %s AND productID = %s
-        """, (quantity, session_id, product_id))
-        conn.commit()
-        
-        if cursor.rowcount == 0:
-            return jsonify({'success': False, 'message': '购物车中没有此商品'}), 404
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+    query = """
+        UPDATE carts 
+        SET quantity = %s 
+        WHERE sessionID = %s AND productID = %s
+    """
+    affected_rows = execute_update(query, (quantity, session_id, product_id))
+    
+    if affected_rows == 0:
+        return jsonify({'success': False, 'message': '购物车中没有此商品'}), 404
     
     return jsonify({'success': True})
 
 @app.route('/api/cart/<product_id>', methods=['DELETE'])
-@db_handler
-def remove_cart_item(conn, cursor, product_id):
+@handle_exceptions
+def remove_cart_item(product_id):
     session_id, _ = get_session_id()
     
-    try:
-        cursor.execute("""
-            DELETE FROM carts 
-            WHERE sessionID = %s AND productID = %s
-        """, (session_id, product_id))
-        conn.commit()
-        
-        if cursor.rowcount == 0:
-            return jsonify({'success': False, 'message': '购物车中没有此商品'}), 404
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+    query = """
+        DELETE FROM carts 
+        WHERE sessionID = %s AND productID = %s
+    """
+    affected_rows = execute_update(query, (session_id, product_id))
+    
+    if affected_rows == 0:
+        return jsonify({'success': False, 'message': '购物车中没有此商品'}), 404
     
     return jsonify({'success': True})
 
 @app.route('/api/cart/batch', methods=['DELETE'])
-@db_handler
-def batch_delete_cart_items(conn, cursor):
+@handle_exceptions
+def batch_delete_cart_items():
     session_id, _ = get_session_id()
     data = request.get_json()
     product_ids = data.get('ids', [])
@@ -225,30 +201,15 @@ def batch_delete_cart_items(conn, cursor):
     if not product_ids:
         return jsonify({'success': False, 'message': '未指定要删除的商品'}), 400
     
-    try:
-        placeholders = ', '.join(['%s'] * len(product_ids))
-        query = f"""
-            DELETE FROM carts 
-            WHERE sessionID = %s AND productID IN ({placeholders})
-        """
-        cursor.execute(query, [session_id] + product_ids)
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+    placeholders = ', '.join(['%s'] * len(product_ids))
+    query = f"""
+        DELETE FROM carts 
+        WHERE sessionID = %s AND productID IN ({placeholders})
+    """
+    params = [session_id] + product_ids
+    execute_update(query, params)
     
     return jsonify({'success': True})
 
-# 添加静态文件服务
-@app.route('/')
-def index():
-    return app.send_static_file('productList.html')
-
-@app.route('/shoppingCart.html')
-def shopping_cart():
-    return app.send_static_file('shoppingCart.html')
-
 if __name__ == '__main__':
-    # 确保static文件夹存在
-    os.makedirs('static', exist_ok=True)
     app.run(debug=True)
