@@ -62,25 +62,3 @@ def execute_batch(query, params_list):
             return cursor.rowcount
     except Exception as e:
         raise DatabaseError(f"批量操作失败: {str(e)}")
-
-def execute_transaction(operations):
-    """
-    在一个事务中执行多个操作
-    
-    参数:
-        operations (list): 操作列表，每个操作是一个(query, params)元组
-        
-    返回:
-        bool: 事务是否成功
-    """
-    if not operations:
-        return True
-        
-    try:
-        with get_connection() as (conn, cursor):
-            for query, params in operations:
-                cursor.execute(query, params or ())
-            conn.commit()
-            return True
-    except Exception as e:
-        raise DatabaseError(f"事务执行失败: {str(e)}")
