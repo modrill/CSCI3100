@@ -31,4 +31,8 @@ v1.1.2
 
 v1.1.3
    lib/database - >database 包，提供数据库操作函数。使用说明在database方法说明.txt
-  
+
+v1.1.4
+    cart与checkout 连接。
+    目前情况：checkout的跳转？0
+    -》cart连接数据库读取。（现在用的临时函数）
