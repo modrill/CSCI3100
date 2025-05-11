@@ -12,114 +12,141 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BuyZu · 购物车</title>
+<title>Buyzu · 购物车</title>
 
 <!-- ============ 样式 ============ -->
 <style>
-:root{
-  --bg:#f6f7f9;--card-bg:#fff;--border:#e5e7eb;--primary:#2563eb;
-  --text:#111827;--muted:#6b7280;--radius:18px;          /* 圆角更大 */
-  --shadow:0 4px 12px rgba(0,0,0,.06);--transition:.55s;--skeleton:#e0e0e0;
-  --danger:#dc2626;--success:#10b981;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-     background:var(--bg);color:var(--text);line-height:1.5}
+  /* Reset */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; background: #F7FFF7; color: #1A1F36; line-height:1.5; }
+  a { color: inherit; text-decoration: none; }
 
-/* 顶栏 */
-header{display:flex;align-items:center;gap:.6rem;background:var(--card-bg);
-       border-bottom:1px solid var(--border);padding:.8rem 1rem;font-weight:600;font-size:1.15rem}
-header svg{width:28px;height:28px;fill:var(--primary)}
+  /* Utility */
+  .container { width:90%; max-width:800px; margin:0 auto; padding:2rem 0; }
+  .glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
 
-/* 主区域 */
-main{max-width:960px;margin:1.2rem auto;padding:0 1rem}
-.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.8rem}
-.section-head h2{font-size:1.05rem;font-weight:700}
-.empty-cart{text-align:center;padding:3rem 1rem;color:var(--muted)}
-.empty-cart svg{width:64px;height:64px;fill:var(--muted);margin-bottom:1rem}
+  /* Header */
+  header { position: sticky; top:0; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); z-index:100; }
+  .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem .5rem; }
+  .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+  .search-cart { display:flex; align-items:center; gap:2rem; }
+  .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+  .search-cart .icon { font-size:1.5rem; cursor:pointer; }
+  .auth-buttons { display:flex; gap:1rem; }
+  .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+  .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+  .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+  .auth-buttons .btn:hover { opacity:.85; }
 
-/* 购物车列表 */
-.cart-list{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
-.cart-header{display:grid;grid-template-columns:24px 100px 1fr 120px 100px 80px;padding:1rem;font-weight:600;border-bottom:1px solid var(--border);background:#fafafa}
-.cart-item{display:grid;grid-template-columns:24px 100px 1fr 120px 100px 80px;padding:1rem;border-bottom:1px solid var(--border);align-items:center}
-.cart-item:last-child{border-bottom:none}
-.cart-item:hover{background:#f9fafb}
+  /* 主区域 */
+  main { max-width:800px; margin:0 auto; padding:2rem 0; }
+  .section-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; }
+  .section-head h2 { font-size:1.5rem; font-weight:700; }
+  .empty-cart { text-align:center; padding:3rem 1rem; color:#6B7280; background:white; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
+  .empty-cart svg { width:64px; height:64px; fill:#6B7280; margin-bottom:1rem; }
 
-/* 商品图片和信息 */
-.item-check{display:flex;align-items:center;justify-content:center}
-.item-check input{width:18px;height:18px;cursor:pointer}
-.item-img{padding:.25rem}
-.item-img img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#fafafa}
-.item-info{padding:0 .5rem}
-.item-name{font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.item-brand{font-size:.85rem;color:var(--muted);margin-top:.25rem}
+  /* 购物车列表 */
+  .cart-list { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
+  .cart-header { display:grid; grid-template-columns:24px 100px 1fr 120px 100px 80px; padding:1rem; font-weight:600; border-bottom:1px solid #E5E7EB; background:#F0F1F3; }
+  .cart-item { display:grid; grid-template-columns:24px 100px 1fr 120px 100px 80px; padding:1rem; border-bottom:1px solid #E5E7EB; align-items:center; }
+  .cart-item:last-child { border-bottom:none; }
+  .cart-item:hover { background:#F7FFF7; }
 
-/* 数量调整 */
-.item-quantity{display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.quantity-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer}
-.quantity-btn:hover{background:#f0f1f3}
-.quantity-btn svg{width:16px;height:16px;fill:var(--muted)}
-.quantity-input{width:40px;height:32px;border:none;text-align:center;font-size:.9rem}
-.quantity-input:focus{outline:none}
-
-/* 价格和操作 */
-.item-price{font-weight:600;color:#d9230f}
-.item-actions{display:flex;justify-content:center}
-.delete-btn{background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:.5rem}
-.delete-btn:hover{color:var(--danger)}
-.delete-btn svg{width:18px;height:18px;fill:currentColor}
-
-/* 结算区域 */
-.cart-footer{margin-top:1.5rem;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow)}
-.cart-summary{display:flex;justify-content:space-between;align-items:center}
-.summary-left{display:flex;align-items:center;gap:.75rem}
-.select-all{display:flex;align-items:center;gap:.5rem}
-.select-all input{width:18px;height:18px;cursor:pointer}
-.summary-actions{display:flex;gap:.5rem}
-.summary-actions button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem}
-.summary-actions button:hover{color:var(--primary)}
-.summary-right{display:flex;align-items:center;gap:1.5rem}
-.total-price{font-size:1.1rem;font-weight:700;color:#d9230f}
-.checkout-btn{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.75rem 1.5rem;font-weight:600;cursor:pointer;transition:background .25s}
-.checkout-btn:hover{background:#1d4ed8}
-
-/* 进入动画 */
-@keyframes fadeIn{
-  0%{opacity:0;transform:translateY(10px)}
-  100%{opacity:1;transform:none}
-}
-.fade-in{animation:fadeIn .35s ease-out both}
-
-/* 响应式调整 */
-@media(max-width:768px){
-  .cart-header{display:none}
-  .cart-item{grid-template-columns:24px 80px 1fr;grid-template-areas:
-    "check img info"
-    "check img price"
-    "check img quantity"
-    "check img actions";
-    gap:.5rem;
+  /* 商品图片和信息 */
+  .item-check { display:flex; align-items:center; justify-content:center; }
+  .item-check input { width:18px; height:18px; cursor:pointer; }
+  .item-img { padding:.25rem; }
+  .item-img img { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; background:#fafafa; }
+  .item-info { padding:0 .5rem; }
+  .item-name {
+    font-weight: 600;
+    display: -webkit-box;
+    display: box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    overflow: hidden;
   }
-  .item-check{grid-area:check}
-  .item-img{grid-area:img}
-  .item-info{grid-area:info}
-  .item-price{grid-area:price}
-  .item-quantity{grid-area:quantity;width:120px}
-  .item-actions{grid-area:actions;justify-content:flex-start}
-  
-  .cart-summary{flex-direction:column;align-items:flex-start;gap:1rem}
-  .summary-right{width:100%;justify-content:space-between}
-}
+  .item-brand { font-size:.85rem; color:#6B7280; margin-top:.25rem; }
+
+  /* 数量调整 */
+  .item-quantity { display:flex; align-items:center; border:1px solid #E5E7EB; border-radius:8px; overflow:hidden; }
+  .quantity-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; }
+  .quantity-btn:hover { background:#F0F1F3; }
+  .quantity-btn svg { width:16px; height:16px; fill:#6B7280; }
+  .quantity-input { width:40px; height:32px; border:none; text-align:center; font-size:.9rem; }
+  .quantity-input:focus { outline:none; }
+
+  /* 价格和操作 */
+  .item-price { font-weight:600; color:#FF6B6B; }
+  .item-actions { display:flex; justify-content:center; }
+  .delete-btn { background:none; border:none; cursor:pointer; color:#6B7280; display:flex; align-items:center; justify-content:center; padding:.5rem; }
+  .delete-btn:hover { color:#FF6B6B; }
+  .delete-btn svg { width:18px; height:18px; fill:currentColor; }
+
+  /* 结算区域 */
+  .cart-footer { margin-top:1.5rem; background:#fff; border-radius:12px; padding:1.2rem; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
+  .cart-summary { display:flex; justify-content:space-between; align-items:center; }
+  .summary-left { display:flex; align-items:center; gap:.75rem; }
+  .select-all { display:flex; align-items:center; gap:.5rem; }
+  .select-all input { width:18px; height:18px; cursor:pointer; }
+  .summary-actions { display:flex; gap:.5rem; }
+  .summary-actions button { background:none; border:none; color:#6B7280; cursor:pointer; font-size:.9rem; }
+  .summary-actions button:hover { color:#FF6B6B; }
+  .summary-right { display:flex; align-items:center; gap:1.5rem; }
+  .total-price { font-size:1.1rem; font-weight:700; color:#FF6B6B; }
+  .checkout-btn { background:#FF6B6B; color:#fff; border:none; border-radius:30px; padding:.75rem 1.5rem; font-weight:600; cursor:pointer; transition:.25s; }
+  .checkout-btn:hover { opacity:.85; }
+
+  /* 进入动画 */
+  @keyframes fadeIn {
+    0% { opacity:0; transform:translateY(10px); }
+    100% { opacity:1; transform:none; }
+  }
+  .fade-in { animation:fadeIn .35s ease-out both; }
+
+  /* 响应式调整 */
+  @media(max-width:768px) {
+    .cart-header { display:none; }
+    .cart-item {
+      grid-template-columns:24px 80px 1fr;
+      grid-template-areas:
+        "check img info"
+        "check img price"
+        "check img quantity"
+        "check img actions";
+      gap:.5rem;
+    }
+    .item-check { grid-area:check; }
+    .item-img { grid-area:img; }
+    .item-info { grid-area:info; }
+    .item-price { grid-area:price; }
+    .item-quantity { grid-area:quantity; width:120px; }
+    .item-actions { grid-area:actions; justify-content:flex-start; }
+    
+    .cart-summary { flex-direction:column; align-items:flex-start; gap:1rem; }
+    .summary-right { width:100%; justify-content:space-between; }
+  }
 </style>
 </head>
 
 <body>
 <header>
-  <svg viewBox="0 0 24 24"><path d="M7 4h-2l-3 7v2h2l2-4h11l1.2 3H20v2h-2l-1-3H8l-1 2H3v-2l3-7zM6 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18z"/></svg>
-  BuyZu 购物车
+  <div class="nav-wrapper container">
+    <a href="homepage.html" class="logo">Buyzu</a>
+    <div class="search-cart">
+      <input type="text" placeholder="Search…">
+      <a href="shoppingCart.html" class="icon">🛒</a>
+    </div>
+    <div class="auth-buttons">
+      <button class="btn login">Login</button>
+      <button class="btn register">Register</button>
+    </div>
+  </div>
 </header>
 
-<main>
+<main class="container">
   <section>
     <div class="section-head">
       <h2>我的购物车</h2>
@@ -130,6 +157,12 @@ main{max-width:960px;margin:1.2rem auto;padding:0 1rem}
     </div>
   </section>
 </main>
+
+<footer>
+  <div class="container" style="text-align:center; padding:2rem 0; color:#6b7280;">
+    &copy; 2025 Buyzu. All rights reserved.
+  </div>
+</footer>
 
 <!-- ============ 脚本 ============ -->
 <script>
@@ -232,7 +265,7 @@ function renderCart() {
           <div class="item-name">${item.name}</div>
           <div class="item-brand">${item.brandName || ''}</div>
         </div>
-        <div class="item-price">￥${(+item.price).toFixed(2)}</div>
+        <div class="item-price">HK$${(+item.price).toFixed(2)}</div>
         <div class="item-quantity">
           <button class="quantity-btn" onclick="updateQuantity('${item.product_id}', -1)">
             <svg viewBox="0 0 24 24"><path d="M5 13v-2h14v2z"/></svg>
@@ -268,7 +301,7 @@ function renderCart() {
         <div class="summary-right">
           <div>
             已选 <span id="selectedCount">${cartItems.filter(item => item.checked).length}</span> 件商品，
-            合计：<span class="total-price">￥${totalPrice.toFixed(2)}</span>
+            合计：<span class="total-price">HK$${totalPrice.toFixed(2)}</span>
           </div>
           <button class="checkout-btn" onclick="checkout()">去结算</button>
         </div>
@@ -473,13 +506,12 @@ function checkout() {
    localStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
   
    // 跳转到结算页面
-   window.location.href = 'checkout.html'; //checkout的路径捏
-
- }
-
+   window.location.href = 'checkout.html';
+}
 
 /* ---------- 初始化 ---------- */
 document.addEventListener('DOMContentLoaded', loadCart);
 </script>
 </body>
 </html>
+
