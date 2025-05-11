@@ -19,7 +19,7 @@ from functools import wraps
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from lib.database import execute_query, execute_update, execute_batch, execute_transaction
+from lib.database import execute_query, execute_update, execute_batch
 from lib.database.exception import DatabaseError
 
 
