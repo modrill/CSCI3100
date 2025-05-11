@@ -12,9 +12,13 @@ Connection:
     DBConnectionPool:实现数据库连接池，采用单例模式，确保整个应用共享同一个连接池实例。
     提供 get_connection() -》从连接池中获取一个数据库连接
     get_connection用法
+    try:
         with get_connection() as (conn, cursor):
-        cursor.execute("SELECT * FROM products")
-        results = cursor.fetchall()
+            if conn and conn.is_connected():
+                print("成功捏！")
+            else:
+                print("gg!")
+        
 
 Exception:
     针对operation中的错误：
@@ -57,3 +61,5 @@ eg:
         "INSERT INTO users (name, email) VALUES (%s, %s)",
         users_to_insert
     )
+
+请注意：operations中的操作有引用get_connection(). 会进行连接
