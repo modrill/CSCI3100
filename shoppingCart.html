@@ -25,18 +25,38 @@
   .container { width:90%; max-width:800px; margin:0 auto; padding:2rem 0; }
   .glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
 
-  /* Header */
-  header { position: sticky; top:0; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); z-index:100; }
-  .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem .5rem; }
-  .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
-  .search-cart { display:flex; align-items:center; gap:2rem; }
-  .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-  .search-cart .icon { font-size:1.5rem; cursor:pointer; }
-  .auth-buttons { display:flex; gap:1rem; }
-  .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
-  .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
-  .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
-  .auth-buttons .btn:hover { opacity:.85; }
+   /* Header */
+   header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
+   .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
+   .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+   .search-cart { display:flex; align-items:center; gap:2rem; }
+   .search-cart input { width:300px;padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+   .search-cart button { 
+     padding:.3rem 1rem; /* 缩小按钮尺寸 */
+     border:none; 
+     border-radius:20px; 
+     background:#FF6B6B; 
+     color:#fff; 
+     font-size:.85rem; 
+     cursor:pointer; 
+   }
+   .search-cart .icon { font-size:1.5rem; cursor:pointer; }
+   .auth-buttons { display:flex; gap:1rem; }
+   .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+   .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+   .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+   .auth-buttons .btn:hover { opacity:.85; }
+   .auth-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center; /* 确保所有子元素垂直居中对齐 */
+  }
+  .cart-icon {
+    font-size: 1.5rem; /* 调整大小 */
+    display: flex;
+    align-items: center;
+  }
+  
 
   /* 主区域 */
   main { max-width:800px; margin:0 auto; padding:2rem 0; }
@@ -132,16 +152,18 @@
 </head>
 
 <body>
+
 <header>
   <div class="nav-wrapper container">
     <a href="homepage.html" class="logo">Buyzu</a>
-    <div class="search-cart">
-      <input type="text" placeholder="Search…">
-      <a href="shoppingCart.html" class="icon">🛒</a>
-    </div>
+  <div class="search-cart">
+    <input type="text" id="searchInput" placeholder="Search…">
+    <button onclick="redirectToSearch()">Search</button>
+  </div>
     <div class="auth-buttons">
       <button class="btn login">Login</button>
       <button class="btn register">Register</button>
+      <a href="shoppingCart.html" class="cart-icon">🛒</a>
     </div>
   </div>
 </header>
@@ -508,6 +530,17 @@ function checkout() {
   
    // 跳转到结算页面
    window.location.href = 'checkout.html';
+}
+
+/* ---------- 跳转搜索 ---------- */
+function redirectToSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (query) {
+    // 跳转到 searchpage.html，并将搜索关键词作为查询参数传递
+    window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
+  } else {
+    alert("Please enter a search term!");
+  }
 }
 
 /* ---------- 初始化 ---------- */
