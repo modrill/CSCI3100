@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.3s ease;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            font-size: 1rem;
+        }
+        input:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 1.5rem;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+        .toggle-form a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .password-match-message {
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+        .match {
+            color: #28a745;
+        }
+        .not-match {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <form id="loginForm" style="display: block;">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Login</button>
+            <div class="toggle-form">
+                Don't have an account? <a href="#" onclick="toggleForms()">Register</a>
+            </div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" style="display: none;">
+            <h2>Register</h2>
+            <div class="form-group">
+                <label for="registerUsername">Username</label>
+                <input type="text" id="registerUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+                <div id="passwordMatchMessage" class="password-match-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail">Email (Optional)</label>
+                <input type="email" id="registerEmail">
+            </div>
+            <button type="submit" id="registerButton" disabled>Register</button>
+            <div class="toggle-form">
+                Already have an account? <a href="#" onclick="toggleForms()">Login</a>
+            </div>
+        </form>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+            errorMessage.textContent = '';
+        }
+
+        // Password matching check
+        const registerPassword = document.getElementById('registerPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const passwordMatchMessage = document.getElementById('passwordMatchMessage');
+        const registerButton = document.getElementById('registerButton');
+
+        function checkPasswordMatch() {
+            const password = registerPassword.value;
+            const confirm = confirmPassword.value;
+
+            if (confirm.length > 0) {
+                if (password === confirm) {
+                    passwordMatchMessage.textContent = 'Passwords match';
+                    passwordMatchMessage.className = 'password-match-message match';
+                    registerButton.disabled = false;
+                } else {
+                    passwordMatchMessage.textContent = 'Passwords do not match';
+                    passwordMatchMessage.className = 'password-match-message not-match';
+                    registerButton.disabled = true;
+                }
+            } else {
+                passwordMatchMessage.textContent = '';
+                registerButton.disabled = true;
+            }
+        }
+
+        registerPassword.addEventListener('input', checkPasswordMatch);
+        confirmPassword.addEventListener('input', checkPasswordMatch);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors',
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+                
+                alert('Login successful!');
+                // Add redirect logic here
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = error.message;
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            const email = document.getElementById('registerEmail').value;
+            
+            if (password !== confirmPass) {
+                document.getElementById('errorMessage').textContent = 'Passwords do not match';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5001/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors',
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ username, password, email })
+                });
+                
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+                
+                alert('Registration successful!');
+                toggleForms(); // Switch to login form
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html> 
