@@ -150,19 +150,15 @@
         inp.addEventListener('change', async ()=>{
           const pid = inp.dataset.id;
           const qty = Math.max(1, parseInt(inp.value)||1);
-          await fetch(`/api/cart?id=${pid}`, {
-            method:'DELETE',
-            headers:{'X-UserID': uid}
-          });
           await fetch('/api/cart', {
-            method:'POST',
+            method:'PUT',
             headers:{
               'Content-Type':'application/json',
               'X-UserID': uid
             },
             body: JSON.stringify({ id: pid, qty })
           });
-          loadCart();
+          loadCart(); // 重新加载购物车以更新显示
         });
       });
     }

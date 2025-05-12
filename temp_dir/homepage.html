@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyzu · Home</title>
+  <style>
+    /* Reset */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; background: #F7FFF7; color: #1A1F36; line-height:1.5; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Utility */
+    .container { width:90%; max-width:1200px; margin:0 auto; }
+    .glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
+
+    /* Header */
+    header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
+    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
+    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+    .search-cart { display:flex; align-items:center; gap:2rem; }
+    .search-cart input { width:300px;padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .search-cart button { 
+      padding:.3rem 1rem; 
+      border:none; 
+      border-radius:20px; 
+      background:#FF6B6B; 
+      color:#fff; 
+      font-size:.85rem; 
+      cursor:pointer; 
+    }
+    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
+    .auth-buttons { display:flex; gap:1rem; }
+    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+    .auth-buttons .btn:hover { opacity:.85; }
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .cart-icon {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Hero Banner */
+    .hero-banner { background: linear-gradient(135deg,#FF6B6B,#FFD93D); color:#fff; padding:4rem 0; }
+    .hero-banner .container { text-align:center; }
+    .hero-banner h1 { font-size:2.75rem; margin-bottom:.5rem; }
+    .hero-banner p { font-size:1.2rem; opacity:.9; }
+
+    /* Modified Related-to Banner */
+    .reco-banner { background: #F0F1F3; padding:2rem 0 4rem; }
+    .reco-banner .container { }
+    .reco-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+    .reco-header h2 { font-size:1.5rem; margin:0; color:#1A1F36; }
+    .reco-header .refresh {
+      padding:.4rem .8rem;
+      border:1px solid #1A1F36;
+      border-radius:20px;
+      background:transparent;
+      font-size:.9rem;
+      cursor:pointer;
+      transition:.25s;
+      color:#1A1F36;
+    }
+    .reco-header .refresh:hover { background:#E5E7EB; }
+
+    /* Carousel (single‐card view) */
+    .carousel-hero { position:relative; width:100%; overflow:hidden; }
+    .track { display:flex; justify-content:center; }
+    .reco-card { flex:0 0 260px; max-width:260px; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.1); transition:transform .25s; }
+    .reco-card.fade-in { animation: slideFadeIn .55s cubic-bezier(.25,.8,.35,1) both; }
+    .reco-card img { width:100%; aspect-ratio:1/1; object-fit:cover; }
+    .reco-body { padding:.5rem; color:#1A1F36; }
+    .reco-name { font-size:.75rem; font-weight:600; line-height:1.2em; height:2.4em; overflow:hidden; }
+    .reco-brand { font-size:.65rem; color:#6b7280; margin:.25rem 0; }
+    .reco-price { color:#d9230f; font-weight:700; font-size:.75rem; }
+    .nav-arrow { position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px;
+                 background:rgba(0,0,0,.3); color:#fff; border-radius:50%; display:flex;
+                 align-items:center; justify-content:center; cursor:pointer; transition:.25s; z-index:5; }
+    .nav-prev { left:2%; }
+    .nav-next { right:2%; }
+    .nav-arrow:hover { background:rgba(0,0,0,.5); }
+    .nav-arrow svg { width:18px; height:18px; fill:currentColor; }
+    @keyframes slideFadeIn {
+      0% { opacity:0; transform: translateX(40px) scale(.96); }
+      100% { opacity:1; transform: none; }
+    }
+
+    /* Categories */
+    .categories { padding:2rem 0 4rem; }
+    .categories h2 { font-size:2rem; text-align:center; margin-bottom:2rem; color:#1A1F36; }
+    .cat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; }
+    .cat-card { position:relative; height:150px; overflow:hidden; border-radius:12px; cursor:pointer; transition:transform .3s,box-shadow .3s; }
+    .cat-card::before { content:attr(data-name); position:absolute; bottom:.5rem; left:.5rem; color:#fff; font-weight:bold; font-size:1.2rem; }
+    .cat-card:hover { transform:translateY(-5px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+    .cat-1 { background:linear-gradient(45deg,#00C9FF,#92FE9D); }
+    .cat-2 { background:linear-gradient(45deg,#7F00FF,#E100FF); }
+    .cat-3 { background:linear-gradient(45deg,#FF512F,#DD2476); }
+    .cat-4 { background:linear-gradient(45deg,#36D1DC,#5B86E5); }
+
+    /* Hot Sellers */
+    .featured { padding:4rem 0; }
+    .featured h2 { font-size:2rem; text-align:center; margin-bottom:2rem; color:#1A1F36; }
+    .product-row { display:flex; gap:1rem; overflow-x:auto; scroll-behavior:smooth; padding-bottom:1rem; }
+    .product-card { flex:0 0 200px; background:#F7FFF7; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.1); transition:transform .3s; }
+    .product-card:hover { transform:translateY(-5px); }
+    .img-placeholder { width:100%; height:120px; background:#e0e0e0; border-radius:8px; margin-bottom:.8rem; }
+    .product-card h3 { font-size:1rem; margin-bottom:.5rem; }
+    .product-card .price { color:#FF6B6B; font-weight:bold; }
+
+    /* Subscribe */
+    .subscribe { text-align:center; padding:4rem 0; }
+    .subscribe .glass { display:inline-block; padding:2rem; max-width:400px; width:100%; }
+    .subscribe input { width:100%; padding:.8rem 1rem; border:none; border-radius:30px; margin-bottom:1rem; }
+    .subscribe button { padding:.8rem 2rem; border:none; border-radius:30px; background:#FF6B6B; color:#fff; cursor:pointer; }
+
+    /* Footer */
+    footer { background:#1A1F36; color:#fff; padding:2rem 0; }
+    .footer-cols { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; }
+    .footer-col { min-width:150px; }
+    .footer-col h4 { margin-bottom:1rem; }
+    .footer-col ul { list-style:none; }
+    .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
+    footer p { text-align:center; color:#6b7280; margin-top:1rem; }
+
+    /* Responsive tweaks */
+    @media(max-width:768px){ .product-row { gap:.5rem; } }
+    @media(max-width:480px){ .nav-arrow { display:none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-wrapper container">
+      <a href="homepage.html" class="logo">Buyzu</a>
+      <div class="search-cart">
+        <input type="text" id="searchInput" placeholder="Search…">
+        <button onclick="redirectToSearch()">Search</button>
+      </div>
+
+      <div class="auth-buttons">
+        <div id="auth-status">
+          <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
+          <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
+        </div>
+        <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
+        <button class="btn" onclick="window.location.href='orders.html'">My Orders</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <div class="container">
+        <h1>Welcome to Buyzu</h1>
+        <p>Your trendsetting shopping destination</p>
+      </div>
+    </section>
+
+    <!-- Related-to Banner (modified) -->
+    <section class="reco-banner">
+      <div class="container">
+        <div class="reco-header">
+          <h2>Related to items you've viewed</h2>
+          <button class="refresh" id="btnBatch">Refresh</button>
+        </div>
+        <div class="carousel-hero">
+          <div class="nav-arrow nav-prev" id="btnPrev" title="Previous">
+            <svg viewBox="0 0 24 24"><path d="M15.4 5 14 3.6 6.6 11l7.4 7.4 1.4-1.4L9.4 11z"/></svg>
+          </div>
+          <div class="track" id="track"></div>
+          <div class="nav-arrow nav-next" id="btnNext" title="Next">
+            <svg viewBox="0 0 24 24"><path d="m9 3.6-1.4 1.4 7.4 7.4-7.4 7.4L9 21l8.4-8.4z"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories container">
+      <h2>Shop by Category</h2>
+      <div class="cat-grid">
+        <div class="cat-card cat-1" data-name="Apparel"></div>
+        <div class="cat-card cat-2" data-name="Footwear"></div>
+        <div class="cat-card cat-3" data-name="Accessories"></div>
+        <div class="cat-card cat-4" data-name="Gadgets"></div>
+      </div>
+    </section>
+
+    <!-- Hot Sellers -->
+    <section class="featured container">
+      <h2>Hot Sellers</h2>
+      <div class="product-row">
+        <div class="product-card"><div class="img-placeholder"></div><h3>Product A</h3><div class="price">HK$49.99</div></div>
+        <div class="product-card"><div class="img-placeholder"></div><h3>Product B</h3><div class="price">HK$39.99</div></div>
+        <div class="product-card"><div class="img-placeholder"></div><h3>Product C</h3><div class="price">HK$29.99</div></div>
+        <div class="product-card"><div class="img-placeholder"></div><h3>Product D</h3><div class="price">HK$59.99</div></div>
+      </div>
+    </section>
+
+    <!-- Subscribe -->
+    <section class="subscribe">
+      <div class="glass">
+        <h2>Stay in the Loop</h2>
+        <p>Subscribe to get the latest trends & offers</p>
+        <input type="email" placeholder="Your email address">
+        <button>Subscribe</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-cols">
+      <div class="footer-col"><h4>Support</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+    </div>
+    <p>&copy; 2025 Buyzu. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const API      = '/api/home_reco?k=8';
+    const perBatch = 4;
+    const autoGap  = 6000;
+    const track    = document.getElementById('track');
+    const btnPrev  = document.getElementById('btnPrev');
+    const btnNext  = document.getElementById('btnNext');
+    const btnBatch = document.getElementById('btnBatch');
+    let uid, rawList = [], batchIdx = 0, slideIdx = 0, timer;
+
+    function getCookie(n){ const m=document.cookie.match('(?:^|; )'+n+'=([^;]+)'); return m?decodeURIComponent(m[1]):null; }
+    function setCookie(n,v,d=365){ document.cookie = `${n}=${encodeURIComponent(v)};expires=${new Date(Date.now()+d*864e5).toUTCString()};path=/`; }
+    function genAnon(){ return 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(16).slice(2,6); }
+
+    function renderSkeleton(){
+      track.innerHTML = Array(perBatch).fill().map(_=>`
+        <div class="reco-card" style="opacity:.3">
+          <div style="height:100px;background:#e0e0e0"></div>
+          <div class="reco-body">
+            <div style="height:.6rem;background:#e0e0e0;margin-bottom:.4rem"></div>
+            <div style="height:.5rem;background:#e0e0e0;margin-bottom:.4rem"></div>
+            <div style="height:.5rem;width:50%;background:#e0e0e0"></div>
+          </div>
+        </div>`).join('');
+    }
+
+    function renderCurrent(){
+      const start = batchIdx * perBatch;
+      track.innerHTML = '';
+      const p = rawList[start + slideIdx];
+      if(!p){
+        track.innerHTML = '<p style="color:#1A1F36;text-align:center;">No recommendations</p>';
+        return;
+      }
+      const card = document.createElement('div');
+      card.className = 'reco-card fade-in';
+      card.innerHTML = `
+        <a href="product.html?id=${p.productID}">
+          <img src="/images/${p.img}" alt="${p.productName}">
+          <div class="reco-body">
+            <div class="reco-name">${p.productName}</div>
+            <div class="reco-brand">${p.brandName||''}</div>
+            <div class="reco-price">HK$${(+p.price).toFixed(2)}</div>
+          </div>
+        </a>`;
+      track.appendChild(card);
+    }
+
+    function startAuto(){
+      clearInterval(timer);
+      timer = setInterval(()=>{
+        slideIdx = (slideIdx + 1) % perBatch;
+        renderCurrent();
+      }, autoGap);
+    }
+    function nextSlide(){ slideIdx = (slideIdx + 1) % perBatch; renderCurrent(); }
+    function prevSlide(){ slideIdx = (slideIdx - 1 + perBatch) % perBatch; renderCurrent(); }
+    function switchBatch(){
+      batchIdx = (batchIdx + 1) % Math.ceil(rawList.length / perBatch);
+      slideIdx = 0;
+      renderCurrent();
+      startAuto();
+    }
+
+    async function loadReco(){
+      renderSkeleton();
+      uid = localStorage.getItem('userID') || getCookie('SESSIONID');
+      if(!uid){ uid = genAnon(); localStorage.setItem('userID', uid); setCookie('SESSIONID', uid); }
+      try {
+        const res = await fetch(API, { headers:{ 'X-UserID': uid } });
+        rawList = (await res.json()).list || [];
+        batchIdx = slideIdx = 0;
+        renderCurrent();
+        startAuto();
+      } catch {
+        track.innerHTML = '<p style="color:#1A1F36;text-align:center;">Unable to load recommendations</p>';
+      }
+    }
+
+    btnPrev.onclick = ()=>{ prevSlide(); startAuto(); };
+    btnNext.onclick = ()=>{ nextSlide(); startAuto(); };
+    btnBatch.onclick = switchBatch;
+    document.addEventListener('visibilitychange', ()=>{
+      document.visibilityState === 'visible' ? startAuto() : clearInterval(timer);
+    });
+    document.addEventListener('DOMContentLoaded', loadReco);
+
+    function redirectToSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
+      } else {
+        alert("Please enter a search term!");
+      }
+    }
+
+    function checkLoginStatus() {
+      const authStatus = document.getElementById('auth-status');
+      const userStr = localStorage.getItem('user');
+      
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        authStatus.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="color: #1A1F36;">Welcome, ${user.username}</span>
+            <button class="btn login" onclick="logout()">Logout</button>
+          </div>
+        `;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.reload();
+    }
+
+    document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+    function handleCartClick() {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        window.location.href = 'shoppingCart.html';
+      } else {
+        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.origin + '/shoppingCart.html');
+      }
+    }
+
+  </script>
+</body>
+</html>

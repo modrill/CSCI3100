@@ -23,10 +23,9 @@ from email.header import Header
 
 from pydantic import BaseModel, EmailStr
 from werkzeug.security import generate_password_hash, check_password_hash
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
 
 # ──────────────────────────────────────────────────────────────
+
 # 1. 数据库配置（与 demo.py 保持一致，默认端口 3307）
 # ──────────────────────────────────────────────────────────────
 DB_CONFIG: Dict[str, Any] = dict(
@@ -196,13 +195,20 @@ def product_detail(id: str):
         "images": [row["img"]],
         "reviews": []
     }
-
+'''
 def get_owner_key(request: Request) -> str:
     uid = request.headers.get("X-UserID") or request.cookies.get("SESSIONID")
     if not uid:
         raise HTTPException(401, "缺少用户标识")
     return uid
+'''
+def get_owner_key(request: Request) -> str:
+    uid = request.headers.get("X-SessionID") or request.cookies.get("cart_session")
+    if not uid:
+        raise HTTPException(401, "缺少用户标识")
+    return uid
 
+'''
 @app.post("/api/cart")
 async def add_to_cart(request: Request):
     body = await request.json()
@@ -221,20 +227,6 @@ async def add_to_cart(request: Request):
             conn.commit()
     return {"success": True}
 
-@app.put("/api/cart")
-async def update_cart_item(request: Request):
-    body = await request.json()
-    pid = body.get("id")
-    qty = int(body.get("qty", 1))
-    if not pid or qty < 1:
-        raise HTTPException(400, "参数不合法")
-    owner = get_owner_key(request)
-    sql = "UPDATE carts SET quantity=%s WHERE ownerKey=%s AND productID=%s"
-    with db_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, (qty, owner, pid))
-            conn.commit()
-    return {"success": True}
 
 @app.get("/api/cart")
 async def list_cart(request: Request):
@@ -261,6 +253,7 @@ async def delete_cart_item(request: Request, id: str):
             cur.execute(sql, (owner, id))
             conn.commit()
     return {"success": True}
+'''
 
 @app.get("/api/hot_products")
 def hot_products(k: int = 8):
@@ -417,7 +410,7 @@ async def login(req: LoginReq):
 
 class GoogleAuthReq(BaseModel):
     token: str
-
+'''
 @app.post("/api/auth/google")
 async def google_auth(req: GoogleAuthReq):
     if not req.token:
@@ -447,7 +440,7 @@ async def google_auth(req: GoogleAuthReq):
         raise HTTPException(401, "Invalid token")
     except Exception as e:
         raise HTTPException(500, f"Google 登录失败: {e}")
-
+'''
 @app.get("/create-admin")
 async def create_admin():
     try:
