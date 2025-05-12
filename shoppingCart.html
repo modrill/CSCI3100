@@ -1,20 +1,20 @@
 <!-- 
-    购物车模板
-    大致功能模板：一个temple;
-    商品的展示和加入购物车（无数据捏
-    购物车界面
-    加减商品数
-    删除
-    计算总价
+    Shopping Cart Template
+    Main features: a template;
+    Product display and add to cart (no real data)
+    Shopping cart interface
+    Add/reduce product quantity
+    Delete items
+    Calculate total price
 -->
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Buyzu · 购物车</title>
+<title>Buyzu · Shopping Cart</title>
 
-<!-- ============ 样式 ============ -->
+<!-- ============ Styles ============ -->
 <style>
   /* Reset */
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -32,7 +32,7 @@
    .search-cart { display:flex; align-items:center; gap:2rem; }
    .search-cart input { width:300px;padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
    .search-cart button { 
-     padding:.3rem 1rem; /* 缩小按钮尺寸 */
+     padding:.3rem 1rem; /* smaller button size */
      border:none; 
      border-radius:20px; 
      background:#FF6B6B; 
@@ -49,30 +49,30 @@
    .auth-buttons {
     display: flex;
     gap: 1rem;
-    align-items: center; /* 确保所有子元素垂直居中对齐 */
+    align-items: center; /* ensure all child elements are vertically centered */
   }
   .cart-icon {
-    font-size: 1.5rem; /* 调整大小 */
+    font-size: 1.5rem; /* adjust size */
     display: flex;
     align-items: center;
   }
   
 
-  /* 主区域 */
+  /* Main area */
   main { max-width:800px; margin:0 auto; padding:2rem 0; }
   .section-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; }
   .section-head h2 { font-size:1.5rem; font-weight:700; }
   .empty-cart { text-align:center; padding:3rem 1rem; color:#6B7280; background:white; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
   .empty-cart svg { width:64px; height:64px; fill:#6B7280; margin-bottom:1rem; }
 
-  /* 购物车列表 */
+  /* Cart list */
   .cart-list { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
   .cart-header { display:grid; grid-template-columns:24px 100px 1fr 120px 100px 80px; padding:1rem; font-weight:600; border-bottom:1px solid #E5E7EB; background:#F0F1F3; }
   .cart-item { display:grid; grid-template-columns:24px 100px 1fr 120px 100px 80px; padding:1rem; border-bottom:1px solid #E5E7EB; align-items:center; }
   .cart-item:last-child { border-bottom:none; }
   .cart-item:hover { background:#F7FFF7; }
 
-  /* 商品图片和信息 */
+  /* Product image and info */
   .item-check { display:flex; align-items:center; justify-content:center; }
   .item-check input { width:18px; height:18px; cursor:pointer; }
   .item-img { padding:.25rem; }
@@ -90,7 +90,7 @@
   }
   .item-brand { font-size:.85rem; color:#6B7280; margin-top:.25rem; }
 
-  /* 数量调整 */
+  /* Quantity adjustment */
   .item-quantity { display:flex; align-items:center; border:1px solid #E5E7EB; border-radius:8px; overflow:hidden; }
   .quantity-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; }
   .quantity-btn:hover { background:#F0F1F3; }
@@ -98,14 +98,14 @@
   .quantity-input { width:40px; height:32px; border:none; text-align:center; font-size:.9rem; }
   .quantity-input:focus { outline:none; }
 
-  /* 价格和操作 */
+  /* Price and actions */
   .item-price { font-weight:600; color:#FF6B6B; }
   .item-actions { display:flex; justify-content:center; }
   .delete-btn { background:none; border:none; cursor:pointer; color:#6B7280; display:flex; align-items:center; justify-content:center; padding:.5rem; }
   .delete-btn:hover { color:#FF6B6B; }
   .delete-btn svg { width:18px; height:18px; fill:currentColor; }
 
-  /* 结算区域 */
+  /* Checkout area */
   .cart-footer { margin-top:1.5rem; background:#fff; border-radius:12px; padding:1.2rem; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
   .cart-summary { display:flex; justify-content:space-between; align-items:center; }
   .summary-left { display:flex; align-items:center; gap:.75rem; }
@@ -119,14 +119,14 @@
   .checkout-btn { background:#FF6B6B; color:#fff; border:none; border-radius:30px; padding:.75rem 1.5rem; font-weight:600; cursor:pointer; transition:.25s; }
   .checkout-btn:hover { opacity:.85; }
 
-  /* 进入动画 */
+  /* Enter animation */
   @keyframes fadeIn {
     0% { opacity:0; transform:translateY(10px); }
     100% { opacity:1; transform:none; }
   }
   .fade-in { animation:fadeIn .35s ease-out both; }
 
-  /* 响应式调整 */
+  /* Responsive adjustments */
   @media(max-width:768px) {
     .cart-header { display:none; }
     .cart-item {
@@ -171,11 +171,11 @@
 <main class="container">
   <section>
     <div class="section-head">
-      <h2>我的购物车</h2>
+      <h2>My Shopping Cart</h2>
     </div>
 
     <div id="cartContainer">
-      <!-- 购物车内容将通过JS动态加载 -->
+      <!-- Cart content will be loaded dynamically via JS -->
     </div>
   </section>
 </main>
@@ -186,15 +186,15 @@
   </div>
 </footer>
 
-<!-- ============ 脚本 ============ -->
+<!-- ============ Scripts ============ -->
 <script>
-/* ---------- 常量 ---------- */
+/* ---------- Constants ---------- */
 const API_CART = '/api/cart';
 const API_PRODUCTS = '/api/products';
 const cartContainer = document.getElementById('cartContainer');
 
-/*这个地方是临时dataset。连接数据库时修改。接收数据->从商品界面*/
-// 示例商品数据
+/*This is a temporary dataset. Modify when connecting to database. Receive data -> from product page*/
+// Sample product data
 const DEMO_PRODUCTS = [
   {
     product_id: '1',
@@ -207,7 +207,7 @@ const DEMO_PRODUCTS = [
   },
   {
     product_id: '6',
-    name: 'Sony WF-1000XM5 真无线降噪耳机',
+    name: 'Sony WF-1000XM5 Wireless Noise Cancelling Earbuds',
     brandName: 'Sony',
     price: 1599.00,
     quantity: 2,
@@ -216,7 +216,7 @@ const DEMO_PRODUCTS = [
   },
   {
     product_id: '21',
-    name: 'HUAWEI FreeClip 开放式无线耳机',
+    name: 'HUAWEI FreeClip Open-ear Wireless Earbuds',
     brandName: 'HUAWEI',
     price: 1199.00,
     quantity: 1,
@@ -227,54 +227,54 @@ const DEMO_PRODUCTS = [
 
 let cartItems = [];
 let allProducts = [];
-let isDemo = true; // 标记是否使用演示数据
+let isDemo = true; // Flag to indicate if using demo data
 
 /* ---------- Cookie ---------- */
 function getCookie(n){const m=document.cookie.match('(?:^|; )'+n+'=([^;]+)');return m?decodeURIComponent(m[1]):null;}
 function setCookie(n,v,d=365){document.cookie=`${n}=${encodeURIComponent(v)}; expires=${new Date(Date.now()+d*864e5).toUTCString()}; path=/`;} 
 function genAnon(){return 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(16).slice(2,6);}
 
-/* ---------- 渲染购物车为空 ---------- */
+/* ---------- Render Empty Cart ---------- */
 function renderEmptyCart() {
   cartContainer.innerHTML = `
     <div class="empty-cart fade-in">
       <svg viewBox="0 0 24 24">
         <path d="M16.2 4H19c.6 0 1 .4 1 1v1H4V5c0-.6.4-1 1-1h2.8l.6-1.1C8.7 2.4 9.2 2 9.8 2h4.4c.6 0 1.1.4 1.4.9L16.2 4zM3 8h18v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V8zm7 3v6c0 .6.4 1 1 1s1-.4 1-1v-6c0-.6-.4-1-1-1s-1 .4-1 1zm4 0v6c0 .6.4 1 1 1s1-.4 1-1v-6c0-.6-.4-1-1-1s-1 .4-1 1z"/>
       </svg>
-      <p>购物车还是空的，去挑选一些商品吧！</p>
+      <p>Your cart is empty. Start shopping now!</p>
     </div>
   `;
 }
 
-/* ---------- 渲染购物车列表 ---------- */
+/* ---------- Render Cart List ---------- */
 function renderCart() {
   if (!cartItems || cartItems.length === 0) {
     renderEmptyCart();
     return;
   }
 
-  // 计算总价
+  // Calculate total price
   const totalPrice = cartItems.reduce((sum, item) => {
     return item.checked ? sum + (item.price * item.quantity) : sum;
   }, 0);
 
-  // 检查是否全选
+  // Check if all items are selected
   const allChecked = cartItems.length > 0 && cartItems.every(item => item.checked);
   
-  // 构建HTML
+  // Build HTML
   let html = `
     <div class="cart-list fade-in">
       <div class="cart-header">
-        <div class="item-check">选择</div>
+        <div class="item-check">Select</div>
         <div></div>
-        <div>商品信息</div>
-        <div>单价</div>
-        <div>数量</div>
-        <div>操作</div>
+        <div>Product Info</div>
+        <div>Price</div>
+        <div>Quantity</div>
+        <div>Action</div>
       </div>
   `;
 
-  // 添加每个商品
+  // Add each product
   cartItems.forEach(item => {
     html += `
       <div class="cart-item" data-id="${item.product_id}">
@@ -315,18 +315,18 @@ function renderCart() {
         <div class="summary-left">
           <div class="select-all">
             <input type="checkbox" id="selectAll" ${allChecked ? 'checked' : ''} onchange="toggleSelectAll()">
-            <label for="selectAll">全选</label>
+            <label for="selectAll">Select All</label>
           </div>
           <div class="summary-actions">
-            <button onclick="batchDelete()">删除选中</button>
+            <button onclick="batchDelete()">Delete Selected</button>
           </div>
         </div>
         <div class="summary-right">
           <div>
-            已选 <span id="selectedCount">${cartItems.filter(item => item.checked).length}</span> 件商品，
-            合计：<span class="total-price">HK$${totalPrice.toFixed(2)}</span>
+            Selected <span id="selectedCount">${cartItems.filter(item => item.checked).length}</span> items,
+            Total: <span class="total-price">HK$${totalPrice.toFixed(2)}</span>
           </div>
-          <button class="checkout-btn" onclick="checkout()">去结算</button>
+          <button class="checkout-btn" onclick="checkout()">Checkout</button>
         </div>
       </div>
     </div>
@@ -335,10 +335,10 @@ function renderCart() {
   cartContainer.innerHTML = html;
 }
 
-/* ---------- 加载购物车数据 ---------- */
+/* ---------- Load Cart Data ---------- */
 async function loadCart() {
   try {
-    // 确保有会话ID
+    // Ensure there's a session ID
     let sessionId = localStorage.getItem('userID') || getCookie('cart_session');
     if (!sessionId) {
       sessionId = genAnon();
@@ -346,7 +346,7 @@ async function loadCart() {
       setCookie('cart_session', sessionId);
     }
 
-    // 尝试从API获取购物车数据
+    // Try to get cart data from API
     try {
       const res = await fetch(API_CART, {
         headers: { 'X-SessionID': sessionId }
@@ -357,52 +357,52 @@ async function loadCart() {
         cartItems = data.map(item => ({...item, checked: true}));
         isDemo = false;
         
-        // 如果购物车有商品，获取商品详情
+        // If cart has items, get product details
         if (cartItems.length > 0) {
           await loadProductDetails();
         }
       } else {
-        // 如果API请求失败，使用演示数据
-        console.log('使用演示数据展示购物车');
+        // If API request fails, use demo data
+        console.log('Using demo data to display cart');
         cartItems = [...DEMO_PRODUCTS];
         isDemo = true;
       }
     } catch (error) {
-      // 如果API请求出错，使用演示数据
-      console.log('API连接失败，使用演示数据', error);
+      // If API request errors, use demo data
+      console.log('API connection failed, using demo data', error);
       cartItems = [...DEMO_PRODUCTS];
       isDemo = true;
     }
     
     renderCart();
   } catch (error) {
-    console.error('加载购物车失败:', error);
+    console.error('Failed to load cart:', error);
     renderEmptyCart();
   }
 }
 
-/* ---------- 加载商品详情 ---------- */
+/* ---------- Load Product Details ---------- */
 async function loadProductDetails() {
-  if (isDemo) return; // 演示模式不需要加载商品详情
+  if (isDemo) return; // No need to load product details in demo mode
   
   try {
-    // 获取所有商品数据以补充购物车中缺少的信息
+    // Get all product data to supplement missing info in cart
     const res = await fetch(API_PRODUCTS);
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     
     allProducts = await res.json();
     
-    // 将商品详情合并到购物车项中
+    // Merge product details into cart items
     cartItems = cartItems.map(item => {
       const product = allProducts.find(p => p.product_id === item.product_id);
       return product ? {...item, ...product} : item;
     });
   } catch (error) {
-    console.error('加载商品详情失败:', error);
+    console.error('Failed to load product details:', error);
   }
 }
 
-/* ---------- 更新商品数量 ---------- */
+/* ---------- Update Product Quantity ---------- */
 async function updateQuantity(productId, change) {
   const item = cartItems.find(item => item.product_id === productId);
   if (!item) return;
@@ -425,16 +425,16 @@ async function updateQuantity(productId, change) {
       
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     } catch (error) {
-      console.error('更新数量失败:', error);
+      console.error('Failed to update quantity:', error);
     }
   }
   
-  // 更新本地数据
+  // Update local data
   item.quantity = newQuantity;
   renderCart();
 }
 
-/* ---------- 设置商品数量 ---------- */
+/* ---------- Set Product Quantity ---------- */
 function setQuantity(productId, value) {
   const quantity = parseInt(value);
   if (isNaN(quantity) || quantity < 1) return;
@@ -442,9 +442,9 @@ function setQuantity(productId, value) {
   updateQuantity(productId, quantity - cartItems.find(item => item.product_id === productId).quantity);
 }
 
-/* ---------- 移除商品 ---------- */
+/* ---------- Remove Item ---------- */
 async function removeItem(productId) {
-  if (!confirm('确定要从购物车中删除此商品吗？')) return;
+  if (!confirm('Are you sure you want to remove this item from your cart?')) return;
   
   if (!isDemo) {
     try {
@@ -457,16 +457,16 @@ async function removeItem(productId) {
       
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     } catch (error) {
-      console.error('删除商品失败:', error);
+      console.error('Failed to delete item:', error);
     }
   }
   
-  // 更新本地数据
+  // Update local data
   cartItems = cartItems.filter(item => item.product_id !== productId);
   renderCart();
 }
 
-/* ---------- 切换商品选中状态 ---------- */
+/* ---------- Toggle Item Selection ---------- */
 function toggleItemCheck(productId) {
   const item = cartItems.find(item => item.product_id === productId);
   if (item) {
@@ -475,22 +475,22 @@ function toggleItemCheck(productId) {
   }
 }
 
-/* ---------- 切换全选状态 ---------- */
+/* ---------- Toggle Select All ---------- */
 function toggleSelectAll() {
   const selectAll = document.getElementById('selectAll').checked;
   cartItems.forEach(item => item.checked = selectAll);
   renderCart();
 }
 
-/* ---------- 批量删除 ---------- */
+/* ---------- Batch Delete ---------- */
 async function batchDelete() {
   const selectedItems = cartItems.filter(item => item.checked);
   if (selectedItems.length === 0) {
-    alert('请先选择要删除的商品');
+    alert('Please select items to delete');
     return;
   }
   
-  if (!confirm(`确定要删除选中的 ${selectedItems.length} 件商品吗？`)) return;
+  if (!confirm(`Are you sure you want to delete ${selectedItems.length} selected items?`)) return;
   
   if (!isDemo) {
     try {
@@ -508,42 +508,42 @@ async function batchDelete() {
       
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     } catch (error) {
-      console.error('批量删除失败:', error);
+      console.error('Batch delete failed:', error);
     }
   }
   
-  // 更新本地数据
+  // Update local data
   cartItems = cartItems.filter(item => !item.checked);
   renderCart();
 }
 
-/* ---------- 结算 ---------- */
+/* ---------- Checkout ---------- */
 function checkout() {
   const selectedItems = cartItems.filter(item => item.checked);
   if (selectedItems.length === 0) {
-    alert('请先选择要结算的商品');
+    alert('Please select items to checkout');
     return;
   }
   
-   // 将选中的商品保存到 localStorage
+   // Save selected items to localStorage
    localStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
   
-   // 跳转到结算页面
+   // Redirect to checkout page
    window.location.href = 'checkout.html';
 }
 
-/* ---------- 跳转搜索 ---------- */
+/* ---------- Redirect Search ---------- */
 function redirectToSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (query) {
-    // 跳转到 searchpage.html，并将搜索关键词作为查询参数传递
+    // Redirect to searchpage.html with search keyword as query parameter
     window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
   } else {
     alert("Please enter a search term!");
   }
 }
 
-/* ---------- 初始化 ---------- */
+/* ---------- Initialize ---------- */
 document.addEventListener('DOMContentLoaded', loadCart);
 </script>
 </body>
