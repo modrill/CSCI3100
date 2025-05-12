@@ -27,7 +27,12 @@
 
   /* Header */
   header { position: sticky; top:0; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); z-index:100; }
-  .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem .5rem; }
+  .nav-wrapper { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 1rem .5rem; 
+  }
   .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
   .search-cart { display:flex; align-items:center; gap:2rem; }
   .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -135,10 +140,6 @@
 <header>
   <div class="nav-wrapper container">
     <a href="homepage.html" class="logo">Buyzu</a>
-    <div class="search-cart">
-      <input type="text" placeholder="Search…">
-      <a href="shoppingCart.html" class="icon">🛒</a>
-    </div>
     <div class="auth-buttons">
       <div id="user-welcome" style="color: #1A1F36;">Welcome, <span id="username"></span></div>
     </div>
@@ -511,37 +512,21 @@ function checkout() {
    window.location.href = 'checkout.html';
 }
 
-<<<<<<< HEAD
-/* ---------- 检查用户登录状态 ---------- */
-function checkLoginStatus() {
-  const userStr = localStorage.getItem('user');
-  if (!userStr) {
-    // 如果未登录，重定向到登录页面
-=======
 /* ---------- Check Login Status ---------- */
 function checkLoginStatus() {
   const userStr = localStorage.getItem('user');
   if (!userStr) {
     // If not logged in, redirect to login page
->>>>>>> 1dc5af945853eba90b00d5d44977c0bed2314076
     window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
     return;
   }
   
-<<<<<<< HEAD
-  // 显示用户名
-=======
   // Display username
->>>>>>> 1dc5af945853eba90b00d5d44977c0bed2314076
   const user = JSON.parse(userStr);
   document.getElementById('username').textContent = user.username;
 }
 
-<<<<<<< HEAD
-/* ---------- 初始化 ---------- */
-=======
 /* ---------- Initialize ---------- */
->>>>>>> 1dc5af945853eba90b00d5d44977c0bed2314076
 document.addEventListener('DOMContentLoaded', () => {
   checkLoginStatus();
   loadCart();
