@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 显示彩色输出的函数
+# Function to print colored output
 function print_color() {
     case $1 in
         "green") echo -e "\033[0;32m$2\033[0m" ;;
@@ -10,81 +10,81 @@ function print_color() {
     esac
 }
 
-# 检查Python是否已安装
-print_color "yellow" "检查Python环境..."
+# Check if Python is installed
+print_color "yellow" "Checking Python environment..."
 if ! command -v python3 &> /dev/null; then
-    print_color "red" "未安装Python3，请先安装Python3"
+    print_color "red" "Python3 is not installed, please install Python3 first"
     exit 1
 fi
-print_color "green" "Python3已安装"
+print_color "green" "Python3 is installed"
 
-# 检查pip是否已安装
+# Check if pip is installed
 if ! command -v pip3 &> /dev/null; then
-    print_color "red" "未安装pip3，请先安装pip3"
+    print_color "red" "pip3 is not installed, please install pip3 first"
     exit 1
 fi
-print_color "green" "pip3已安装"
+print_color "green" "pip3 is installed"
 
-# 检查虚拟环境
+# Check virtual environment
 VENV_DIR="../login/venv"
 if [ ! -d "$VENV_DIR" ]; then
-    print_color "yellow" "未找到虚拟环境，创建新的虚拟环境..."
+    print_color "yellow" "Virtual environment not found, creating a new one..."
     python3 -m venv $VENV_DIR
     if [ $? -ne 0 ]; then
-        print_color "red" "创建虚拟环境失败，请检查Python是否正确安装"
+        print_color "red" "Failed to create virtual environment, please check if Python is correctly installed"
         exit 1
     fi
-    print_color "green" "虚拟环境创建成功"
+    print_color "green" "Virtual environment created successfully"
 else
-    print_color "green" "使用已有的虚拟环境"
+    print_color "green" "Using existing virtual environment"
 fi
 
-# 激活虚拟环境
-print_color "yellow" "激活虚拟环境..."
+# Activate virtual environment
+print_color "yellow" "Activating virtual environment..."
 source $VENV_DIR/bin/activate
 if [ $? -ne 0 ]; then
-    print_color "red" "激活虚拟环境失败"
+    print_color "red" "Failed to activate virtual environment"
     exit 1
 fi
-print_color "green" "虚拟环境激活成功"
+print_color "green" "Virtual environment activated successfully"
 
-# 安装依赖
-print_color "yellow" "安装所需依赖..."
+# Install dependencies
+print_color "yellow" "Installing required dependencies..."
 pip3 install -r ../login/requirements.txt
 if [ $? -ne 0 ]; then
-    print_color "red" "安装依赖失败"
+    print_color "red" "Failed to install dependencies"
     exit 1
 fi
-print_color "green" "依赖安装成功"
+print_color "green" "Dependencies installed successfully"
 
-# 检查MySQL是否已安装
-print_color "yellow" "检查MySQL服务..."
+# Check if MySQL is installed
+print_color "yellow" "Checking MySQL service..."
 if ! command -v mysql &> /dev/null; then
-    print_color "red" "未安装MySQL，请先安装MySQL"
+    print_color "red" "MySQL is not installed, please install MySQL first"
     exit 1
 fi
-print_color "green" "MySQL已安装"
+print_color "green" "MySQL is installed"
 
-# 执行SQL脚本更新数据库
-print_color "yellow" "更新数据库结构..."
+# Execute SQL script to update database
+print_color "yellow" "Updating database structure..."
 mysql -u taotao -p123456 < setup_admin_db.sql
 if [ $? -ne 0 ]; then
-    print_color "red" "数据库更新失败，请检查MySQL连接和权限"
+    print_color "red" "Database update failed, please check MySQL connection and permissions"
     exit 1
 fi
-print_color "green" "数据库更新成功"
+print_color "green" "Database updated successfully"
 
-# 启动后端服务
-print_color "yellow" "正在启动管理用户后端服务..."
+# Start backend service
+print_color "yellow" "Starting user management backend service..."
 python3 backend.py &
 if [ $? -ne 0 ]; then
-    print_color "red" "启动后端服务失败"
+    print_color "red" "Failed to start backend service"
     exit 1
 fi
-print_color "green" "后端服务已在后台启动，端口5002"
+print_color "green" "Backend service started in background, port 5002"
 
 print_color "green" "======================="
-print_color "green" "管理用户系统设置完成！"
-print_color "green" "API地址: http://localhost:5002/api/admin/users"
-print_color "green" "前端地址: 使用浏览器访问 frontend.html"
+print_color "green" "User Management System Setup Complete!"
+print_color "green" "API URL: http://localhost:5002/api/admin/users"
+print_color "green" "Frontend URL: Access frontend.html with your browser"
 print_color "green" "=======================" 
