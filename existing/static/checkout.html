@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyzu · Checkout</title>
+  <style>
+    /* Reset */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; background: #F7FFF7; color: #1A1F36; line-height:1.5; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Utility */
+    .container { width:90%; max-width:800px; margin:0 auto; padding:2rem 0; }
+    .glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
+
+    /* Header */
+    header { position: sticky; top:0; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); z-index:100; }
+    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem .5rem; }
+    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+    .search-cart { display:flex; align-items:center; gap:2rem; }
+    .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
+    .auth-buttons { display:flex; gap:1rem; }
+    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+    .auth-buttons .btn:hover { opacity:.85; }
+
+    /* Tabs */
+    .tabs { display:flex; border-bottom:2px solid #E5E7EB; margin-bottom:2rem; }
+    .tab-btn { flex:1; text-align:center; padding:.75rem 0; cursor:pointer; font-weight:600; color:#6B7280; border-bottom:4px solid transparent; transition:.25s; }
+    .tab-btn.active { color:#1A1F36; border-color:#FF6B6B; }
+    .checkout-section { display:none; }
+    .checkout-section.active { display:block; }
+
+    /* Form styles */
+    form { display:flex; flex-direction:column; gap:1rem; }
+    label { font-size:.9rem; }
+    input, select, textarea { padding:.6rem 1rem; border:1px solid #D1D5DB; border-radius:6px; }
+    .two-cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .btn-submit { margin-top:1.5rem; padding:.75rem; background:#FF6B6B; color:#fff; border:none; border-radius:30px; cursor:pointer; font-size:1rem; }
+
+    /* Order summary */
+    .order-summary { width:100%; border-collapse:collapse; }
+    .order-summary th, .order-summary td { padding:.75rem; border-bottom:1px solid #E5E7EB; }
+    .order-summary th { text-align:left; background:#F0F1F3; }
+    .order-summary img { width:50px; height:50px; object-fit:cover; border-radius:4px; }
+    .total-row td { font-weight:700; text-align:right; }
+
+    @media(max-width:600px){
+      .two-cols { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-wrapper container">
+      <a href="homepage.html" class="logo">Buyzu</a>
+      <div class="search-cart">
+        <input type="text" placeholder="Search…">
+        <a href="cart.html" class="icon">🛒</a>
+      </div>
+      <div class="auth-buttons">
+        <button class="btn login">Login</button>
+        <button class="btn register">Register</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Checkout</h2>
+    <div class="tabs">
+      <div class="tab-btn active" data-tab="shipping">Shipping Info</div>
+      <div class="tab-btn" data-tab="payment">Payment Info</div>
+      <div class="tab-btn" data-tab="review">Order Review</div>
+    </div>
+
+    <!-- Shipping Info -->
+    <section id="shipping" class="checkout-section active">
+      <form id="shipping-form">
+        <div class="two-cols">
+          <div>
+            <label>Full Name</label>
+            <input type="text" name="fullname" required>
+          </div>
+          <div>
+            <label>Phone Number</label>
+            <input type="tel" name="phone" required>
+          </div>
+        </div>
+        <label>Street Address</label>
+        <input type="text" name="address" placeholder="Street, Apt/Suite #" required>
+        <div class="two-cols">
+          <div>
+            <label>City</label>
+            <input type="text" name="city" required>
+          </div>
+          <div>
+            <label>Postal Code</label>
+            <input type="text" name="postal" required>
+          </div>
+        </div>
+        <label>Country/Region</label>
+        <select name="country" required>
+          <option value="">Select Country/Region</option>
+          <option>China</option>
+          <option>Hong Kong SAR</option>
+          <option>United States</option>
+        </select>
+        <label>Shipping Method</label>
+        <select name="shippingMethod" required>
+          <option value="standard">Standard Shipping (3–7 business days)</option>
+          <option value="express">Express Shipping (1–2 business days)</option>
+        </select>
+        <button type="button" class="btn-submit" onclick="goTab('payment')">Next: Payment Info</button>
+      </form>
+    </section>
+
+    <!-- Payment Info -->
+    <section id="payment" class="checkout-section">
+      <form id="payment-form">
+        <label>Cardholder Name</label>
+        <input type="text" name="cardName" required>
+        <label>Card Number</label>
+        <input type="text" name="cardNumber" placeholder="•••• •••• •••• ••••" maxlength="19" required>
+        <div class="two-cols">
+          <div>
+            <label>Expiry (MM/YY)</label>
+            <input type="text" name="expiry" placeholder="MM/YY" maxlength="5" required>
+          </div>
+          <div>
+            <label>CVV</label>
+            <input type="text" name="cvv" maxlength="3" required>
+          </div>
+        </div>
+        <button type="button" class="btn-submit" onclick="goTab('review')">Next: Order Review</button>
+      </form>
+    </section>
+
+    <!-- Order Review -->
+    <section id="review" class="checkout-section">
+      <h3>Order Summary</h3>
+      <table class="order-summary">
+        <thead>
+          <tr><th>Item</th><th>Name</th><th>Qty</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody id="summary-body">
+          <!-- JS will render order lines here -->
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="3">Total</td>
+            <td id="summary-total">HK$0.00</td>
+          </tr>
+        </tfoot>
+      </table>
+      <button class="btn-submit" onclick="placeOrder()">Place Order</button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="text-align:center; padding:2rem 0; color:#6b7280;">
+      &copy; 2025 Buyzu. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.checkout-section');
+    function goTab(name) {
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      sections.forEach(s => s.classList.toggle('active', s.id === name));
+      if (name === 'review') renderSummary();
+    }
+    tabs.forEach(t => t.addEventListener('click', () => goTab(t.dataset.tab)));
+
+    // Render order summary from localStorage cart
+    function renderSummary() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const tbody = document.getElementById('summary-body');
+      tbody.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const sub = item.price * item.qty;
+        total += sub;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="/images/${item.img}" alt="" width="50" height="50"></td>
+          <td>${item.name}</td>
+          <td>${item.qty}</td>
+          <td>HK$${sub.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('summary-total').innerText = `HK$${total.toFixed(2)}`;
+    }
+
+    // Place order action
+    function placeOrder() {
+      alert('Your order has been placed. Thank you!');
+      localStorage.removeItem('cart');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>
