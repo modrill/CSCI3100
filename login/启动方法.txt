@@ -16,3 +16,8 @@ Werkzeug==2.0.1
 mysql-connector-python==8.0.26 
 flask-cors==3.0.10
 
+数据库：
+cd /Users/apple/Desktop/CSCI3100/login
+
+mysql -u taotao -p123456 buyzu < setup_login_db.sql
+
