@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Buyzu · My Orders</title>
+  <title>My Orders</title>
   <style>
     /* Reset */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -15,8 +15,13 @@
     button { cursor:pointer; }
 
     /* Header */
-    header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
-    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
+    header { position: sticky; top:0; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); z-index:100; }
+    .nav-wrapper { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 1rem .5rem; 
+    }
     .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
     .auth-buttons { display:flex; gap:1rem; }
     .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
@@ -26,17 +31,26 @@
 
     /* Orders */
     .orders { margin-top:3rem; }
-    .orders h2 { font-size:2rem; margin-bottom:1rem; text-align:center; }
-    .order-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.05); padding:1rem; margin-bottom:1rem; }
-    .order-card .order-header { display:flex; justify-content:space-between; align-items:center; }
-    .order-card .order-header h3 { font-size:1.2rem; }
-    .order-card .order-header button { padding:.3rem .7rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.85rem; cursor:pointer; }
-    .order-card .order-header button:hover { opacity:.9; }
-    .order-details { margin-top:.5rem; border-top:1px solid #ddd; padding-top:.5rem; }
-    .order-item { display:flex; justify-content:space-between; margin-bottom:.5rem; }
-    .order-item img { width:50px; height:50px; border-radius:8px; object-fit:cover; }
+    .orders h2 { font-size:2rem; margin-bottom:1rem; text-align:left; }
+    .tabs { display:flex; gap:1rem; border-bottom:2px solid #ddd; margin-bottom:1rem; }
+    .tab { padding:.5rem 1rem; cursor:pointer; transition:.25s; }
+    .tab.active { border-bottom:2px solid #FF6B6B; font-weight:bold; }
+    .filter { margin-bottom:1rem; }
+    .filter select { padding:.5rem; border-radius:5px; border:1px solid #ddd; }
+
+    .order-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.05); padding:1rem; margin-bottom:1rem; display: none; }
+    .order-item { display:flex; justify-content:space-between; margin-bottom:.5rem; align-items:center; }
+    .order-item img { width:100px; height:100px; border-radius:8px; object-fit:cover; }
     .order-item .item-info { flex:1; margin-left:.5rem; }
     .order-item .item-info p { margin:.25rem 0; }
+    .order-item .price { font-weight:bold; color:#FF6B6B; }
+    .order-details { margin-top:.5rem; border-top:1px solid #ddd; padding-top:.5rem; }
+
+    /* Buttons */
+    .order-item button { padding:.4rem .8rem; border-radius:8px; border:none; color:#fff; transition:.25s; }
+    .order-item button.pay-btn { background:#FF6B6B; }
+    .order-item button.review-btn { background:#1A1F36; }
+    .order-item button:hover { opacity:.85; }
 
     /* Footer */
     footer { background:#1A1F36; color:#fff; padding:2rem 0; }
@@ -49,12 +63,12 @@
   </style>
 </head>
 <body>
+  <!-- Header -->
   <header>
-    <div class="container nav-wrapper">
+    <div class="nav-wrapper container">
       <a href="homepage.html" class="logo">Buyzu</a>
       <div class="auth-buttons">
-        <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
-        <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
+        <div id="user-welcome" style="color: #1A1F36;">Welcome, <span id="username"></span></div>
       </div>
     </div>
   </header>
@@ -62,46 +76,126 @@
   <main class="container">
     <section class="orders">
       <h2>My Orders</h2>
-      <div class="order-card">
-        <div class="order-header">
-          <h3>Order #12345</h3>
-          <button onclick="window.location.href='order-details.html?id=12345'">View Details</button>
-        </div>
-        <div class="order-details">
-          <div class="order-item">
-            <img src="/images/product1.jpg" alt="Product 1"/>
-            <div class="item-info">
-              <p>Product Name 1</p>
-              <p>Quantity: 2</p>
-              <p>Price: HK$99.99</p>
-            </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="all">All Orders</div>
+        <div class="tab" data-tab="pending-payment">Pending Payment</div>
+        <div class="tab" data-tab="pending-review">Pending Review</div>
+      </div>
+      <div class="filter">
+        <select>
+          <option>Orders in the last three months</option>
+          <option>All Orders</option>
+        </select>
+      </div>
+      <div class="order-card" data-content="all">
+        <p>2025-05-12 23:05:26 Order No: 315184447115</p>
+        <div class="order-item">
+          <img src="/images/product1.jpg" alt="Product 1"/>
+          <div class="item-info">
+            <p>Product 1 Description</p>
+            <p>Quantity: 1</p>
+            <p class="price">To Pay: ¥157.00</p>
           </div>
-          <div class="order-item">
-            <img src="/images/product2.jpg" alt="Product 2"/>
-            <div class="item-info">
-              <p>Product Name 2</p>
-              <p>Quantity: 1</p>
-              <p>Price: HK$49.99</p>
-            </div>
+          <div>
+            <p>Status: Not Completed</p>
           </div>
         </div>
       </div>
-      
-      <!-- Additional orders can be added in similar format -->
+      <div class="order-card" data-content="all">
+        <p>2025-05-12 23:15:30 Order No: 315184447117</p>
+        <div class="order-item">
+          <img src="/images/product3.jpg" alt="Product 3"/>
+          <div class="item-info">
+            <p>Product 3 Description</p>
+            <p>Quantity: 1</p>
+            <p class="price">Paid: ¥200.00</p>
+          </div>
+          <div>
+            <p>Status: Completed</p>
+          </div>
+        </div>
+      </div>
+      <div class="order-card" data-content="pending-payment" data-status="pending-payment">
+        <p>2025-05-12 23:05:26 Order No: 315184447115</p>
+        <div class="order-item">
+          <img src="/images/product1.jpg" alt="Product 1"/>
+          <div class="item-info">
+            <p>Product 1 Description</p>
+            <p>Quantity: 1</p>
+            <p class="price">To Pay: ¥157.00</p>
+          </div>
+          <div>
+            <p>Pending Payment</p>
+            <button class="pay-btn">Pay</button>
+          </div>
+        </div>
+      </div>
+      <div class="order-card" data-content="pending-review" data-status="pending-review">
+        <p>2025-05-12 23:15:30 Order No: 315184447117</p>
+        <div class="order-item">
+          <img src="/images/product3.jpg" alt="Product 3"/>
+          <div class="item-info">
+            <p>Product 3 Description</p>
+            <p>Quantity: 1</p>
+            <p class="price">Paid: ¥200.00</p>
+          </div>
+          <div>
+            <p>Pending Review</p>
+            <button class="review-btn">Review</button>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
     <div class="container footer-cols">
       <div class="footer-col"><h4>Support</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul></div>
-      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Join Us</a></li></ul></div>
       <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
     </div>
     <p>&copy; 2025 Buyzu. All rights reserved.</p>
   </footer>
 
   <script>
-    // You can add JavaScript if needed for dynamic functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      const orderCards = document.querySelectorAll('.order-card');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          const target = tab.getAttribute('data-tab');
+          orderCards.forEach(card => {
+            if (target === 'all') {
+              card.style.display = card.getAttribute('data-content') === 'all' ? 'block' : 'none';
+            } else {
+              card.style.display = card.getAttribute('data-status') === target ? 'block' : 'none';
+            }
+          });
+        });
+      });
+
+      // Trigger click on the active tab to show its content on page load
+      document.querySelector('.tab.active').click();
+
+      // Review button functionality
+      const reviewButtons = document.querySelectorAll('.review-btn');
+      reviewButtons.forEach(button => {
+        button.addEventListener('click', () => {
+        window.location.href = 'reviews.html';
+        });
+      });
+
+      const paybutton = document.querySelectorAll('.pay-btn');
+      paybutton.forEach(button => {
+        button.addEventListener('click', () => {
+        window.location.href = 'shoppingCart.html';
+        });
+    });
+    });
   </script>
 </body>
 </html>
