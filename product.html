@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyzu · Product Detail</title>
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:Arial,sans-serif; background:#F7FFF7; color:#1A1F36; line-height:1.5; }
+    a { text-decoration:none; color:inherit; }
+    .container { width:90%; max-width:1200px; margin:0 auto; padding:2rem 0; }
+    button { cursor:pointer; }
+
+    /* Header (copied from searchpage.html) */
+    header { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.8); backdrop-filter:blur(8px); }
+    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
+    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; margin-right:2rem; text-decoration:none; } /* 去掉下划线 */
+    .search-cart { display:flex; align-items:center; margin:0 auto; gap:0.5rem; }
+    .search-cart input { width:400px; padding:.4rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .search-cart button { padding:.3rem 1rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.85rem; cursor:pointer; }
+    .auth-buttons { display:flex; gap:1.5rem; }
+    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+    .auth-buttons .btn:hover { opacity:.85; }
+    .cart-icon { font-size:1.5rem; cursor:pointer; margin-left:1rem; text-decoration:none; color:#FF6B6B; }
+
+    /* Main layout */
+    .product-detail { display:flex; gap:2rem; flex-wrap:wrap; margin-bottom:4rem; }
+    .gallery { flex:1; min-width:280px; }
+      .main-img { width:100%; border-radius:12px; object-fit:cover; }
+      .thumbs { display:flex; gap:.5rem; margin-top:.5rem; }
+      .thumbs img { width:60px; height:60px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; }
+      .thumbs img.active { border-color:#FF6B6B; }
+
+    .info { flex:1; min-width:280px; display:flex; flex-direction:column; gap:1rem; }
+      .info h1 { font-size:2rem; }
+      .price { font-size:1.5rem; color:#d9230f; font-weight:700; }
+      .stock { font-size:.9rem; color:#6b7280; }
+      .description { margin:1rem 0; }
+      .actions { display:flex; align-items:center; gap:1rem; }
+      .actions input { width:60px; padding:.4rem; text-align:center; border:1px solid #ddd; border-radius:8px; }
+      .actions button { padding:.5rem 1rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.9rem; cursor:pointer; }
+      .actions button:hover { opacity:.9; }
+
+    /* Reviews */
+    .reviews { margin-top:3rem; }
+      .reviews h2 { font-size:1.5rem; margin-bottom:1rem; }
+      .review { padding:1rem; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.05); margin-bottom:1rem; }
+      .review .user { font-weight:600; }
+      .review .text { margin:.5rem 0; }
+
+    /* Footer */
+    footer { background:#1A1F36; color:#fff; padding:2rem 0; }
+    .footer-cols { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; }
+    .footer-col { min-width:150px; }
+    .footer-col h4 { margin-bottom:1rem; }
+    .footer-col ul { list-style:none; }
+    .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
+    footer p { text-align:center; color:#6b7280; margin-top:1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="/" class="logo">Buyzu</a>
+        <div class="search-cart">
+          <input type="text" id="searchInput" placeholder="Search for products..." />
+          <button onclick="redirectToSearch()">Search</button>
+        </div>
+        <div class="auth-buttons">
+          <button class="btn login">Login</button>
+          <button class="btn register">Register</button>
+          <a href="#" class="cart-icon">🛒</a>
+        </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="product-detail">
+      <div class="gallery">
+        <img id="mainImg" class="main-img" src="" alt="Main image">
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+      <div class="info">
+        <h1 id="prodName">Loading...</h1>
+        <div class="price" id="prodPrice">HK$0.00</div>
+        <div class="stock" id="prodStock"></div>
+        <div class="description" id="prodDesc"></div>
+        <div class="actions">
+          <input id="qty" type="number" value="1" min="1">
+          <button id="btnAdd">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="reviews">
+      <h2>Customer Reviews</h2>
+      <div id="reviewList">Loading reviews…</div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-cols">
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul>
+      </div>
+    </div>
+    <p>&copy; 2025 Buyzu. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    async function loadProduct() {
+      const id = getQueryParam('id');
+      if (!id) return alert('No product ID!');
+      document.getElementById('prodName').innerText = 'Loading...';
+      try {
+        const res = await fetch(`/api/product?id=${id}`);
+        const p = await res.json();
+        document.getElementById('prodName').innerText = p.productName;
+        document.getElementById('prodPrice').innerText = `HK$${p.price.toFixed(2)}`;
+        document.getElementById('prodStock').innerText = p.stock > 0 ? `In stock: ${p.stock}` : 'Out of stock';
+        document.getElementById('prodDesc').innerText = p.description;
+        const mainImg = document.getElementById('mainImg');
+        const thumbs  = document.getElementById('thumbs');
+        mainImg.src = `/images/${p.images[0]}`;
+        thumbs.innerHTML = '';
+        p.images.forEach((img,i) => {
+          const t = document.createElement('img');
+          t.src = `/images/${img}`;
+          if (i===0) t.classList.add('active');
+          t.onclick = ()=> {
+            mainImg.src = t.src;
+            thumbs.querySelectorAll('img').forEach(x=>x.classList.remove('active'));
+            t.classList.add('active');
+          };
+          thumbs.appendChild(t);
+        });
+        const rv = document.getElementById('reviewList');
+        rv.innerHTML = '';
+        (p.reviews||[]).forEach(r=>{
+          const d = document.createElement('div');
+          d.className = 'review';
+          d.innerHTML = `<div class="user">${r.user}</div>
+                         <div class="text">${r.text}</div>`;
+          rv.appendChild(d);
+        });
+      } catch (e) {
+        console.error(e);
+        alert('Failed to load product.');
+      }
+    }
+
+    document.getElementById('btnAdd').onclick = ()=>{
+      const id   = getQueryParam('id');
+      const qty  = parseInt(document.getElementById('qty').value) || 1;
+      const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+      const exist = cart.find(x=>x.id===id);
+      if (exist) exist.qty += qty;
+      else cart.push({ id, qty });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Added to cart!');
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id'); // 获取产品 ID
+
+        if (productId) {
+            fetchProductDetails(productId);
+        } else {
+            alert('Product not found!');
+        }
+    });
+
+    async function fetchProductDetails(productId) {
+        try {
+            // 调用后端接口获取产品详情
+            const response = await fetch(`/product?id=${productId}`);
+            const product = await response.json();
+
+            if (product) {
+                renderProductDetails(product);
+            } else {
+                alert('Product not found!');
+            }
+        } catch (error) {
+            console.error('Error fetching product details:', error);
+            alert('Error loading product details.');
+        }
+    }
+
+    function renderProductDetails(product) {
+        document.querySelector('.main-img').src = `/images/${product.image_url}`;
+        document.querySelector('.info h1').textContent = product.name;
+        document.querySelector('.price').textContent = `HK$${(+product.price).toFixed(2)}`;
+        document.querySelector('.stock').textContent = `Stock: ${product.stock}`;
+        document.querySelector('.description').textContent = product.description;
+
+        // 渲染缩略图
+        const thumbsContainer = document.querySelector('.thumbs');
+        product.thumbnails.forEach(thumb => {
+            const thumbImg = document.createElement('img');
+            thumbImg.src = `/images/${thumb}`;
+            thumbImg.alt = product.name;
+            thumbImg.onclick = () => {
+                document.querySelector('.main-img').src = thumbImg.src;
+                document.querySelectorAll('.thumbs img').forEach(img => img.classList.remove('active'));
+                thumbImg.classList.add('active');
+            };
+            thumbsContainer.appendChild(thumbImg);
+        });
+    }
+      function redirectToSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+          // 跳转到搜索页面，并将关键词作为查询参数传递
+          window.location.href = `/searchpage.html?keyword=${encodeURIComponent(query)}`;
+      } else {
+          alert('Please enter a search term.');
+      }
+  }
+  </script>
+</body>
+</html>

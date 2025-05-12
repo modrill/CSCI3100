@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Buyzu · Search</title>
+    <style>
+        /* 全局样式 */
+        body { font-family: Arial, sans-serif; background: #F7FFF7; color: #1A1F36; }
+        .container { width:90%; max-width:1200px; margin:2rem auto; }
+
+        /* Header */
+        header { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.8); backdrop-filter:blur(8px); }
+        .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
+        .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; margin-right:2rem; text-decoration:none; } /* 去掉下划线 */
+        .search-cart { display:flex; align-items:center; margin:0 auto; gap:0.5rem; }
+        .search-cart input { width:400px; padding:.4rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .search-cart button { padding:.3rem 1rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.85rem; cursor:pointer; }
+        .auth-buttons { display:flex; gap:1.5rem; }
+        .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+        .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+        .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+        .auth-buttons .btn:hover { opacity:.85; }
+        .cart-icon { font-size:1.5rem; cursor:pointer; margin-left:1rem; text-decoration:none; color:#FF6B6B; } /* 去掉下划线 */
+
+        /* 筛选按钮 */
+        .filter-dropdown { position:relative; display:inline-block; text-align:center; margin-bottom:2rem; }
+        .filter-button { padding:.5rem 1rem; border:none; border-radius:20px; background:#E5E7EB; color:#1A1F36; cursor:pointer; transition:.25s; }
+        .filter-button:hover { background:#D1D5DB; }
+        .filter-options { display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%); background:#fff; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.1); z-index:10; width:200px; }
+        .filter-options button { display:block; width:100%; padding:.5rem 1rem; border:none; background:none; text-align:left; cursor:pointer; white-space:nowrap; }
+        .filter-options button:hover { background:#F3F4F6; }
+
+        /* 搜索结果 */
+        .results { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1.5rem; }
+        .product-card { display: block;background:#fff; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.1); transition:transform .3s; color:inherit;text-decoration: none;}
+        .product-card:hover { transform:translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);}
+        .product-card img { width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:.8rem; }
+        .product-card h3 { font-size:1rem; margin-bottom:.5rem; }
+        .product-card .price { color:#FF6B6B; font-weight:bold; }
+        .product-card .sales { font-size:0.9rem; color:#6b7280; }
+        .no-results { text-align:center; color:#6b7280; font-size:1.2rem; margin-top:2rem; }
+
+        /* Footer */
+        footer { text-align:center; padding:1rem 0; background:#1A1F36; color:#fff; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-wrapper container">
+            <a href="/" class="logo">Buyzu</a>
+            <div class="search-cart">
+                <input type="text" id="searchInput" placeholder="Search for products...">
+                <button onclick="searchProducts()">Search</button>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn login">Login</button>
+                <button class="btn register">Register</button>
+                <a href="cart.html" class="cart-icon">🛒</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 筛选按钮 -->
+        <div class="filter-dropdown">
+            <button class="filter-button" onclick="toggleFilter()">Filter</button>
+            <div id="filterOptions" class="filter-options">
+                <button onclick="sortBy('sales', 'desc')">Sales: High to Low</button>
+                <button onclick="sortBy('sales', 'asc')">Sales: Low to High</button>
+                <button onclick="sortBy('price', 'desc')">Price: High to Low</button>
+                <button onclick="sortBy('price', 'asc')">Price: Low to High</button>
+            </div>
+        </div>
+
+        <!-- 搜索结果 -->
+        <div id="searchResults" class="results"></div>
+        <p id="noResults" class="no-results" style="display:none;">No products found.</p>
+    </main>
+
+    <footer>
+        <div class="container footer-cols">
+            <div class="footer-col"><h4>Support</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul></div>
+            <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul></div>
+            <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+        </div>
+        <p>&copy; 2025 Buyzu. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let products = []; // 存储搜索结果
+
+        async function searchProducts() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+
+            if (!query) {
+                resultsDiv.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            try {
+                // 调用后端搜索接口
+                const response = await fetch(`/search?keyword=${encodeURIComponent(query)}`);
+                products = await response.json();
+
+                if (products.length === 0) {
+                    resultsDiv.innerHTML = '';
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                    sortBy('sales', 'desc'); // 默认按销量从高到低排序并渲染
+                    renderSearchResults(products);
+                }
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+                noResults.textContent = 'Error fetching search results.';
+                noResults.style.display = 'block';
+            }
+        }
+
+        function sortBy(key, order) {
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '';
+
+            // 排序逻辑
+            products.sort((a, b) => {
+                if (order === 'asc') return a[key] - b[key];
+                return b[key] - a[key];
+            });
+
+            // 渲染排序后的商品
+            renderSearchResults(products);
+        }
+
+        function toggleFilter() {
+            const filterOptions = document.getElementById('filterOptions');
+            filterOptions.style.display = filterOptions.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // 获取 URL 中的查询参数
+        function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+        }
+
+        // 页面加载时自动搜索
+        document.addEventListener('DOMContentLoaded', () => {
+        const keyword = getQueryParam('keyword');
+        if (keyword) {
+            document.getElementById('searchInput').value = keyword; // 设置搜索框内容
+            searchProducts(); // 自动触发搜索
+        }
+        });
+
+        function renderSearchResults(products) {
+        const resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = '';
+
+        products.forEach(product => {
+            const productCard = document.createElement('a'); // 使用 <a> 标签包裹卡片
+            productCard.href = `/product.html?id=${product.id}`; // 跳转到产品详情页面
+            productCard.className = 'product-card'; // 添加样式
+            productCard.innerHTML = `
+                <img src="/images/${product.image_url}" alt="${product.name}">
+                <h3>${product.name}</h3>
+                <p class="price">HK$${(+product.price).toFixed(2)}</p>
+                <p class="sales">Sales: ${product.sales}</p>
+            `;
+            resultsDiv.appendChild(productCard);
+        });
+    }
+    </script>
+</body>
+</html>
