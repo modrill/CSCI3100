@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyzu · My Orders</title>
+  <style>
+    /* Reset */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; background: #F7FFF7; color: #1A1F36; line-height:1.5; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Utility */
+    .container { width:90%; max-width:1200px; margin:0 auto; padding:2rem 0; }
+    button { cursor:pointer; }
+
+    /* Header */
+    header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
+    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
+    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+    .auth-buttons { display:flex; gap:1rem; }
+    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+    .auth-buttons .btn:hover { opacity:.85; }
+
+    /* Orders */
+    .orders { margin-top:3rem; }
+    .orders h2 { font-size:2rem; margin-bottom:1rem; text-align:center; }
+    .order-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.05); padding:1rem; margin-bottom:1rem; }
+    .order-card .order-header { display:flex; justify-content:space-between; align-items:center; }
+    .order-card .order-header h3 { font-size:1.2rem; }
+    .order-card .order-header button { padding:.3rem .7rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.85rem; cursor:pointer; }
+    .order-card .order-header button:hover { opacity:.9; }
+    .order-details { margin-top:.5rem; border-top:1px solid #ddd; padding-top:.5rem; }
+    .order-item { display:flex; justify-content:space-between; margin-bottom:.5rem; }
+    .order-item img { width:50px; height:50px; border-radius:8px; object-fit:cover; }
+    .order-item .item-info { flex:1; margin-left:.5rem; }
+    .order-item .item-info p { margin:.25rem 0; }
+
+    /* Footer */
+    footer { background:#1A1F36; color:#fff; padding:2rem 0; }
+    .footer-cols { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; }
+    .footer-col { min-width:150px; }
+    .footer-col h4 { margin-bottom:1rem; }
+    .footer-col ul { list-style:none; }
+    .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
+    footer p { text-align:center; color:#6b7280; margin-top:1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav-wrapper">
+      <a href="homepage.html" class="logo">Buyzu</a>
+      <div class="auth-buttons">
+        <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
+        <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="orders">
+      <h2>My Orders</h2>
+      <div class="order-card">
+        <div class="order-header">
+          <h3>Order #12345</h3>
+          <button onclick="window.location.href='order-details.html?id=12345'">View Details</button>
+        </div>
+        <div class="order-details">
+          <div class="order-item">
+            <img src="/images/product1.jpg" alt="Product 1"/>
+            <div class="item-info">
+              <p>Product Name 1</p>
+              <p>Quantity: 2</p>
+              <p>Price: HK$99.99</p>
+            </div>
+          </div>
+          <div class="order-item">
+            <img src="/images/product2.jpg" alt="Product 2"/>
+            <div class="item-info">
+              <p>Product Name 2</p>
+              <p>Quantity: 1</p>
+              <p>Price: HK$49.99</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Additional orders can be added in similar format -->
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-cols">
+      <div class="footer-col"><h4>Support</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+    </div>
+    <p>&copy; 2025 Buyzu. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // You can add JavaScript if needed for dynamic functionality
+  </script>
+</body>
+</html>

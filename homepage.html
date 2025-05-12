@@ -21,7 +21,7 @@
     .search-cart { display:flex; align-items:center; gap:2rem; }
     .search-cart input { width:300px;padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .search-cart button { 
-      padding:.3rem 1rem; /* 缩小按钮尺寸 */
+      padding:.3rem 1rem; 
       border:none; 
       border-radius:20px; 
       background:#FF6B6B; 
@@ -38,10 +38,10 @@
     .auth-buttons {
       display: flex;
       gap: 1rem;
-      align-items: center; /* ensure all child elements are vertically centered */
+      align-items: center;
     }
     .cart-icon {
-      font-size: 1.5rem; /* adjust size */
+      font-size: 1.5rem;
       display: flex;
       align-items: center;
     }
@@ -137,10 +137,10 @@
   <header>
     <div class="nav-wrapper container">
       <a href="homepage.html" class="logo">Buyzu</a>
-    <div class="search-cart">
-      <input type="text" id="searchInput" placeholder="Search…">
-      <button onclick="redirectToSearch()">Search</button>
-    </div>
+      <div class="search-cart">
+        <input type="text" id="searchInput" placeholder="Search…">
+        <button onclick="redirectToSearch()">Search</button>
+      </div>
 
       <div class="auth-buttons">
         <div id="auth-status">
@@ -148,6 +148,7 @@
           <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
         </div>
         <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
+        <button class="btn" onclick="window.location.href='orders.html'">My Orders</button>
       </div>
     </div>
   </header>
@@ -310,16 +311,14 @@
     document.addEventListener('DOMContentLoaded', loadReco);
 
     function redirectToSearch() {
-    const query = document.getElementById('searchInput').value.trim();
-    if (query) {
-      // 跳转到 searchpage.html，并将搜索关键词作为查询参数传递
-      window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
-    } else {
-      alert("Please enter a search term!");
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
+      } else {
+        alert("Please enter a search term!");
+      }
     }
-  }
 
-    // 检查用户登录状态并更新界面
     function checkLoginStatus() {
       const authStatus = document.getElementById('auth-status');
       const userStr = localStorage.getItem('user');
@@ -335,23 +334,18 @@
       }
     }
 
-    // 登出功能
     function logout() {
       localStorage.removeItem('user');
       window.location.reload();
     }
 
-    // 页面加载时检查登录状态
     document.addEventListener('DOMContentLoaded', checkLoginStatus);
 
-    // 处理购物车点击
     function handleCartClick() {
       const userStr = localStorage.getItem('user');
       if (userStr) {
-        // 已登录，跳转到购物车页面
         window.location.href = 'shoppingCart.html';
       } else {
-        // 未登录，跳转到登录页面，并设置返回到购物车页面
         window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.origin + '/shoppingCart.html');
       }
     }
