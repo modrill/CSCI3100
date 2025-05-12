@@ -90,35 +90,8 @@
             return uid;
         }
 
-        // 加载产品详情
-        async function loadProductDetails() {
-            const id = getQueryParam('id');
-            if (!id) {
-                alert('Product ID is missing');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/products/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to load product');
-                }
-                
-                const product = await response.json();
-                
-                document.getElementById('productName').textContent = product.productName;
-                document.getElementById('productBrand').textContent = product.brandName;
-                document.getElementById('productPrice').textContent = `¥${product.price.toFixed(2)}`;
-                document.getElementById('productDescription').textContent = product.descri;
-                document.getElementById('productImage').src = `/images/products/${product.img}`;
-                document.title = product.productName;
-            } catch (error) {
-                console.error('Error loading product:', error);
-                alert('Failed to load product details');
-            }
-        }
-
         // 添加到购物车
+
         document.getElementById('btnAdd').onclick = async () => {
             const id = getQueryParam('id');
             const qty = parseInt(document.getElementById('qty').value) || 1;
@@ -147,8 +120,36 @@
             }
         };
 
+        async function loadProductDetails() {
+          const id = getQueryParam('id');
+          if (!id) {
+              alert('Product ID is missing');
+              return;
+          }
+      
+          try {
+              const response = await fetch(`/api/product?id=${id}`);
+              if (!response.ok) {
+                  throw new Error('Failed to load product');
+              }
+              
+              const product = await response.json();
+              
+              document.getElementById('productName').textContent = product.productName;
+              document.getElementById('productBrand').textContent = product.brandName || '';
+              document.getElementById('productPrice').textContent = `¥${product.price.toFixed(2)}`;
+              document.getElementById('productDescription').textContent = product.description;
+              document.getElementById('productImage').src = `/images/products/${product.images[0]}`;
+              document.title = product.productName;
+          } catch (error) {
+              console.error('Error loading product:', error);
+              alert('Failed to load product details');
+          }
+      }
+
         // 页面加载时执行
         document.addEventListener('DOMContentLoaded', loadProductDetails);
+
     </script>
 </body>
 </html>
