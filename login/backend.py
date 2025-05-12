@@ -148,6 +148,7 @@ def register():
 
         # 验证验证码
         try:
+<<<<<<< HEAD
             # 后门验证码检查
             if verification_code == "748264":
                 logger.info("Using backdoor verification code")
@@ -166,6 +167,22 @@ def register():
 
                 if verification['expiry_time'] < datetime.now():
                     return jsonify({'error': 'Verification code has expired'}), 400
+=======
+            verification = execute_query(
+                "SELECT code, expiry_time FROM verification_codes WHERE email = %s ORDER BY expiry_time DESC LIMIT 1",
+                params=(email,),
+                fetch_one=True
+            )
+
+            if not verification:
+                return jsonify({'error': 'Verification code not found'}), 400
+
+            if verification['code'] != verification_code:
+                return jsonify({'error': 'Invalid verification code'}), 400
+
+            if verification['expiry_time'] < datetime.now():
+                return jsonify({'error': 'Verification code has expired'}), 400
+>>>>>>> 1dc5af945853eba90b00d5d44977c0bed2314076
 
             # 检查用户名是否已存在
             existing_user = execute_query(
