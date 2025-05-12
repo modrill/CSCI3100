@@ -206,39 +206,84 @@ def get_owner_key(request: Request) -> str:
 @app.post("/api/cart")
 async def add_to_cart(request: Request):
     body = await request.json()
-    pid = body.get("id"); qty = int(body.get("qty", 1))
+    pid = body.get("id")
+    qty = int(body.get("qty", 1))
+    
+    print(f"添加购物车: 商品ID={pid}, 数量={qty}")  # 添加日志
+    
     if not pid or qty < 1:
         raise HTTPException(400, "参数不合法")
+    
     owner = get_owner_key(request)
+    print(f"用户标识: {owner}")  # 添加日志
+    
+    # 先检查产品是否存在
+    with db_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT productID FROM products WHERE productID = %s", (pid,))
+            if not cur.fetchone():
+                raise HTTPException(404, "产品不存在")
+    
+    # 添加或更新购物车
     sql = """
       INSERT INTO carts(ownerKey, productID, quantity)
       VALUES (%s, %s, %s)
       ON DUPLICATE KEY UPDATE quantity=quantity+VALUES(quantity)
     """
-    with db_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, (owner, pid, qty))
-            conn.commit()
-    return {"success": True}
+    
+    try:
+        with db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (owner, pid, qty))
+                affected_rows = cur.rowcount
+                print(f"添加影响的行数: {affected_rows}")  # 添加日志
+                conn.commit()
+        return {"success": True, "affected_rows": affected_rows}
+    except Exception as e:
+        print(f"添加购物车错误: {e}")  # 添加错误日志
+        raise HTTPException(500, f"添加购物车失败: {e}")
 
 @app.put("/api/cart")
 async def update_cart_item(request: Request):
     body = await request.json()
     pid = body.get("id")
     qty = int(body.get("qty", 1))
+    
+    print(f"更新购物车: 商品ID={pid}, 数量={qty}")  # 添加日志
+    
     if not pid or qty < 1:
         raise HTTPException(400, "参数不合法")
+    
     owner = get_owner_key(request)
-    sql = "UPDATE carts SET quantity=%s WHERE ownerKey=%s AND productID=%s"
+    print(f"用户标识: {owner}")  # 添加日志
+    
+    # 确认购物车项存在
     with db_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute(sql, (qty, owner, pid))
-            conn.commit()
-    return {"success": True}
+            cur.execute("SELECT ownerKey FROM carts WHERE ownerKey=%s AND productID=%s", (owner, pid))
+            if not cur.fetchone():
+                raise HTTPException(404, "购物车项不存在")
+    
+    # 更新购物车
+    sql = "UPDATE carts SET quantity=%s WHERE ownerKey=%s AND productID=%s"
+    
+    try:
+        with db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (qty, owner, pid))
+                affected_rows = cur.rowcount  # 获取影响的行数
+                print(f"更新影响的行数: {affected_rows}")  # 添加日志
+                conn.commit()
+        return {"success": True, "affected_rows": affected_rows}
+    except Exception as e:
+        print(f"更新购物车错误: {e}")  # 添加错误日志
+        raise HTTPException(500, f"更新购物车失败: {e}")
 
 @app.get("/api/cart")
 async def list_cart(request: Request):
     owner = get_owner_key(request)
+    print(f"获取购物车: 用户标识={owner}")  # 添加日志
+    
     sql = """
       SELECT p.productID,p.productName,p.price,p.img,b.brandName,c.quantity
       FROM carts c
@@ -246,21 +291,44 @@ async def list_cart(request: Request):
       LEFT JOIN brand b ON p.brandID=b.brandID
       WHERE c.ownerKey=%s ORDER BY c.createdAt DESC
     """
-    with db_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, (owner,))
-            data = cur.fetchall()
-    return {"list": data}
+    
+    try:
+        with db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (owner,))
+                items = cur.fetchall()
+                print(f"找到购物车项: {len(items)}个")  # 添加日志
+        return {"items": items}
+    except Exception as e:
+        print(f"获取购物车错误: {e}")  # 添加错误日志
+        raise HTTPException(500, f"获取购物车失败: {e}")
 
 @app.delete("/api/cart")
-async def delete_cart_item(request: Request, id: str):
-    owner = get_owner_key(request)
-    sql = "DELETE FROM carts WHERE ownerKey=%s AND productID=%s"
-    with db_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, (owner, id))
-            conn.commit()
-    return {"success": True}
+async def delete_cart_item(request: Request):
+    try:
+        body = await request.json()
+        pid = body.get("id")
+        
+        print(f"删除购物车项: 商品ID={pid}")  # 添加日志
+        
+        if not pid:
+            raise HTTPException(400, "参数不合法")
+        
+        owner = get_owner_key(request)
+        print(f"用户标识: {owner}")  # 添加日志
+        
+        sql = "DELETE FROM carts WHERE ownerKey=%s AND productID=%s"
+        with db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (owner, pid))
+                affected_rows = cur.rowcount
+                print(f"删除影响的行数: {affected_rows}")  # 添加日志
+                conn.commit()
+        
+        return {"success": True, "affected_rows": affected_rows}
+    except Exception as e:
+        print(f"删除购物车项错误: {e}")  # 添加错误日志
+        raise HTTPException(500, f"删除购物车项失败: {e}")
 
 @app.get("/api/hot_products")
 def hot_products(k: int = 8):
@@ -537,3 +605,8 @@ async def serve_cart():
 @app.get("/checkout.html")
 async def serve_checkout():
     return FileResponse("static/checkout.html")
+
+# 启动服务器
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

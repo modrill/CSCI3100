@@ -1,180 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Buyzu · Product Detail</title>
-  <style>
-    /* Reset & Base */
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:Arial,sans-serif; background:#F7FFF7; color:#1A1F36; line-height:1.5; }
-    a { text-decoration:none; color:inherit; }
-    .container { width:90%; max-width:1200px; margin:0 auto; padding:2rem 0; }
-    button { cursor:pointer; }
-
-    /* Header (identical to homepage) */
-    header { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.8); backdrop-filter:blur(8px); }
-    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
-    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
-    .search-cart { display:flex; align-items:center; gap:2rem; }
-    .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
-    .auth-buttons { display:flex; gap:1rem; }
-    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
-    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
-    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
-    .auth-buttons .btn:hover { opacity:.85; }
-
-    /* Main layout */
-    .product-detail { display:flex; gap:2rem; flex-wrap:wrap; margin-bottom:4rem; }
-    .gallery { flex:1; min-width:280px; }
-      .main-img { width:100%; border-radius:12px; object-fit:cover; }
-      .thumbs { display:flex; gap:.5rem; margin-top:.5rem; }
-      .thumbs img { width:60px; height:60px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; }
-      .thumbs img.active { border-color:#FF6B6B; }
-
-    .info { flex:1; min-width:280px; display:flex; flex-direction:column; gap:1rem; }
-      .info h1 { font-size:2rem; }
-      .price { font-size:1.5rem; color:#d9230f; font-weight:700; }
-      .stock { font-size:.9rem; color:#6b7280; }
-      .description { margin:1rem 0; }
-      .actions { display:flex; align-items:center; gap:1rem; }
-      .actions input { width:60px; padding:.4rem; text-align:center; border:1px solid #D1D5DB; border-radius:6px; }
-      .actions button { padding:.6rem 1.5rem; background:#FF6B6B; color:#fff; border:none; border-radius:30px; }
-
-    /* Reviews */
-    .reviews { margin-top:3rem; }
-      .reviews h2 { font-size:1.5rem; margin-bottom:1rem; }
-      .review { padding:1rem; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.05); margin-bottom:1rem; }
-      .review .user { font-weight:600; }
-      .review .text { margin:.5rem 0; }
-
-    /* Footer */
-    footer { background:#1A1F36; color:#fff; padding:2rem 0; }
-    .footer-cols { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; }
-    .footer-col { min-width:150px; }
-    .footer-col h4 { margin-bottom:1rem; }
-    .footer-col ul { list-style:none; }
-    .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
-    footer p { text-align:center; color:#6b7280; margin-top:1rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .product-img {
+            max-height: 400px;
+            object-fit: contain;
+        }
+        .qty-input {
+            width: 60px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="nav-wrapper container">
-      <a href="homepage.html" class="logo">Buyzu</a>
-      <div class="search-cart">
-        <input type="text" placeholder="Search…">
-        <a href="cart.html" class="icon">🛒</a>
-      </div>
-      <div class="auth-buttons">
-        <button class="btn login">Login</button>
-        <button class="btn register">Register</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="product-detail">
-      <div class="gallery">
-        <img id="mainImg" class="main-img" src="" alt="Main image">
-        <div class="thumbs" id="thumbs"></div>
-      </div>
-      <div class="info">
-        <h1 id="prodName">Loading...</h1>
-        <div class="price" id="prodPrice">HK$0.00</div>
-        <div class="stock" id="prodStock"></div>
-        <div class="description" id="prodDesc"></div>
-        <div class="actions">
-          <input id="qty" type="number" value="1" min="1">
-          <button id="btnAdd">Add to Cart</button>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">BuyZu</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Products</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">
+                            <i class="bi bi-cart"></i> Cart
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div id="productDetails" class="row">
+            <div class="col-md-6">
+                <img id="productImage" src="" alt="Product Image" class="img-fluid product-img">
+            </div>
+            <div class="col-md-6">
+                <h1 id="productName"></h1>
+                <p id="productBrand" class="text-muted"></p>
+                <h3 id="productPrice" class="text-danger mb-3"></h3>
+                <p id="productDescription" class="mb-4"></p>
+                
+                <div class="d-flex align-items-center mb-4">
+                    <label for="qty" class="me-3">Quantity:</label>
+                    <input type="number" id="qty" class="form-control qty-input" value="1" min="1">
+                </div>
+                
+                <button id="btnAdd" class="btn btn-primary">Add to Cart</button>
+            </div>
+        </div>
     </div>
 
-    <section class="reviews">
-      <h2>Customer Reviews</h2>
-      <div id="reviewList">Loading reviews…</div>
-    </section>
-  </main>
+    <script>
+        // 辅助函数：获取URL参数
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        // 会话管理函数
+        function getCookie(name){
+            const m = document.cookie.match('(?:^|; )'+name+'=([^;]+)');
+            return m ? decodeURIComponent(m[1]) : null;
+        }
+        
+        function setCookie(name, val, days=365){
+            document.cookie = `${name}=${encodeURIComponent(val)};expires=${new Date(Date.now()+days*864e5).toUTCString()};path=/`;
+        }
+        
+        function ensureUser(){
+            let uid = localStorage.getItem('userID') || getCookie('SESSIONID');
+            if(!uid){
+                uid = 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6);
+                localStorage.setItem('userID', uid);
+                setCookie('SESSIONID', uid);
+            }
+            return uid;
+        }
 
-  <footer>
-    <div class="container footer-cols">
-      <div class="footer-col">
-        <h4>Support</h4>
-        <ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul>
-      </div>
-      <div class="footer-col">
-        <h4>Company</h4>
-        <ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul>
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul>
-      </div>
-    </div>
-    <p>&copy; 2025 Buyzu. All rights reserved.</p>
-  </footer>
+        // 加载产品详情
+        async function loadProductDetails() {
+            const id = getQueryParam('id');
+            if (!id) {
+                alert('Product ID is missing');
+                return;
+            }
 
-  <script>
-    function getQueryParam(name) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(name);
-    }
+            try {
+                const response = await fetch(`/api/products/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to load product');
+                }
+                
+                const product = await response.json();
+                
+                document.getElementById('productName').textContent = product.productName;
+                document.getElementById('productBrand').textContent = product.brandName;
+                document.getElementById('productPrice').textContent = `¥${product.price.toFixed(2)}`;
+                document.getElementById('productDescription').textContent = product.descri;
+                document.getElementById('productImage').src = `/images/products/${product.img}`;
+                document.title = product.productName;
+            } catch (error) {
+                console.error('Error loading product:', error);
+                alert('Failed to load product details');
+            }
+        }
 
-    async function loadProduct() {
-      const id = getQueryParam('id');
-      if (!id) return alert('No product ID!');
-      document.getElementById('prodName').innerText = 'Loading...';
-      try {
-        const res = await fetch(`/api/product?id=${id}`);
-        const p = await res.json();
-        document.getElementById('prodName').innerText = p.productName;
-        document.getElementById('prodPrice').innerText = `HK$${p.price.toFixed(2)}`;
-        document.getElementById('prodStock').innerText = p.stock > 0 ? `In stock: ${p.stock}` : 'Out of stock';
-        document.getElementById('prodDesc').innerText = p.description;
-        const mainImg = document.getElementById('mainImg');
-        const thumbs  = document.getElementById('thumbs');
-        mainImg.src = `/images/${p.images[0]}`;
-        thumbs.innerHTML = '';
-        p.images.forEach((img,i) => {
-          const t = document.createElement('img');
-          t.src = `/images/${img}`;
-          if (i===0) t.classList.add('active');
-          t.onclick = ()=> {
-            mainImg.src = t.src;
-            thumbs.querySelectorAll('img').forEach(x=>x.classList.remove('active'));
-            t.classList.add('active');
-          };
-          thumbs.appendChild(t);
-        });
-        const rv = document.getElementById('reviewList');
-        rv.innerHTML = '';
-        (p.reviews||[]).forEach(r=>{
-          const d = document.createElement('div');
-          d.className = 'review';
-          d.innerHTML = `<div class="user">${r.user}</div>
-                         <div class="text">${r.text}</div>`;
-          rv.appendChild(d);
-        });
-      } catch (e) {
-        console.error(e);
-        alert('Failed to load product.');
-      }
-    }
+        // 添加到购物车
+        document.getElementById('btnAdd').onclick = async () => {
+            const id = getQueryParam('id');
+            const qty = parseInt(document.getElementById('qty').value) || 1;
+            const uid = ensureUser();
+            
+            try {
+                const response = await fetch('/api/cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-UserID': uid
+                    },
+                    body: JSON.stringify({ id, qty })
+                });
+                
+                if (response.ok) {
+                    alert('Added to cart!');
+                } else {
+                    const errorData = await response.json();
+                    console.error('Failed to add to cart:', errorData);
+                    alert('Failed to add to cart.');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Failed to add to cart.');
+            }
+        };
 
-    document.getElementById('btnAdd').onclick = ()=>{
-      const id   = getQueryParam('id');
-      const qty  = parseInt(document.getElementById('qty').value) || 1;
-      const cart = JSON.parse(localStorage.getItem('cart')||'[]');
-      const exist = cart.find(x=>x.id===id);
-      if (exist) exist.qty += qty;
-      else cart.push({ id, qty });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert('Added to cart!');
-    };
-
-    document.addEventListener('DOMContentLoaded', loadProduct);
-  </script>
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', loadProductDetails);
+    </script>
 </body>
 </html>
