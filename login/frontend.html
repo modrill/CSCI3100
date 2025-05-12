@@ -80,6 +80,43 @@
             text-align: center;
             font-size: 0.9rem;
         }
+        /* 修改验证码按钮样式 */
+        .verification-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0;
+            align-items: center;
+        }
+        .verification-group input {
+            flex: 3;
+            height: 42px;
+            margin: 0;
+        }
+        .send-code-btn {
+            flex: 1;
+            height: 42px;
+            padding: 0 1rem;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 90px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .send-code-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .send-code-btn.countdown {
+            background-color: #6c757d;
+        }
         h2 {
             color: #333;
             text-align: center;
@@ -133,12 +170,21 @@
                 <div id="passwordMatchMessage" class="password-match-message"></div>
             </div>
             <div class="form-group">
-                <label for="registerEmail">Email (Optional)</label>
-                <input type="email" id="registerEmail">
+                <label for="registerEmail">Email</label>
+                <div class="verification-group">
+                    <input type="email" id="registerEmail" required>
+                    <button type="button" id="sendCodeBtn" class="send-code-btn" onclick="sendVerificationCode()">
+                        Send Code
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="verificationCode">Verification Code</label>
+                <input type="text" id="verificationCode" required maxlength="6" placeholder="Enter 6-digit code">
             </div>
             <button type="submit" id="registerButton" disabled>Register</button>
             <div class="toggle-form">
-                Already have an account? <a href="#login" onclick="toggleForms()">Login</a>
+                Already have an account? <a href="#" onclick="toggleForms()">Login</a>
             </div>
         </form>
         <div id="errorMessage" class="error-message"></div>
@@ -149,6 +195,7 @@
         function checkHash() {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
+            const errorMessage = document.getElementById('errorMessage');
             
             if (window.location.hash === '#register') {
                 loginForm.style.display = 'none';
@@ -156,6 +203,11 @@
             } else {
                 loginForm.style.display = 'block';
                 registerForm.style.display = 'none';
+            }
+            
+            // 清除错误信息
+            if (errorMessage) {
+                errorMessage.textContent = '';
             }
         }
 
@@ -171,15 +223,14 @@
             
             if (loginForm.style.display === 'none') {
                 window.location.hash = ''; // 切换到登录时清除hash
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
             } else {
                 window.location.hash = 'register'; // 切换到注册时添加hash
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
             }
             
-            errorMessage.textContent = '';
+            // 清除错误信息
+            if (errorMessage) {
+                errorMessage.textContent = '';
+            }
         }
 
         // Password matching check
@@ -249,15 +300,78 @@
             }
         });
 
+        // 发送验证码
+        async function sendVerificationCode() {
+            const email = document.getElementById('registerEmail').value;
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            
+            if (!email) {
+                document.getElementById('errorMessage').textContent = 'Please enter your email first';
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                document.getElementById('errorMessage').textContent = 'Please enter a valid email address';
+                return;
+            }
+
+            try {
+                sendCodeBtn.disabled = true;
+                const response = await fetch('http://localhost:5001/api/send-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to send verification code');
+                }
+
+                // 开始倒计时
+                let countdown = 60;
+                sendCodeBtn.classList.add('countdown');
+                const timer = setInterval(() => {
+                    sendCodeBtn.textContent = `Resend (${countdown}s)`;
+                    countdown--;
+                    if (countdown < 0) {
+                        clearInterval(timer);
+                        sendCodeBtn.disabled = false;
+                        sendCodeBtn.classList.remove('countdown');
+                        sendCodeBtn.textContent = 'Send Code';
+                    }
+                }, 1000);
+
+                document.getElementById('errorMessage').textContent = 'Verification code sent!';
+            } catch (error) {
+                sendCodeBtn.disabled = false;
+                document.getElementById('errorMessage').textContent = error.message;
+            }
+        }
+
+        // 验证邮箱格式
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // 修改注册表单提交处理
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('registerUsername').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPass = document.getElementById('confirmPassword').value;
             const email = document.getElementById('registerEmail').value;
+            const verificationCode = document.getElementById('verificationCode').value;
             
             if (password !== confirmPass) {
                 document.getElementById('errorMessage').textContent = 'Passwords do not match';
+                return;
+            }
+
+            if (!verificationCode) {
+                document.getElementById('errorMessage').textContent = 'Please enter verification code';
                 return;
             }
 
@@ -270,7 +384,12 @@
                     },
                     mode: 'cors',
                     credentials: 'same-origin',
-                    body: JSON.stringify({ username, password, email })
+                    body: JSON.stringify({ 
+                        username, 
+                        password, 
+                        email,
+                        verificationCode 
+                    })
                 });
                 
                 const data = await response.json();
@@ -279,7 +398,7 @@
                 }
                 
                 alert('Registration successful!');
-                toggleForms(); // Switch to login form
+                toggleForms();
             } catch (error) {
                 document.getElementById('errorMessage').textContent = error.message;
             }
