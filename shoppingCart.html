@@ -454,14 +454,6 @@ function checkLoginStatus() {
 document.addEventListener('DOMContentLoaded', () => {
   checkLoginStatus();
   loadCart();
-  
-  // Display username if available
-  const username = localStorage.getItem('username');
-  if (username) {
-    document.getElementById('username').textContent = username;
-  } else {
-    document.getElementById('user-welcome').textContent = 'Guest';
-  }
 });
 
 // Expose addToCart to global scope for product page
