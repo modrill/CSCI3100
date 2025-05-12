@@ -1,15 +1,3 @@
-'''
-我是注释
-购物车的后端 针对购物车的页面（暂时没有其他页面的联动）
-目前有四个功能
-连接数据库
-读取商品
-往购物车里添加商品
-读取购物车里的东西
-*/
-'''
-
-
 from flask import Flask, jsonify, request, make_response
 from flask import send_from_directory
 import mysql.connector
@@ -28,14 +16,14 @@ app.secret_key = os.urandom(24)
 
 
 def get_session_id():
-    # 首先从请求头获取
+    # First try to get from header
     session_id = request.headers.get('X-SessionID')
     
-    # 如果请求头中没有，尝试从cookie获取
+    # If not in header, try to get from cookie
     if not session_id:
         session_id = request.cookies.get('cart_session')
         
-    # 如果仍然没有，生成新的会话ID
+    # If still not found, generate a new session ID
     if not session_id:
         session_id = secrets.token_hex(16)
         resp = make_response()
@@ -59,15 +47,27 @@ def handle_exceptions(func):
 def home():
     return send_from_directory('.', 'shoppingCart.html')
 
+@app.route('/homepage.html')
+def homepage():
+    return send_from_directory('.', 'homepage.html')
+
+@app.route('/checkout.html')
+def checkout():
+    return send_from_directory('.', 'checkout.html')
+
+@app.route('/login/frontend.html')
+def login():
+    return send_from_directory('login', 'frontend.html')
+
 @app.route('/api/products', methods=['GET'])
 @handle_exceptions
 def get_products():
     query = """
         SELECT 
-            p.productID as product_id, 
-            p.productName as name, 
+            p.productID, 
+            p.productName, 
             p.price, 
-            p.inventoryCount as stock,
+            p.inventoryCount,
             p.img,
             b.brandName
         FROM products p
@@ -88,8 +88,8 @@ def get_cart():
     
     query = """
         SELECT 
-            c.productID as product_id, 
-            p.productName as name, 
+            c.productID, 
+            p.productName, 
             p.price, 
             c.quantity,
             p.img,
@@ -109,28 +109,28 @@ def get_cart():
 def add_to_cart():
     session_id, resp = get_session_id()
     if resp:
-        # 需要设置新cookie
+        # Need to set new cookie
         response = resp
     else:
-        # 使用默认响应
+        # Use default response
         response = jsonify({'success': True})
     
     data = request.get_json()
-    product_id = data.get('product_id')
+    product_id = data.get('productID')  # Changed from product_id to productID
     quantity = data.get('quantity', 1)
     
-    # 检查商品是否存在
+    # Check if product exists
     query = "SELECT productID, inventoryCount FROM products WHERE productID = %s"
     product = execute_query(query, (product_id,), fetch_one=True)
     
     if not product:
-        return jsonify({'success': False, 'message': 'product not available'}), 404
+        return jsonify({'success': False, 'message': 'Product not available'}), 404
     
-    # 检查库存
+    # Check stock
     if product['inventoryCount'] < quantity:
-        return jsonify({'success': False, 'message': 'no enough stock'}), 400
+        return jsonify({'success': False, 'message': 'Not enough stock'}), 400
     
-    # 更新购物车
+    # Update cart
     query = """
         INSERT INTO carts (sessionID, productID, quantity, createdAt)
         VALUES (%s, %s, %s, NOW())
@@ -150,66 +150,41 @@ def update_cart_item(product_id):
     quantity = data.get('quantity')
     
     if not quantity or quantity < 1:
-        return jsonify({'success': False, 'message': '数量必须大于0'}), 400
+        return jsonify({'success': False, 'message': 'Quantity must be greater than 0'}), 400
     
-    # 检查库存
+    # Check stock
     query = "SELECT inventoryCount FROM products WHERE productID = %s"
     product = execute_query(query, (product_id,), fetch_one=True)
     
     if not product:
-        return jsonify({'success': False, 'message': '商品不存在'}), 404
+        return jsonify({'success': False, 'message': 'Product not found'}), 404
     
     if product['inventoryCount'] < quantity:
-        return jsonify({'success': False, 'message': '库存不足'}), 400
+        return jsonify({'success': False, 'message': 'Not enough stock'}), 400
     
-    # 更新购物车
+    # Update cart
     query = """
         UPDATE carts 
         SET quantity = %s 
         WHERE sessionID = %s AND productID = %s
     """
-    affected_rows = execute_update(query, (quantity, session_id, product_id))
-    
-    if affected_rows == 0:
-        return jsonify({'success': False, 'message': '购物车中没有此商品'}), 404
+    execute_update(query, (quantity, session_id, product_id))
     
     return jsonify({'success': True})
 
 @app.route('/api/cart/<product_id>', methods=['DELETE'])
 @handle_exceptions
-def remove_cart_item(product_id):
+def remove_from_cart(product_id):
     session_id, _ = get_session_id()
     
-    query = """
-        DELETE FROM carts 
-        WHERE sessionID = %s AND productID = %s
-    """
-    affected_rows = execute_update(query, (session_id, product_id))
-    
-    if affected_rows == 0:
-        return jsonify({'success': False, 'message': '购物车中没有此商品'}), 404
+    query = "DELETE FROM carts WHERE sessionID = %s AND productID = %s"
+    execute_update(query, (session_id, product_id))
     
     return jsonify({'success': True})
 
-@app.route('/api/cart/batch', methods=['DELETE'])
-@handle_exceptions
-def batch_delete_cart_items():
-    session_id, _ = get_session_id()
-    data = request.get_json()
-    product_ids = data.get('ids', [])
-    
-    if not product_ids:
-        return jsonify({'success': False, 'message': '未指定要删除的商品'}), 400
-    
-    placeholders = ', '.join(['%s'] * len(product_ids))
-    query = f"""
-        DELETE FROM carts 
-        WHERE sessionID = %s AND productID IN ({placeholders})
-    """
-    params = [session_id] + product_ids
-    execute_update(query, params)
-    
-    return jsonify({'success': True})
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('images', filename)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

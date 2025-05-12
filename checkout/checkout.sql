@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS buyzu;
 USE buyzu;
 CREATE TABLE orders (
     order_id          CHAR(36)      PRIMARY KEY,         
-    user_id           BIGINT UNSIGNED NOT NULL,          
+    id           BIGINT UNSIGNED NOT NULL,          
     total_amount      DECIMAL(10,2)  NOT NULL,           
     status            ENUM('pending', 'paid', 'failed', 'shipped', 'completed') DEFAULT 'pending',
     payment_method    ENUM('credit_card') DEFAULT 'credit_card',  
@@ -12,9 +12,9 @@ CREATE TABLE orders (
     street_address    VARCHAR(255)   NOT NULL,           
     city              VARCHAR(50)    NOT NULL,           
     postal_code       VARCHAR(20)    NOT NULL,           
-    country           ENUM('Hong Kong SAR', 'China', 'United States') NOT NULL
+    country           ENUM('Hong Kong SAR', 'China', 'United States') NOT NULL,
     created_at        DATETIME       DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (id) REFERENCES users(id)
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
 -- 订单商品项
@@ -39,12 +39,4 @@ CREATE TABLE payments (
     transaction_id  VARCHAR(255)  NOT NULL,              
 
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
-) ENGINE=InnoDB CHARSET=utf8mb4;
-
--- 创建用户表
-CREATE TABLE users (
-    user_id         BIGINT UNSIGNED  AUTO_INCREMENT PRIMARY KEY,
-    username        VARCHAR(50)      NOT NULL UNIQUE,
-    password_hash   CHAR(60)         NOT NULL, 
-    email           VARCHAR(255)     NOT NULL UNIQUE,
 ) ENGINE=InnoDB CHARSET=utf8mb4;
