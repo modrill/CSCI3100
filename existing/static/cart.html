@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Buyzu · Shopping Cart</title>
+  <style>
+    /* Header 导航栏样式（与 homepage 保持一致） */
+    a { color: inherit; text-decoration: none;}
+    header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
+    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; width:90%; max-width:1200px; margin:0 auto; }
+    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+    .search-cart { display:flex; align-items:center; gap:2rem; }
+    .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
+    .auth-buttons { display:flex; gap:1rem; }
+    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
+    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
+    .auth-buttons .btn:hover { opacity:.85; }
+
+    /* 原有 cart 样式 */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:Arial,sans-serif;background:#F7FFF7;color:#1A1F36;line-height:1.5;}
+    .container{width:90%;max-width:1200px;margin:2rem auto;}
+    table{width:100%;border-collapse:collapse;margin-bottom:1.5rem;}
+    th,td{padding:.75rem;text-align:left;border-bottom:1px solid #E5E7EB;}
+    th{background:#F0F1F3;}
+    img{width:60px;height:60px;object-fit:cover;border-radius:4px;margin-right:.5rem;}
+    .qty-input{width:50px;text-align:center;}
+    .remove-btn{background:transparent;border:none;color:#d9230f;cursor:pointer;}
+    .total{ text-align:right;font-size:1.2rem;font-weight:700;margin-bottom:2rem;}
+    .empty{ text-align:center;color:#6b7280;margin:4rem 0;}
+    #btnCheckout{ padding:.6rem 1.5rem;background:#FF6B6B;color:#fff;
+                  border:none;border-radius:30px;cursor:pointer;}
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <header>
+    <div class="nav-wrapper">
+      <a href="homepage.html" class="logo">Buyzu</a>
+      <div class="search-cart">
+        <input type="text" placeholder="Search…">
+        <a href="cart.html" class="icon">🛒</a>
+      </div>
+      <div class="auth-buttons">
+        <button class="btn login">Login</button>
+        <button class="btn register">Register</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Your Shopping Cart</h1>
+    <p class="empty" id="emptyMsg">Your cart is empty.</p>
+    <table id="cartTable" style="display:none;">
+      <thead>
+        <tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th><th> </th></tr>
+      </thead>
+      <tbody id="cartBody"></tbody>
+    </table>
+    <div class="total" id="totalCost" style="display:none;">Total: HK$0.00</div>
+    <button id="btnCheckout" style="display:none;">Checkout</button>
+  </div>
+
+  <script>
+    // SessionID 管理
+    function getCookie(name){
+      const m = document.cookie.match('(?:^|; )'+name+'=([^;]+)');
+      return m ? decodeURIComponent(m[1]) : null;
+    }
+    function setCookie(name, val, days=365){
+      document.cookie = `${name}=${encodeURIComponent(val)};expires=${new Date(Date.now()+days*864e5).toUTCString()};path=/`;
+    }
+    function ensureUser(){
+      let uid = localStorage.getItem('userID') || getCookie('SESSIONID');
+      if(!uid){
+        uid = 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6);
+        localStorage.setItem('userID', uid);
+        setCookie('SESSIONID', uid);
+      }
+      return uid;
+    }
+
+    async function loadCart(){
+      const uid = ensureUser();
+      const res = await fetch('/api/cart', { headers: {'X-UserID': uid} });
+      if(!res.ok) return console.error('加载购物车失败');
+      const { list } = await res.json();
+      const table = document.getElementById('cartTable');
+      const body  = document.getElementById('cartBody');
+      const empty = document.getElementById('emptyMsg');
+      let total = 0;
+
+      if(list.length===0){
+        table.style.display='none';
+        empty.style.display='block';
+        document.getElementById('totalCost').style.display='none';
+        document.getElementById('btnCheckout').style.display='none';
+        return;
+      }
+
+      empty.style.display='none';
+      table.style.display='table';
+      document.getElementById('totalCost').style.display='block';
+      document.getElementById('btnCheckout').style.display='inline-block';
+      body.innerHTML = '';
+
+      list.forEach(item => {
+        const sub = item.price * item.quantity;
+        total += sub;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div style="display:flex;align-items:center;">
+              <img src="/images/${item.img}" alt="">
+              <div>
+                <div>${item.productName}</div>
+                <div style="font-size:.8rem;color:#6b7280">${item.brandName||''}</div>
+              </div>
+            </div>
+          </td>
+          <td>HK$${item.price.toFixed(2)}</td>
+          <td><input type="number" class="qty-input" min="1" value="${item.quantity}" data-id="${item.productID}"></td>
+          <td>HK$${sub.toFixed(2)}</td>
+          <td><button class="remove-btn" data-id="${item.productID}">×</button></td>
+        `;
+        body.appendChild(tr);
+      });
+
+      document.getElementById('totalCost').innerText = `Total: HK$${total.toFixed(2)}`;
+      bindCartEvents();
+    }
+
+    function bindCartEvents(){
+      const uid = ensureUser();
+      // 删除
+      document.querySelectorAll('.remove-btn').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          await fetch(`/api/cart?id=${btn.dataset.id}`, {
+            method:'DELETE',
+            headers:{'X-UserID': uid}
+          });
+          loadCart();
+        });
+      });
+      // 修改数量：先删后加
+      document.querySelectorAll('.qty-input').forEach(inp=>{
+        inp.addEventListener('change', async ()=>{
+          const pid = inp.dataset.id;
+          const qty = Math.max(1, parseInt(inp.value)||1);
+          await fetch(`/api/cart?id=${pid}`, {
+            method:'DELETE',
+            headers:{'X-UserID': uid}
+          });
+          await fetch('/api/cart', {
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'X-UserID': uid
+            },
+            body: JSON.stringify({ id: pid, qty })
+          });
+          loadCart();
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCart();
+      // Checkout 跳转
+      document.getElementById('btnCheckout')
+        .addEventListener('click', ()=> window.location.href='checkout.html');
+    });
+  </script>
+</body>
+</html>
