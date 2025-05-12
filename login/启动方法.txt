@@ -1,0 +1,8 @@
+有问题的话先尝试关闭：
+lsof -i :5001
+pkill -f "python backend.py"
+
+再重新启动：
+cd login && source venv/bin/activate
+python backend.py
+open frontend.html
