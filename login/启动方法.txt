@@ -1,4 +1,4 @@
-需要安装虚拟环境：
+需要安装虚拟环境，backend需要在虚拟环境里运行：
 cd login && python3 -m venv venv && source venv/bin/activate && pip install Flask==2.0.1 Werkzeug==2.0.1 mysql-connector-python==8.0.26 flask-cors==3.0.10
 
 有问题的话先尝试关闭：
@@ -9,3 +9,10 @@ pkill -f "python backend.py"
 cd login && source venv/bin/activate
 python backend.py
 open frontend.html
+
+依赖：
+Flask==2.0.1 
+Werkzeug==2.0.1 
+mysql-connector-python==8.0.26 
+flask-cors==3.0.10
+
