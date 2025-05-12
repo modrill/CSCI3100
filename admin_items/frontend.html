@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management System</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #4a69bd;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-box .form-control {
+            padding-left: 40px;
+            border-radius: 20px;
+        }
+        .search-box .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #6c757d;
+        }
+        .table th {
+            background-color: #f1f2f6;
+        }
+        .action-btn {
+            margin-right: 5px;
+        }
+        .pagination {
+            justify-content: center;
+        }
+        .modal-header {
+            background-color: #4a69bd;
+            color: white;
+        }
+        .modal-footer {
+            border-top: none;
+            padding: 15px 20px;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+        }
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .status-active {
+            color: #2ecc71;
+        }
+        .status-inactive {
+            color: #e74c3c;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-boxes me-2"></i>Product Management System</h2>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="fas fa-plus me-1"></i> Add Product
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search product ID, name or description...">
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Brand</th>
+                                <th>Inventory</th>
+                                <th>Status</th>
+                                <th>Rating</th>
+                                <th>Sales</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                            <!-- Product data will be loaded dynamically with JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <nav>
+                    <ul class="pagination" id="pagination">
+                        <!-- Pagination links will be loaded dynamically with JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productID" class="form-label">Product ID*</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="productID" required>
+                                        <button class="btn btn-outline-secondary" type="button" id="generateID">Generate</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productName" class="form-label">Product Name*</label>
+                                    <input type="text" class="form-control" id="productName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="price" class="form-label">Price*</label>
+                                    <input type="number" class="form-control" id="price" min="0.01" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category">
+                                        <option value="">Select Category</option>
+                                        <!-- Categories will be loaded dynamically -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="brand" class="form-label">Brand</label>
+                                    <select class="form-select" id="brand">
+                                        <option value="">Select Brand</option>
+                                        <!-- Brands will be loaded dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="imageUrl" class="form-label">Image URL*</label>
+                                    <input type="text" class="form-control" id="imageUrl" required>
+                                    <img id="imagePreview" class="image-preview mt-2 d-none" alt="Product Image Preview">
+                                </div>
+                                <div class="form-group">
+                                    <label for="inventory" class="form-label">Inventory Count</label>
+                                    <input type="number" class="form-control" id="inventory" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status">
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rating" class="form-label">Rating</label>
+                                    <input type="number" class="form-control" id="rating" min="0" max="5" step="0.1" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sales" class="form-label">Sales</label>
+                                    <input type="number" class="form-control" id="sales" min="0" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitAddProduct">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <input type="hidden" id="editProductID">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editProductName" class="form-label">Product Name*</label>
+                                    <input type="text" class="form-control" id="editProductName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editPrice" class="form-label">Price*</label>
+                                    <input type="number" class="form-control" id="editPrice" min="0.01" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="editCategory">
+                                        <option value="">Select Category</option>
+                                        <!-- Categories will be loaded dynamically -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editBrand" class="form-label">Brand</label>
+                                    <select class="form-select" id="editBrand">
+                                        <option value="">Select Brand</option>
+                                        <!-- Brands will be loaded dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editImageUrl" class="form-label">Image URL*</label>
+                                    <input type="text" class="form-control" id="editImageUrl" required>
+                                    <img id="editImagePreview" class="image-preview mt-2" alt="Product Image Preview">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editInventory" class="form-label">Inventory Count</label>
+                                    <input type="number" class="form-control" id="editInventory" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editStatus" class="form-label">Status</label>
+                                    <select class="form-select" id="editStatus">
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editRating" class="form-label">Rating</label>
+                                    <input type="number" class="form-control" id="editRating" min="0" max="5" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editSales" class="form-label">Sales</label>
+                                    <input type="number" class="form-control" id="editSales" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitEditProduct">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Delete Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this product? This action cannot be undone.</p>
+                    <p><strong>Product ID: <span id="deleteProductIDText"></span></strong></p>
+                    <p><strong>Product Name: <span id="deleteProductName"></span></strong></p>
+                    <input type="hidden" id="deleteProductID">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>Product Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img id="detailsImage" class="img-fluid rounded" alt="Product Image">
+                        </div>
+                        <div class="col-md-7">
+                            <h4 id="detailsName" class="mb-3"></h4>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th width="30%">Product ID</th>
+                                    <td id="detailsID"></td>
+                                </tr>
+                                <tr>
+                                    <th>Price</th>
+                                    <td id="detailsPrice"></td>
+                                </tr>
+                                <tr>
+                                    <th>Category</th>
+                                    <td id="detailsCategory"></td>
+                                </tr>
+                                <tr>
+                                    <th>Brand</th>
+                                    <td id="detailsBrand"></td>
+                                </tr>
+                                <tr>
+                                    <th>Inventory</th>
+                                    <td id="detailsInventory"></td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td id="detailsStatus"></td>
+                                </tr>
+                                <tr>
+                                    <th>Rating</th>
+                                    <td id="detailsRating"></td>
+                                </tr>
+                                <tr>
+                                    <th>Sales</th>
+                                    <td id="detailsSales"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h5>Description</h5>
+                            <p id="detailsDescription" class="text-muted"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="editFromDetails">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Animation -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-border loading-spinner text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // API基础URL
+        const API_BASE_URL = 'http://localhost:5003/api/admin';
+        
+        // 认证Token
+        const AUTH_TOKEN = 'admin';
+        
+        // 全局变量
+        let currentPage = 1;
+        let totalPages = 1;
+        let perPage = 10;
+        let products = [];
+        let categories = [];
+        let brands = [];
+        
+        // DOM加载完成后执行
+        $(document).ready(function() {
+            console.log('页面加载完成，开始初始化...');
+            // 初始化数据
+            loadCategories();
+            loadBrands();
+            loadProducts(currentPage);
+            
+            // 绑定事件
+            bindEvents();
+        });
+        
+        // 绑定各种事件处理
+        function bindEvents() {
+            // 搜索功能
+            $('#searchInput').on('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    const keyword = $(this).val().trim();
+                    if (keyword) {
+                        searchProducts(keyword);
+                    } else {
+                        loadProducts(1);
+                    }
+                }
+            });
+            
+            // 生成产品ID
+            $('#generateID').on('click', function() {
+                generateProductID();
+            });
+            
+            // 图片预览
+            $('#imageUrl').on('change', function() {
+                previewImage('#imageUrl', '#imagePreview');
+            });
+            
+            $('#editImageUrl').on('change', function() {
+                previewImage('#editImageUrl', '#editImagePreview');
+            });
+            
+            // 添加产品
+            $('#submitAddProduct').on('click', function() {
+                addProduct();
+            });
+            
+            // 编辑产品
+            $('#submitEditProduct').on('click', function() {
+                updateProduct();
+            });
+            
+            // 确认删除
+            $('#confirmDelete').on('click', function() {
+                deleteProduct();
+            });
+            
+            // 从详情页编辑
+            $('#editFromDetails').on('click', function() {
+                const productID = $('#detailsID').text();
+                loadProductForEdit(productID);
+                $('#productDetailsModal').modal('hide');
+                $('#editProductModal').modal('show');
+            });
+        }
+        
+        // 加载产品列表
+        function loadProducts(page) {
+            showLoading();
+            currentPage = page;
+            
+            $.ajax({
+                url: `${API_BASE_URL}/items?page=${page}&per_page=${perPage}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(response) {
+                    console.log('成功获取产品数据:', response);
+                    products = response.products;
+                    totalPages = response.total_pages;
+                    
+                    renderProductsTable(products);
+                    renderPagination(currentPage, totalPages);
+                    
+                    hideLoading();
+                },
+                error: function(xhr, status, error) {
+                    console.error('获取产品列表失败:', error);
+                    alert('获取产品列表失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 加载类别列表
+        function loadCategories() {
+            $.ajax({
+                url: `${API_BASE_URL}/categories`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(response) {
+                    categories = response;
+                    renderCategoryOptions(categories);
+                },
+                error: function(xhr, status, error) {
+                    console.error('获取类别列表失败:', error);
+                }
+            });
+        }
+        
+        // 加载品牌列表
+        function loadBrands() {
+            $.ajax({
+                url: `${API_BASE_URL}/brands`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(response) {
+                    brands = response;
+                    renderBrandOptions(brands);
+                },
+                error: function(xhr, status, error) {
+                    console.error('获取品牌列表失败:', error);
+                }
+            });
+        }
+        
+        // 渲染产品表格
+        function renderProductsTable(products) {
+            const tableBody = $('#productTableBody');
+            tableBody.empty();
+            
+            if (products.length === 0) {
+                tableBody.html('<tr><td colspan="11" class="text-center">暂无产品数据</td></tr>');
+                return;
+            }
+            
+            products.forEach(product => {
+                const statusClass = product.currentStatus ? 'status-active' : 'status-inactive';
+                const statusText = product.currentStatus ? '上架' : '下架';
+                
+                const row = `
+                    <tr>
+                        <td>${product.productID}</td>
+                        <td><img src="${product.img}" class="product-image" alt="${product.productName}"></td>
+                        <td>${product.productName}</td>
+                        <td>¥${product.price.toFixed(2)}</td>
+                        <td>${product.categoryName || '-'}</td>
+                        <td>${product.brandName || '-'}</td>
+                        <td>${product.inventoryCount}</td>
+                        <td><span class="${statusClass}"><i class="fas ${product.currentStatus ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${statusText}</span></td>
+                        <td>${product.rating.toFixed(1)}</td>
+                        <td>${product.sales}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info action-btn" onclick="viewProductDetails('${product.productID}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary action-btn" onclick="loadProductForEdit('${product.productID}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger action-btn" onclick="confirmDelete('${product.productID}', '${product.productName}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                tableBody.append(row);
+            });
+        }
+        
+        // 渲染分页
+        function renderPagination(currentPage, totalPages) {
+            const pagination = $('#pagination');
+            pagination.empty();
+            
+            // 无数据时不显示分页
+            if (totalPages === 0) {
+                return;
+            }
+            
+            // 上一页按钮
+            pagination.append(`
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0)" onclick="loadProducts(${currentPage - 1})">上一页</a>
+                </li>
+            `);
+            
+            // 页码按钮
+            const maxPageButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+            
+            if (endPage - startPage + 1 < maxPageButtons && startPage > 1) {
+                startPage = Math.max(1, endPage - maxPageButtons + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.append(`
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="javascript:void(0)" onclick="loadProducts(${i})">${i}</a>
+                    </li>
+                `);
+            }
+            
+            // 下一页按钮
+            pagination.append(`
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0)" onclick="loadProducts(${currentPage + 1})">下一页</a>
+                </li>
+            `);
+        }
+        
+        // 渲染类别选项
+        function renderCategoryOptions(categories) {
+            const categorySelects = $('#category, #editCategory');
+            
+            categories.forEach(category => {
+                const option = `<option value="${category.categoryID}">${category.categoryName}</option>`;
+                categorySelects.append(option);
+            });
+        }
+        
+        // 渲染品牌选项
+        function renderBrandOptions(brands) {
+            const brandSelects = $('#brand, #editBrand');
+            
+            brands.forEach(brand => {
+                const option = `<option value="${brand.brandID}">${brand.brandName}</option>`;
+                brandSelects.append(option);
+            });
+        }
+        
+        // 图片预览
+        function previewImage(inputSelector, previewSelector) {
+            const imageUrl = $(inputSelector).val();
+            const preview = $(previewSelector);
+            
+            if (imageUrl) {
+                preview.attr('src', imageUrl).removeClass('d-none');
+            } else {
+                preview.addClass('d-none');
+            }
+        }
+        
+        // 生成产品ID
+        function generateProductID() {
+            $.ajax({
+                url: `${API_BASE_URL}/generate-product-id`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(response) {
+                    $('#productID').val(response.productID);
+                },
+                error: function(xhr, status, error) {
+                    console.error('生成产品ID失败:', error);
+                    alert('生成产品ID失败: ' + (xhr.responseJSON?.error || error));
+                }
+            });
+        }
+        
+        // 添加产品
+        function addProduct() {
+            // 获取表单数据
+            const productData = {
+                productID: $('#productID').val(),
+                productName: $('#productName').val(),
+                descri: $('#description').val(),
+                price: parseFloat($('#price').val()),
+                categoryID: $('#category').val() ? parseInt($('#category').val()) : null,
+                brandID: $('#brand').val() ? parseInt($('#brand').val()) : null,
+                img: $('#imageUrl').val(),
+                currentStatus: parseInt($('#status').val()),
+                inventoryCount: parseInt($('#inventory').val()),
+                rating: parseFloat($('#rating').val()),
+                sales: parseInt($('#sales').val())
+            };
+            
+            // 验证必填字段
+            if (!productData.productID || !productData.productName || !productData.price || !productData.img) {
+                alert('请填写所有必填字段（产品ID、名称、价格、图片）');
+                return;
+            }
+            
+            showLoading();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/items`,
+                method: 'POST',
+                headers: {
+                    'Authorization': AUTH_TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(productData),
+                success: function(response) {
+                    alert('产品添加成功');
+                    $('#addProductModal').modal('hide');
+                    $('#addProductForm')[0].reset();
+                    $('#imagePreview').addClass('d-none');
+                    loadProducts(currentPage);
+                },
+                error: function(xhr, status, error) {
+                    console.error('添加产品失败:', error);
+                    alert('添加产品失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 查看产品详情
+        function viewProductDetails(productID) {
+            showLoading();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/items/${productID}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(product) {
+                    // 填充详情
+                    $('#detailsName').text(product.productName);
+                    $('#detailsID').text(product.productID);
+                    $('#detailsPrice').text(`¥${product.price.toFixed(2)}`);
+                    $('#detailsCategory').text(product.categoryName || '-');
+                    $('#detailsBrand').text(product.brandName || '-');
+                    $('#detailsInventory').text(product.inventoryCount);
+                    $('#detailsStatus').html(`<span class="${product.currentStatus ? 'text-success' : 'text-danger'}">
+                        <i class="fas ${product.currentStatus ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${product.currentStatus ? '上架' : '下架'}
+                    </span>`);
+                    $('#detailsRating').text(product.rating.toFixed(1));
+                    $('#detailsSales').text(product.sales);
+                    $('#detailsDescription').text(product.descri || '暂无描述');
+                    $('#detailsImage').attr('src', product.img);
+                    
+                    // 显示模态框
+                    $('#productDetailsModal').modal('show');
+                    hideLoading();
+                },
+                error: function(xhr, status, error) {
+                    console.error('获取产品详情失败:', error);
+                    alert('获取产品详情失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 加载产品进行编辑
+        function loadProductForEdit(productID) {
+            showLoading();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/items/${productID}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(product) {
+                    // 填充表单
+                    $('#editProductID').val(product.productID);
+                    $('#editProductName').val(product.productName);
+                    $('#editPrice').val(product.price);
+                    $('#editCategory').val(product.categoryID);
+                    $('#editBrand').val(product.brandID);
+                    $('#editImageUrl').val(product.img);
+                    $('#editInventory').val(product.inventoryCount);
+                    $('#editStatus').val(product.currentStatus);
+                    $('#editRating').val(product.rating);
+                    $('#editSales').val(product.sales);
+                    $('#editDescription').val(product.descri);
+                    
+                    // 预览图片
+                    $('#editImagePreview').attr('src', product.img).removeClass('d-none');
+                    
+                    // 显示模态框
+                    $('#editProductModal').modal('show');
+                    hideLoading();
+                },
+                error: function(xhr, status, error) {
+                    console.error('获取产品详情失败:', error);
+                    alert('获取产品详情失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 更新产品
+        function updateProduct() {
+            const productID = $('#editProductID').val();
+            
+            // 获取表单数据
+            const productData = {
+                productName: $('#editProductName').val(),
+                descri: $('#editDescription').val(),
+                price: parseFloat($('#editPrice').val()),
+                categoryID: $('#editCategory').val() ? parseInt($('#editCategory').val()) : null,
+                brandID: $('#editBrand').val() ? parseInt($('#editBrand').val()) : null,
+                img: $('#editImageUrl').val(),
+                currentStatus: parseInt($('#editStatus').val()),
+                inventoryCount: parseInt($('#editInventory').val()),
+                rating: parseFloat($('#editRating').val()),
+                sales: parseInt($('#editSales').val())
+            };
+            
+            // 验证必填字段
+            if (!productData.productName || !productData.price || !productData.img) {
+                alert('请填写所有必填字段（名称、价格、图片）');
+                return;
+            }
+            
+            showLoading();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/items/${productID}`,
+                method: 'PUT',
+                headers: {
+                    'Authorization': AUTH_TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(productData),
+                success: function(response) {
+                    alert('产品更新成功');
+                    $('#editProductModal').modal('hide');
+                    loadProducts(currentPage);
+                },
+                error: function(xhr, status, error) {
+                    console.error('更新产品失败:', error);
+                    alert('更新产品失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 确认删除对话框
+        function confirmDelete(productID, productName) {
+            $('#deleteProductID').val(productID);
+            $('#deleteProductIDText').text(productID);
+            $('#deleteProductName').text(productName);
+            $('#deleteProductModal').modal('show');
+        }
+        
+        // 删除产品
+        function deleteProduct() {
+            const productID = $('#deleteProductID').val();
+            
+            showLoading();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/items/${productID}`,
+                method: 'DELETE',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(response) {
+                    alert('产品删除成功');
+                    $('#deleteProductModal').modal('hide');
+                    loadProducts(currentPage);
+                },
+                error: function(xhr, status, error) {
+                    console.error('删除产品失败:', error);
+                    alert('删除产品失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 搜索产品
+        function searchProducts(keyword) {
+            showLoading();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/search-items?keyword=${encodeURIComponent(keyword)}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': AUTH_TOKEN
+                },
+                success: function(response) {
+                    products = response.products;
+                    renderProductsTable(products);
+                    // 搜索结果不显示分页
+                    $('#pagination').empty();
+                    hideLoading();
+                },
+                error: function(xhr, status, error) {
+                    console.error('搜索产品失败:', error);
+                    alert('搜索产品失败: ' + (xhr.responseJSON?.error || error));
+                    hideLoading();
+                }
+            });
+        }
+        
+        // 显示加载动画
+        function showLoading() {
+            $('#loadingOverlay').css('visibility', 'visible');
+        }
+        
+        // 隐藏加载动画
+        function hideLoading() {
+            $('#loadingOverlay').css('visibility', 'hidden');
+        }
+    </script>
+</body>
+</html> 
