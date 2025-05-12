@@ -124,7 +124,7 @@ def add_to_cart():
     product = execute_query(query, (product_id,), fetch_one=True)
     
     if not product:
-        return jsonify({'success': False, 'message': product not available''}), 404
+        return jsonify({'success': False, 'message': 'product not available'}), 404
     
     # 检查库存
     if product['inventoryCount'] < quantity:
