@@ -1,3 +1,6 @@
+需要安装虚拟环境：
+cd login && python3 -m venv venv && source venv/bin/activate && pip install Flask==2.0.1 Werkzeug==2.0.1 mysql-connector-python==8.0.26 flask-cors==3.0.10
+
 有问题的话先尝试关闭：
 lsof -i :5001
 pkill -f "python backend.py"
