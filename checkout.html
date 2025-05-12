@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Buyzu · Checkout</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyzu · 结算</title>
   <style>
     /* Reset */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -48,6 +48,13 @@
     .order-summary img { width:50px; height:50px; object-fit:cover; border-radius:4px; }
     .total-row td { font-weight:700; text-align:right; }
 
+    /* Main content */
+    main { max-width:800px; margin:2rem auto; padding:0 1rem; }
+    .section-title { font-size:1.5rem; margin-bottom:1.5rem; }
+    
+    /* Footer */
+    footer { text-align:center; padding:2rem 0; color:#6b7280; }
+
     @media(max-width:600px){
       .two-cols { grid-template-columns:1fr; }
     }
@@ -62,14 +69,13 @@
         <a href="shoppingCart.html" class="icon">🛒</a>
       </div>
       <div class="auth-buttons">
-        <button class="btn login">Login</button>
-        <button class="btn register">Register</button>
+        <div id="user-welcome" style="color: #1A1F36;">Welcome, <span id="username"></span></div>
       </div>
     </div>
   </header>
 
-  <main class="container">
-    <h2>Checkout</h2>
+  <main>
+    <h1 class="section-title">确认订单</h1>
     <div class="tabs">
       <div class="tab-btn active" data-tab="shipping">Shipping Info</div>
       <div class="tab-btn" data-tab="payment">Payment Info</div>
@@ -160,12 +166,29 @@
   </main>
 
   <footer>
-    <div class="container" style="text-align:center; padding:2rem 0; color:#6b7280;">
+    <div class="container">
       &copy; 2025 Buyzu. All rights reserved.
     </div>
   </footer>
 
   <script>
+    // 检查用户登录状态
+    function checkLoginStatus() {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        // 如果未登录，重定向到登录页面
+        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+        return;
+      }
+      
+      // 显示用户名
+      const user = JSON.parse(userStr);
+      document.getElementById('username').textContent = user.username;
+    }
+
+    // 页面加载时检查登录状态
+    document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
     // 页面加载时检查购物车
     document.addEventListener('DOMContentLoaded', function() {
       const cart = JSON.parse(localStorage.getItem('checkoutItems') || '[]');

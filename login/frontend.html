@@ -112,7 +112,7 @@
             </div>
             <button type="submit">Login</button>
             <div class="toggle-form">
-                Don't have an account? <a href="#" onclick="toggleForms()">Register</a>
+                Don't have an account? <a href="#register" onclick="toggleForms()">Register</a>
             </div>
         </form>
 
@@ -138,20 +138,47 @@
             </div>
             <button type="submit" id="registerButton" disabled>Register</button>
             <div class="toggle-form">
-                Already have an account? <a href="#" onclick="toggleForms()">Login</a>
+                Already have an account? <a href="#login" onclick="toggleForms()">Login</a>
             </div>
         </form>
         <div id="errorMessage" class="error-message"></div>
     </div>
 
     <script>
+        // 检查URL hash并显示相应表单
+        function checkHash() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (window.location.hash === '#register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            }
+        }
+
+        // 页面加载时检查
+        window.addEventListener('load', checkHash);
+        // URL hash变化时检查
+        window.addEventListener('hashchange', checkHash);
+
         function toggleForms() {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
             const errorMessage = document.getElementById('errorMessage');
             
-            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
-            registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+            if (loginForm.style.display === 'none') {
+                window.location.hash = ''; // 切换到登录时清除hash
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                window.location.hash = 'register'; // 切换到注册时添加hash
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+            
             errorMessage.textContent = '';
         }
 
@@ -206,8 +233,17 @@
                     throw new Error(data.error || 'Login failed');
                 }
                 
+                // 保存用户信息到localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    id: data.user.id,
+                    username: data.user.username
+                }));
+                
                 alert('Login successful!');
-                // Add redirect logic here
+                // 获取redirect_url参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect_url') || '../homepage.html';
+                window.location.href = redirectUrl;
             } catch (error) {
                 document.getElementById('errorMessage').textContent = error.message;
             }

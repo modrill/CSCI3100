@@ -140,8 +140,7 @@
       <a href="shoppingCart.html" class="icon">🛒</a>
     </div>
     <div class="auth-buttons">
-      <button class="btn login">Login</button>
-      <button class="btn register">Register</button>
+      <div id="user-welcome" style="color: #1A1F36;">Welcome, <span id="username"></span></div>
     </div>
   </div>
 </header>
@@ -510,8 +509,25 @@ function checkout() {
    window.location.href = 'checkout.html';
 }
 
+/* ---------- 检查用户登录状态 ---------- */
+function checkLoginStatus() {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) {
+    // 如果未登录，重定向到登录页面
+    window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+    return;
+  }
+  
+  // 显示用户名
+  const user = JSON.parse(userStr);
+  document.getElementById('username').textContent = user.username;
+}
+
 /* ---------- 初始化 ---------- */
-document.addEventListener('DOMContentLoaded', loadCart);
+document.addEventListener('DOMContentLoaded', () => {
+  checkLoginStatus();
+  loadCart();
+});
 </script>
 </body>
 </html>

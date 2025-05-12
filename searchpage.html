@@ -54,9 +54,11 @@
                 <button onclick="searchProducts()">Search</button>
             </div>
             <div class="auth-buttons">
-                <button class="btn login">Login</button>
-                <button class="btn register">Register</button>
-                <a href="shoppingCart.html" class="cart-icon">🛒</a>
+                <div id="auth-status">
+                    <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
+                    <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
+                </div>
+                <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
             </div>
         </div>
     </header>
@@ -172,6 +174,43 @@
             resultsDiv.appendChild(productCard);
         });
     }
+
+        // 检查用户登录状态并更新界面
+        function checkLoginStatus() {
+            const authStatus = document.getElementById('auth-status');
+            const userStr = localStorage.getItem('user');
+            
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                authStatus.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="color: #1A1F36;">Welcome, ${user.username}</span>
+                        <button class="btn login" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            }
+        }
+
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        // 处理购物车点击
+        function handleCartClick() {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                // 已登录，跳转到购物车页面
+                window.location.href = 'shoppingCart.html';
+            } else {
+                // 未登录，跳转到登录页面，并设置返回到购物车页面
+                window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.origin + '/shoppingCart.html');
+            }
+        }
     </script>
 </body>
 </html>
