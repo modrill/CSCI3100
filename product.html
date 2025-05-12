@@ -12,30 +12,18 @@
     .container { width:90%; max-width:1200px; margin:0 auto; padding:2rem 0; }
     button { cursor:pointer; }
 
-    /* Header (copied from searchpage.html) */
+    /* Header (identical to homepage) */
     header { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.8); backdrop-filter:blur(8px); }
     .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
-    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; margin-right:2rem; text-decoration:none; } /* 去掉下划线 */
-    .search-cart { display:flex; align-items:center; margin:0 auto; gap:0.5rem; }
-    .search-cart input { width:400px; padding:.4rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .search-cart button { padding:.3rem 1rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.85rem; cursor:pointer; }
-    .auth-buttons { display:flex; gap:1.5rem; }
+    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
+    .search-cart { display:flex; align-items:center; gap:2rem; }
+    .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
+    .auth-buttons { display:flex; gap:1rem; }
     .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
     .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
     .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
     .auth-buttons .btn:hover { opacity:.85; }
-    /*.cart-icon { font-size:1.5rem; cursor:pointer; margin-left:1rem; text-decoration:none; color:#FF6B6B; }*/
-    .auth-buttons {
-      display: flex;
-      gap: 1rem;
-      align-items: center; /* ensure all child elements are vertically centered */
-    }
-    .cart-icon {
-      font-size: 1.5rem; /* adjust size */
-      display: flex;
-      align-items: center;
-    }
-    
 
     /* Main layout */
     .product-detail { display:flex; gap:2rem; flex-wrap:wrap; margin-bottom:4rem; }
@@ -51,9 +39,8 @@
       .stock { font-size:.9rem; color:#6b7280; }
       .description { margin:1rem 0; }
       .actions { display:flex; align-items:center; gap:1rem; }
-      .actions input { width:60px; padding:.4rem; text-align:center; border:1px solid #ddd; border-radius:8px; }
-      .actions button { padding:.5rem 1rem; border:none; border-radius:20px; background:#FF6B6B; color:#fff; font-size:.9rem; cursor:pointer; }
-      .actions button:hover { opacity:.9; }
+      .actions input { width:60px; padding:.4rem; text-align:center; border:1px solid #D1D5DB; border-radius:6px; }
+      .actions button { padding:.6rem 1.5rem; background:#FF6B6B; color:#fff; border:none; border-radius:30px; }
 
     /* Reviews */
     .reviews { margin-top:3rem; }
@@ -74,20 +61,16 @@
 </head>
 <body>
   <header>
-    <div class="container">
-      <div class="nav-wrapper">
-        <a href="/" class="logo">Buyzu</a>
-        <div class="search-cart">
-          <input type="text" id="searchInput" placeholder="Search for products..." />
-          <button onclick="redirectToSearch()">Search</button>
-        </div>
-        <div class="auth-buttons">
-          <div id="auth-status">
-            <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
-            <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
-          </div>
-          <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
-        </div>
+    <div class="nav-wrapper container">
+      <a href="homepage.html" class="logo">Buyzu</a>
+      <div class="search-cart">
+        <input type="text" placeholder="Search…">
+        <a href="cart.html" class="icon">🛒</a>
+      </div>
+      <div class="auth-buttons">
+        <button class="btn login">Login</button>
+        <button class="btn register">Register</button>
+      </div>
     </div>
   </header>
 
@@ -134,24 +117,38 @@
   </footer>
 
   <script>
+    // Helper: 获取 URL query 参数
     function getQueryParam(name) {
       const params = new URLSearchParams(window.location.search);
       return params.get(name);
     }
 
+    // 1. 验证登录、取用户 ID
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!currentUser.id) {
+      window.location.href = '/login.html';
+      throw new Error('Not logged in');
+    }
+    const USER_ID = String(currentUser.id);
+
+    // 2. 拉商品详情
     async function loadProduct() {
       const id = getQueryParam('id');
       if (!id) return alert('No product ID!');
       document.getElementById('prodName').innerText = 'Loading...';
       try {
         const res = await fetch(`/api/product?id=${id}`);
+        if (!res.ok) throw new Error(await res.text());
         const p = await res.json();
+        // 填数据
         document.getElementById('prodName').innerText = p.productName;
         document.getElementById('prodPrice').innerText = `HK$${p.price.toFixed(2)}`;
-        document.getElementById('prodStock').innerText = p.stock > 0 ? `In stock: ${p.stock}` : 'Out of stock';
+        document.getElementById('prodStock').innerText =
+          p.stock > 0 ? `In stock: ${p.stock}` : 'Out of stock';
         document.getElementById('prodDesc').innerText = p.description;
-        const mainImg = document.getElementById('mainImg');
-        const thumbs  = document.getElementById('thumbs');
+        // 图库
+        const mainImg = document.getElementById('mainImg'),
+              thumbs  = document.getElementById('thumbs');
         mainImg.src = `/images/${p.images[0]}`;
         thumbs.innerHTML = '';
         p.images.forEach((img,i) => {
@@ -165,127 +162,43 @@
           };
           thumbs.appendChild(t);
         });
+        // Reviews
         const rv = document.getElementById('reviewList');
         rv.innerHTML = '';
         (p.reviews||[]).forEach(r=>{
           const d = document.createElement('div');
           d.className = 'review';
-          d.innerHTML = `<div class="user">${r.user}</div>
-                         <div class="text">${r.text}</div>`;
+          d.innerHTML = `<div class="user">${r.user}</div><div class="text">${r.text}</div>`;
           rv.appendChild(d);
         });
-      } catch (e) {
+      } catch(e) {
         console.error(e);
         alert('Failed to load product.');
       }
     }
 
-    document.getElementById('btnAdd').onclick = ()=>{
-      const id   = getQueryParam('id');
-      const qty  = parseInt(document.getElementById('qty').value) || 1;
-      const cart = JSON.parse(localStorage.getItem('cart')||'[]');
-      const exist = cart.find(x=>x.id===id);
-      if (exist) exist.qty += qty;
-      else cart.push({ id, qty });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert('Added to cart!');
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        const productId = params.get('id'); // 获取产品 ID
-
-        if (productId) {
-            fetchProductDetails(productId);
-        } else {
-            alert('Product not found!');
-        }
+    // 3. Add to Cart
+    document.getElementById('btnAdd').addEventListener('click', async ()=>{
+      const id = getQueryParam('id'),
+            qty = Math.max(1, parseInt(document.getElementById('qty').value)||1);
+      try {
+        const res = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json',
+            'X-UserID': USER_ID
+          },
+          body: JSON.stringify({ id, qty })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        alert('Added to cart!');
+      } catch(e) {
+        console.error(e);
+        alert('Failed to add to cart: '+e.message);
+      }
     });
 
-    async function fetchProductDetails(productId) {
-        try {
-            // 调用后端接口获取产品详情
-            const response = await fetch(`/product?id=${productId}`);
-            const product = await response.json();
-
-            if (product) {
-                renderProductDetails(product);
-            } else {
-                alert('Product not found!');
-            }
-        } catch (error) {
-            console.error('Error fetching product details:', error);
-            alert('Error loading product details.');
-        }
-    }
-
-    function renderProductDetails(product) {
-        document.querySelector('.main-img').src = `/images/${product.image_url}`;
-        document.querySelector('.info h1').textContent = product.name;
-        document.querySelector('.price').textContent = `HK$${(+product.price).toFixed(2)}`;
-        document.querySelector('.stock').textContent = `Stock: ${product.stock}`;
-        document.querySelector('.description').textContent = product.description;
-
-        // 渲染缩略图
-        const thumbsContainer = document.querySelector('.thumbs');
-        product.thumbnails.forEach(thumb => {
-            const thumbImg = document.createElement('img');
-            thumbImg.src = `/images/${thumb}`;
-            thumbImg.alt = product.name;
-            thumbImg.onclick = () => {
-                document.querySelector('.main-img').src = thumbImg.src;
-                document.querySelectorAll('.thumbs img').forEach(img => img.classList.remove('active'));
-                thumbImg.classList.add('active');
-            };
-            thumbsContainer.appendChild(thumbImg);
-        });
-    }
-      function redirectToSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-          // 跳转到搜索页面，并将关键词作为查询参数传递
-          window.location.href = `/searchpage.html?keyword=${encodeURIComponent(query)}`;
-      } else {
-          alert('Please enter a search term.');
-      }
-  }
-
-    // 检查用户登录状态并更新界面
-    function checkLoginStatus() {
-      const authStatus = document.getElementById('auth-status');
-      const userStr = localStorage.getItem('user');
-      
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        authStatus.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <span style="color: #1A1F36;">Welcome, ${user.username}</span>
-            <button class="btn login" onclick="logout()">Logout</button>
-          </div>
-        `;
-      }
-    }
-
-    // 登出功能
-    function logout() {
-      localStorage.removeItem('user');
-      window.location.reload();
-    }
-
-    // 页面加载时检查登录状态
-    document.addEventListener('DOMContentLoaded', checkLoginStatus);
-
-    // 处理购物车点击
-    function handleCartClick() {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        // 已登录，跳转到购物车页面
-        window.location.href = 'shoppingCart.html';
-      } else {
-        // 未登录，跳转到登录页面，并设置返回到购物车页面
-        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.origin + '/shoppingCart.html');
-      }
-    }
+    document.addEventListener('DOMContentLoaded', loadProduct);
   </script>
 </body>
 </html>
