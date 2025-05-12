@@ -180,7 +180,7 @@ function renderCart() {
           <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck('${item.productID}')">
         </div>
         <div class="item-img">
-          <img src="${item.img ? `/images/${item.img}` : `https://picsum.photos/id/${item.productID*10}/200`}" alt="${item.productName}">
+          <img src="/images/${item.img}" alt="${item.productName}">
         </div>
         <div class="item-info">
           <div class="item-name">${item.productName}</div>
@@ -438,7 +438,6 @@ function checkout() {
 
 /* ---------- Check Login Status ---------- */
 function checkLoginStatus() {
-<<<<<<< HEAD
   const userStr = localStorage.getItem('user');
   if (!userStr) {
     // If not logged in, redirect to login page
@@ -450,19 +449,6 @@ function checkLoginStatus() {
   const user = JSON.parse(userStr);
   document.getElementById('username').textContent = user.username;
 }
-=======
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
-      // If not logged in, redirect to login page
-      window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
-      return;
-    }
-    
-    // Display username
-    const user = JSON.parse(userStr);
-    document.getElementById('username').textContent = user.username;
-  }
->>>>>>> eb77950afcb3fc7dead5fdd403f60c282c555914
 
 /* ---------- Initialize ---------- */
 document.addEventListener('DOMContentLoaded', () => {
