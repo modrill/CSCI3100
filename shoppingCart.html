@@ -438,17 +438,17 @@ function checkout() {
 
 /* ---------- Check Login Status ---------- */
 function checkLoginStatus() {
-  const userStr = localStorage.getItem('user');
-  if (!userStr) {
-    // If not logged in, redirect to login page
-    window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
-    return;
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      // If not logged in, redirect to login page
+      window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+      return;
+    }
+    
+    // Display username
+    const user = JSON.parse(userStr);
+    document.getElementById('username').textContent = user.username;
   }
-  
-  // Display username
-  const user = JSON.parse(userStr);
-  document.getElementById('username').textContent = user.username;
-}
 
 /* ---------- Initialize ---------- */
 document.addEventListener('DOMContentLoaded', () => {

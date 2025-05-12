@@ -1,72 +1,72 @@
-# 用户管理系统
+# User Management System
 
-这是一个简单的用户管理系统，提供了用户的增删改查功能，包括前端界面和后端API。
+This is a simple user management system that provides CRUD functionality for users, including a frontend interface and backend API.
 
-## 功能特点
+## Features
 
-- 用户列表展示，支持分页
-- 添加新用户
-- 编辑用户信息
-- 删除用户
-- 搜索用户
-- 管理员权限设置
+- User list display with pagination
+- Add new users
+- Edit user information
+- Delete users
+- Search users
+- Admin privilege management
 
-## 技术栈
+## Tech Stack
 
-- 前端：HTML, CSS, JavaScript, Bootstrap 5, jQuery
-- 后端：Python, Flask
-- 数据库：MySQL
+- Frontend: HTML, CSS, JavaScript, Bootstrap 5, jQuery
+- Backend: Python, Flask
+- Database: MySQL
 
-## 安装与设置
+## Installation and Setup
 
-### 先决条件
+### Prerequisites
 
 - Python 3.7+
 - MySQL 5.7+
-- 依赖项（将从login目录的requirements.txt安装）
+- Dependencies (will be installed from requirements.txt in the login directory)
 
-### 安装步骤
+### Installation Steps
 
-1. 进入`admin_user`目录：
+1. Navigate to the `admin_user` directory:
    ```
    cd admin_user
    ```
 
-2. 运行安装脚本：
+2. Run the setup script:
    ```
    chmod +x setup.sh
    ./setup.sh
    ```
 
-   此脚本将：
-   - 创建或使用现有的Python虚拟环境
-   - 安装所有依赖项
-   - 更新数据库结构
-   - 启动后端服务
+   This script will:
+   - Create or use an existing Python virtual environment
+   - Install all dependencies
+   - Update the database structure
+   - Start the backend service
 
-## 使用说明
+## Usage
 
-1. 启动后端服务（如果setup.sh已运行则无需执行）：
+1. Start the backend service (not needed if setup.sh has already been run):
    ```
    python3 backend.py
    ```
 
-2. 在浏览器中打开frontend.html文件
+2. Open the frontend.html file in your browser
 
-3. 使用以下默认管理员账号登录系统：
-   - 用户名：admin
-   - 密码：123
+3. Log in with the default admin account:
+   - Username: admin
+   - Password: 123
 
-## API文档
+## API Documentation
 
-### 获取用户列表
+### Get User List
 
 - **URL**: `/api/admin/users`
-- **方法**: `GET`
-- **参数**:
-  - `page`: 页码（默认为1）
-  - `per_page`: 每页条数（默认为10）
-- **返回示例**:
+- **Method**: `GET`
+- **Parameters**:
+  - `page`: Page number (default is 1)
+  - `per_page`: Items per page (default is 10)
+- **Response Example**:
   ```json
   {
     "users": [
@@ -85,11 +85,11 @@
   }
   ```
 
-### 获取单个用户
+### Get Single User
 
 - **URL**: `/api/admin/users/<user_id>`
-- **方法**: `GET`
-- **返回示例**:
+- **Method**: `GET`
+- **Response Example**:
   ```json
   {
     "id": 1,
@@ -100,11 +100,11 @@
   }
   ```
 
-### 创建用户
+### Create User
 
 - **URL**: `/api/admin/users`
-- **方法**: `POST`
-- **请求体**:
+- **Method**: `POST`
+- **Request Body**:
   ```json
   {
     "username": "test_user",
@@ -113,18 +113,18 @@
     "is_admin": false
   }
   ```
-- **返回示例**:
+- **Response Example**:
   ```json
   {
-    "message": "用户创建成功"
+    "message": "User created successfully"
   }
   ```
 
-### 更新用户
+### Update User
 
 - **URL**: `/api/admin/users/<user_id>`
-- **方法**: `PUT`
-- **请求体**:
+- **Method**: `PUT`
+- **Request Body**:
   ```json
   {
     "username": "updated_username",
@@ -133,31 +133,31 @@
     "is_admin": true
   }
   ```
-- **返回示例**:
+- **Response Example**:
   ```json
   {
-    "message": "用户更新成功"
+    "message": "User updated successfully"
   }
   ```
 
-### 删除用户
+### Delete User
 
 - **URL**: `/api/admin/users/<user_id>`
-- **方法**: `DELETE`
-- **返回示例**:
+- **Method**: `DELETE`
+- **Response Example**:
   ```json
   {
-    "message": "用户删除成功"
+    "message": "User deleted successfully"
   }
   ```
 
-### 搜索用户
+### Search Users
 
 - **URL**: `/api/admin/search-users`
-- **方法**: `GET`
-- **参数**:
-  - `keyword`: 搜索关键词
-- **返回示例**:
+- **Method**: `GET`
+- **Parameters**:
+  - `keyword`: Search keyword
+- **Response Example**:
   ```json
   {
     "users": [
@@ -172,19 +172,19 @@
   }
   ```
 
-## 数据库更新
+## Database Updates
 
-系统会自动添加以下字段到用户表：
-- `is_admin`: 表示用户是否有管理员权限
-- `created_at`: 用户创建时间
+The system will automatically add the following fields to the users table:
+- `is_admin`: Indicates whether the user has admin privileges
+- `created_at`: User creation timestamp
 
-如果需要手动更新数据库，可以运行：
+If you need to update the database manually, you can run:
 ```
 mysql -u taotao -p123456 < setup_admin_db.sql
 ```
 
-## 注意事项
+## Notes
 
-- 此系统仅用于演示目的，在生产环境中使用前需添加更多安全措施
-- 请勿将管理员密码明文存储
-- 在实际使用中，应实现完善的用户认证机制 
+- This system is for demonstration purposes only; additional security measures should be added before using in production
+- Do not store admin passwords in plain text
+- In real-world usage, a proper user authentication mechanism should be implemented 
