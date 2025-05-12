@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Buyzu · Checkout</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyzu · 结算</title>
   <style>
     /* Reset */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -27,38 +27,6 @@
     .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
     .auth-buttons .btn:hover { opacity:.85; }
 
-     /* Header */
-    header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
-    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
-    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
-    .search-cart { display:flex; align-items:center; gap:2rem; }
-    .search-cart input { width:300px;padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .search-cart button { 
-      padding:.3rem 1rem; /* 缩小按钮尺寸 */
-      border:none; 
-      border-radius:20px; 
-      background:#FF6B6B; 
-      color:#fff; 
-      font-size:.85rem; 
-      cursor:pointer; 
-    }
-    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
-    .auth-buttons { display:flex; gap:1rem; }
-    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
-    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
-    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
-    .auth-buttons .btn:hover { opacity:.85; }
-    .auth-buttons {
-      display: flex;
-      gap: 1rem;
-      align-items: center; /* 确保所有子元素垂直居中对齐 */
-    }
-    .cart-icon {
-      font-size: 1.5rem; /* 调整大小 */
-      display: flex;
-      align-items: center;
-    }
-
     /* Tabs */
     .tabs { display:flex; border-bottom:2px solid #E5E7EB; margin-bottom:2rem; }
     .tab-btn { flex:1; text-align:center; padding:.75rem 0; cursor:pointer; font-weight:600; color:#6B7280; border-bottom:4px solid transparent; transition:.25s; }
@@ -80,29 +48,34 @@
     .order-summary img { width:50px; height:50px; object-fit:cover; border-radius:4px; }
     .total-row td { font-weight:700; text-align:right; }
 
+    /* Main content */
+    main { max-width:800px; margin:2rem auto; padding:0 1rem; }
+    .section-title { font-size:1.5rem; margin-bottom:1.5rem; }
+    
+    /* Footer */
+    footer { text-align:center; padding:2rem 0; color:#6b7280; }
+
     @media(max-width:600px){
       .two-cols { grid-template-columns:1fr; }
     }
   </style>
 </head>
 <body>
-  <<header>
+  <header>
     <div class="nav-wrapper container">
       <a href="homepage.html" class="logo">Buyzu</a>
-    <div class="search-cart">
-      <input type="text" id="searchInput" placeholder="Search…">
-      <button onclick="redirectToSearch()">Search</button>
-    </div>
+      <div class="search-cart">
+        <input type="text" placeholder="Search…">
+        <a href="shoppingCart.html" class="icon">🛒</a>
+      </div>
       <div class="auth-buttons">
-        <button class="btn login">Login</button>
-        <button class="btn register">Register</button>
-        <a href="shoppingCart.html" class="cart-icon">🛒</a>
+        <div id="user-welcome" style="color: #1A1F36;">Welcome, <span id="username"></span></div>
       </div>
     </div>
   </header>
 
-  <main class="container">
-    <h2>Checkout</h2>
+  <main>
+    <h1 class="section-title">确认订单</h1>
     <div class="tabs">
       <div class="tab-btn active" data-tab="shipping">Shipping Info</div>
       <div class="tab-btn" data-tab="payment">Payment Info</div>
@@ -193,12 +166,29 @@
   </main>
 
   <footer>
-    <div class="container" style="text-align:center; padding:2rem 0; color:#6b7280;">
+    <div class="container">
       &copy; 2025 Buyzu. All rights reserved.
     </div>
   </footer>
 
   <script>
+    // 检查用户登录状态
+    function checkLoginStatus() {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        // 如果未登录，重定向到登录页面
+        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+        return;
+      }
+      
+      // 显示用户名
+      const user = JSON.parse(userStr);
+      document.getElementById('username').textContent = user.username;
+    }
+
+    // 页面加载时检查登录状态
+    document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
     // 页面加载时检查购物车
     document.addEventListener('DOMContentLoaded', function() {
       const cart = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
@@ -250,19 +240,8 @@
       
       alert('Your order has been placed. Thank you!');
       localStorage.removeItem('checkoutItems');
-      window.location.href = 'homepage.html';
+      window.location.href = '../index.html';
     }
-
-    function redirectToSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-        // 跳转到 searchpage.html，并将搜索关键词作为查询参数传递
-        window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
-      } else {
-        alert("Please enter a search term!");
-      }
-    }
-
   </script>
 </body>
 </html>
