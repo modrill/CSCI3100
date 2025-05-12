@@ -59,6 +59,18 @@ def handle_exceptions(func):
 def home():
     return send_from_directory('.', 'shoppingCart.html')
 
+@app.route('/homepage.html')
+def homepage():
+    return send_from_directory('.', 'homepage.html')
+
+@app.route('/checkout.html')
+def checkout():
+    return send_from_directory('.', 'checkout.html')
+
+@app.route('/login/frontend.html')
+def login():
+    return send_from_directory('login', 'frontend.html')
+
 @app.route('/api/products', methods=['GET'])
 @handle_exceptions
 def get_products():
