@@ -114,7 +114,7 @@ project_root/
 │   └── cart.html...
 └── item_vec.npy     # Auto-generated when running demo.py
 
-# echnology
+# Technology
 
 * *Database* *
 
