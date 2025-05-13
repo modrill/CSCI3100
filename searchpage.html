@@ -1,168 +1,303 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Buyzu · Search</title>
   <style>
-    /* … 保持原有样式 … */
-    /* Header 样式 */
-  header { 
-    position: sticky; 
-    top: 0; 
-    z-index: 100; 
-    background: rgba(255,255,255,0.8); 
-    backdrop-filter: blur(8px);
-  }
-  .nav-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    padding: 1rem 0;
-  }
-  .logo { 
-    font-size: 1.5rem; 
-    font-weight: bold; 
-    color: #FF6B6B;
-    white-space: nowrap;
-    text-decoration: none;
-  }
+    /* Reset */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; background: #F7FFF7; color: #1A1F36; line-height:1.5; min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
 
-  /* 搜索框和购物车样式 */
-  .search-cart {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-grow: 1;
-    max-width: 600px;
-  }
-  .search-cart input {
-    flex-grow: 1;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 20px;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  .search-cart button {
-    padding: 0.3rem 1rem;
-    border: none;
-    border-radius: 20px;
-    background: #FF6B6B;
-    color: #fff;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+    /* Utility */
+    .container { width:90%; max-width:1200px; margin:0 auto; }
 
-  /* 登录注册按钮样式 */
-  .auth-buttons {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-shrink: 0;
-  }
-  .auth-buttons .btn {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: 0.25s;
-  }
-  .login {
-    background: transparent;
-    border: 1px solid #1A1F36;
-    color: #1A1F36;
-  }
-  .register {
-    background: #FF6B6B;
-    border: none;
-    color: #fff;
-  }
-  .auth-buttons .btn:hover { opacity: 0.85; }
-  .cart-icon {
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-  }
-
-  /* Filter 样式 */
-.filter-container {
-  position: relative;
-  margin: 1rem 0;
-  width: fit-content;
-}
-
-.filter-button {
-  padding: 0.5rem 1.5rem;
-  border: none;
-  border-radius: 20px;
-  background: #FF6B6B;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filter-button:after {
-  content: "▼";
-  font-size: 0.7rem;
-}
-
-.filter-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 10;
-  display: none;
-  width: max-content;
-  overflow: hidden;
-}
-
-.filter-options button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0.8rem 1.2rem;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.filter-options button:hover {
-  background: #f5f5f5;
-}
-
-.filter-options button:not(:last-child) {
-  border-bottom: 1px solid #eee;
-}
-
-
-  /* 响应式设计 */
-  @media (max-width: 768px) {
-    .nav-wrapper { 
-      flex-wrap: wrap; 
+    /* Header */
+    header {
+      position: sticky;
+      top:0;
+      z-index:100;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
     }
-    .search-cart { 
-      order: 2; 
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      padding: 1rem 0;
+    }
+    .logo {
+      font-size:1.5rem;
+      font-weight:bold;
+      color:#FF6B6B;
+      white-space: nowrap;
+    }
+    .search-cart {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-grow: 1;
+      max-width: 600px;
+    }
+    .search-cart input {
+      flex-grow: 1;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .search-cart button {
+      padding: 0.3rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #FF6B6B;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .auth-buttons {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    .auth-buttons .btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    .login-btn {
+      background: transparent;
+      border: 1px solid #1A1F36;
+      color: #1A1F36;
+    }
+    .register-btn {
+      background: #FF6B6B;
+      border: none;
+      color: #fff;
+    }
+    .auth-buttons .btn:hover { opacity: 0.85; }
+    .cart-icon {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Filter */
+    .filter-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .search-title {
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    .filter-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .filter-button {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 20px;
+      background: #FF6B6B;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .filter-button:after {
+      content: "▼";
+      font-size: 0.7rem;
+    }
+    .filter-options {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      z-index: 10;
+      width: 200px;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+    .filter-options button {
+      display: block;
       width: 100%;
+      padding: 0.8rem 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .filter-options button:hover {
+      background: #f5f5f5;
+    }
+    .filter-options button.active {
+      background: #FFE0E0;
+      font-weight: 500;
+    }
+
+    /* Main and Footer */
+    main {
+      flex-grow: 1;
+      padding-bottom: 2rem;
+    }
+    footer {
+      background:#1A1F36;
+      color:#fff;
+      padding:2rem 0;
+      margin-top: 2rem;
+    }
+    .footer-cols {
+      display:flex;
+      flex-wrap:wrap;
+      gap:2rem;
+      justify-content:center;
+    }
+    .footer-col {
+      min-width:150px;
+    }
+    .footer-col h4 {
+      margin-bottom:1rem;
+    }
+    .footer-col ul {
+      list-style:none;
+    }
+    .footer-col li {
+      margin-bottom:.5rem;
+      font-size:.9rem;
+    }
+    footer p {
+      text-align:center;
+      color:#6b7280;
+      margin-top:1rem;
+    }
+
+    /* Product Results */
+    .product-results {
+      padding: 1rem 0;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
       margin-top: 1rem;
     }
-    .auth-buttons { 
-      order: 1;
-      width: 100%;
-      justify-content: flex-end;
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
-  }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .product-img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+    }
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .product-card:hover .product-img img {
+      transform: scale(1.05);
+    }
+    .product-info {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .product-name {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      /* Show max 2 lines */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 2.8em;
+    }
+    .product-brand {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+    .product-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #FF6B6B;
+      margin-top: auto;
+    }
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      font-size: 1.2rem;
+      color: #666;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 107, 107, 0.3);
+      border-radius: 50%;
+      border-top-color: #FF6B6B;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-wrapper {
+        flex-wrap: wrap;
+      }
+      .search-cart {
+        order: 2;
+        width: 100%;
+        margin-top: 1rem;
+      }
+      .auth-buttons {
+        order: 1;
+      }
+      .filter-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
@@ -170,53 +305,117 @@
     <div class="nav-wrapper container">
       <a href="homepage.html" class="logo">Buyzu</a>
       <div class="search-cart">
-        <input type="text" id="searchInput" placeholder="Search…" value="">
-        <button onclick="performSearch()">Search</button>
+        <input type="text" id="searchInput" placeholder="Search for products…" />
+        <button id="btnSearch">Search</button>
       </div>
       <div class="auth-buttons">
-        <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
-        <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
+        <div id="auth-status">
+          <button class="btn login-btn" id="openLogin">Login</button>
+          <button class="btn register-btn" id="openRegister">Register</button>
+        </div>
         <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
       </div>
     </div>
   </header>
-  
 
   <main class="container">
     <div class="filter-container">
-      <button class="filter-button" onclick="toggleFilter()">Filter</button>
-      <div class="filter-options" id="filterOptions">
-        <button data-sort="sales_desc">Sales: High to Low</button>
-        <button data-sort="price_asc">Price: Low to High</button>
-        <button data-sort="price_desc">Price: High to Low</button>
-        <button data-sort="rating_desc">Rating: High to Low</button>
+      <h1 class="search-title">Search Results</h1>
+      <div class="filter-dropdown">
+        <button class="filter-button" onclick="toggleFilter()">Sort By</button>
+        <div class="filter-options" id="filterOptions">
+          <button data-sort="sales_desc" class="active">Sales: High to Low</button>
+          <button data-sort="price_asc">Price: Low to High</button>
+          <button data-sort="price_desc">Price: High to Low</button>
+          <button data-sort="rating_desc">Rating: High to Low</button>
+        </div>
       </div>
     </div>
-  
-    <div id="searchResults" class="results"></div>
-    <p id="noResults" class="no-results" style="display:none;">No products found.</p>
+
+    <section class="product-results">
+      <div id="loadingIndicator" class="loading" style="display:none;">
+        <div class="loading-spinner"></div>
+      </div>
+      <div id="searchResults" class="product-grid"></div>
+      <p id="noResults" class="no-results" style="display:none;">No products found.</p>
+    </section>
   </main>
 
   <footer>
-    <!-- … Footer … -->
+    <div class="container footer-cols">
+      <div class="footer-col"><h4>Support</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+    </div>
+    <p>&copy; 2025 Buyzu. All rights reserved.</p>
   </footer>
 
   <script>
+    // Authentication status
+    function checkLoginStatus() {
+      const authStatus = document.getElementById('auth-status');
+      const userStr = localStorage.getItem('user');
+      
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        const isAdmin = user.is_admin === true;
+        
+        authStatus.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="color: #1A1F36;">Welcome, ${user.username}</span>
+            ${isAdmin ? '<button class="btn register-btn" onclick="goToAdmin()">Admin Panel</button>' : ''}
+            <button class="btn login-btn" onclick="logout()">Logout</button>
+          </div>
+        `;
+      }
+    }
+
+    function goToAdmin() {
+      window.location.href = '/admin';
+    }
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.reload();
+    }
+
+    function handleCartClick() {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        window.location.href = 'cart.html';
+      } else {
+        alert("Please login to view your cart");
+      }
+    }
+
+    // Search functionality
     let currentSort = "sales_desc";
 
     document.getElementById("btnSearch").onclick = () => {
       const kw = document.getElementById("searchInput").value.trim();
-      if (!kw) return showNoResults("Please enter search keywords");
-      // 更新 URL
+      if (!kw) return showNoResults("Please enter a search term");
       const url = new URL(window.location);
       url.searchParams.set("keyword", kw);
       window.history.replaceState(null, "", url);
       doSearch(kw, currentSort);
     };
 
-    // 点击排序选项
-    document.querySelectorAll("#filterOptions button").forEach(btn=>{
+    // Allow pressing Enter to search
+    document.getElementById("searchInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("btnSearch").click();
+      }
+    });
+
+    // Sorting functionality
+    document.querySelectorAll("#filterOptions button").forEach(btn => {
       btn.onclick = () => {
+        // Update active button
+        document.querySelectorAll("#filterOptions button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        
+        // Apply sort
         currentSort = btn.dataset.sort;
         const kw = document.getElementById("searchInput").value.trim();
         doSearch(kw, currentSort);
@@ -224,79 +423,62 @@
       };
     });
 
-    // 切换过滤菜单
     function toggleFilter() {
       const opt = document.getElementById("filterOptions");
+      opt.style.display = opt.style.display === "block" ? "none" : "block";
+      
+      // Close filter when clicking outside
       if (opt.style.display === "block") {
-        opt.style.display = "none";
+        document.addEventListener("click", closeFilterOutside);
       } else {
-        opt.style.display = "block";
+        document.removeEventListener("click", closeFilterOutside);
       }
     }
 
-    // 读取 URL 中的 keyword
+    function closeFilterOutside(event) {
+      const dropdown = document.querySelector(".filter-dropdown");
+      if (!dropdown.contains(event.target)) {
+        document.getElementById("filterOptions").style.display = "none";
+        document.removeEventListener("click", closeFilterOutside);
+      }
+    }
+
     function getQueryParam(name) {
       return new URLSearchParams(window.location.search).get(name) || "";
     }
 
-    // 执行搜索
     async function doSearch(keyword, sort) {
       if (!keyword) return showNoResults("No keyword");
+      
+      // Show loading
+      document.getElementById("loadingIndicator").style.display = "block";
       document.getElementById("searchResults").innerHTML = "";
       document.getElementById("noResults").style.display = "none";
+      
       try {
         const res = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}`);
         if (!res.ok) throw new Error(await res.text());
+        
         const { list } = await res.json();
+        
+        // Update page title
+        document.title = `${keyword} - Buyzu Search`;
+        
+        // Update search results title
+        document.querySelector(".search-title").textContent = `Results for "${keyword}"`;
+        
         if (list.length === 0) {
-          showNoResults("No products found.");
+          showNoResults(`No products found for "${keyword}"`);
         } else {
           renderResults(list);
         }
       } catch (e) {
-        console.error("Search fails:", e);
-        showNoResults("Search fails， please try again later.");
+        console.error("Search failed:", e);
+        showNoResults("Search failed, please try again later");
+      } finally {
+        document.getElementById("loadingIndicator").style.display = "none";
       }
     }
-
-    function searchProducts(keyword) {
-      doSearch(keyword, currentSort);
-    }
-
-      // 搜索功能
-    function performSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-        // 保留现有的搜索逻辑，但更新URL
-        window.history.pushState({}, '', `searchpage.html?keyword=${encodeURIComponent(query)}`);
-        // 调用您现有的搜索函数
-        searchProducts(query);
-      } else {
-        alert("Please input key words!");
-      }
-    }
-
-    // 购物车处理
-    function handleCartClick() {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        window.location.href = 'cart.html';
-      } else {
-        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
-      }
-    }
-
-    // 页面加载时从URL获取搜索关键词
-    window.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const keyword = urlParams.get('keyword');
-      if (keyword) {
-        document.getElementById('searchInput').value = keyword;
-        // 调用您现有的搜索函数
-        searchProducts(keyword);
-      }
-    });
-
 
     function showNoResults(msg) {
       const p = document.getElementById("noResults");
@@ -308,30 +490,37 @@
     function renderResults(products) {
       const container = document.getElementById("searchResults");
       container.innerHTML = "";
+      
       products.forEach(p => {
-        const a = document.createElement("a");
-        a.href = `/product.html?id=${p.id}`;
-        a.className = "product-card";
-        a.innerHTML = `
-          <img src="/images/${p.image_url}" alt="${p.name}" />
-          <h3>${p.name}</h3>
-          <p class="price">HK$${(+p.price).toFixed(2)}</p>
-          <p class="sales">Sales: ${p.sales}</p>
+        const card = document.createElement("a");
+        card.href = `/product.html?id=${p.id}`;
+        card.className = "product-card";
+        
+        card.innerHTML = `
+          <div class="product-img">
+            <img src="/images/${p.image_url}" alt="${p.name}" loading="lazy" />
+          </div>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-brand">${p.brand || ''}</div>
+            <div class="product-price">$${(+p.price).toFixed(2)}</div>
+          </div>
         `;
-        container.appendChild(a);
+        
+        container.appendChild(card);
       });
     }
 
-    // 初始化：页面加载时读取 keyword 并自动搜索
-    document.addEventListener('click', function(event) {
-      const filterContainer = document.querySelector('.filter-container');
-      const filterOptions = document.getElementById('filterOptions');
+    // Initialize
+    document.addEventListener("DOMContentLoaded", () => {
+      checkLoginStatus();
       
-      if (!filterContainer.contains(event.target) && filterOptions.style.display === 'block') {
-        filterOptions.style.display = 'none';
+      const kw = getQueryParam("keyword");
+      if (kw) {
+        document.getElementById("searchInput").value = kw;
+        doSearch(kw, currentSort);
       }
     });
-    
   </script>
 </body>
 </html>

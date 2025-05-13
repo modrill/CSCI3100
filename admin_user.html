@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Management System</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Arial', sans-serif; }
+    .container { max-width: 1200px; margin: 20px auto; }
+    .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom:20px; }
+    .card-header { background-color: #4a69bd; color: white; border-radius:10px 10px 0 0; }
+    .search-box { position: relative; margin-bottom:20px; }
+    .search-box .form-control { padding-left:40px; border-radius:20px; }
+    .search-box .search-icon { position:absolute; left:15px; top:10px; color:#6c757d; }
+    .table th { background-color: #f1f2f6; }
+    .action-btn { margin-right:5px; }
+    .pagination { justify-content:center; }
+    .badge-admin { background-color:#e74c3c; color:white; }
+    .badge-user  { background-color:#2ecc71; color:white; }
+    .loading-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(255,255,255,0.8); display:flex;
+      align-items:center; justify-content:center; visibility:hidden; z-index:9999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center p-3">
+        <h2><i class="fas fa-users me-2"></i>User Management</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+          <i class="fas fa-user-plus me-1"></i> Add User
+        </button>
+      </div>
+      <div class="card-body p-3">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="form-control" id="searchInput" placeholder="Search username or email...">
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th><th>Username</th><th>Email</th>
+                <th>Created At</th><th>Role</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+        <nav>
+          <ul class="pagination" id="pagination"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addUserForm">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" id="add_username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="add_email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" id="add_password" required>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="add_isAdmin">
+            <label class="form-check-label">Admin Privileges</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" id="btnAddUser">Save</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Edit User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editUserForm">
+          <input type="hidden" id="edit_id">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" id="edit_username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="edit_email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password (leave empty to keep)</label>
+            <input type="password" class="form-control" id="edit_password">
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="edit_isAdmin">
+            <label class="form-check-label">Admin Privileges</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" id="btnEditUser">Save</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Delete User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to delete user <strong id="del_username"></strong> ?</p>
+        <input type="hidden" id="del_id">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" id="btnDeleteUser">Delete</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const ORIGIN = window.location.origin;
+    const API    = ORIGIN + '/api/admin';
+    const TOKEN  = 'admin-token';
+    let currentPage = 1, totalPages = 1, users = [];
+
+    function showLoading() { $('#loadingOverlay').css('visibility','visible'); }
+    function hideLoading() { $('#loadingOverlay').css('visibility','hidden'); }
+    function showError(msg) { alert(msg); }
+
+    function formatDT(dt){ return dt? new Date(dt).toLocaleString() : '-'; }
+
+    // 加载用户列表或搜索
+    function loadUsers(page=1, keyword='') {
+      showLoading(); currentPage = page;
+      let url = keyword.trim()
+        ? `${API}/search-users?keyword=${encodeURIComponent(keyword)}`
+        : `${API}/users?page=${page}&per_page=10`;
+      $.ajax({
+        url, method:'GET',
+        headers:{'Authorization': TOKEN},
+        success(res){
+          users = res.users;
+          renderTable(users);
+          if (!keyword.trim()) renderPager(res.page, res.total_pages);
+          else $('#pagination').empty();
+          hideLoading();
+        },
+        error(xhr){
+          hideLoading();
+          showError(xhr.responseJSON?.detail || 'Load failed');
+        }
+      });
+    }
+
+    // 渲染表格
+    function renderTable(list){
+      let tb = $('#userTableBody').empty();
+      if(!list.length) {
+        return tb.append('<tr><td colspan="6" class="text-center">No data</td></tr>');
+      }
+      list.forEach(u=>{
+        let roleCls = u.is_admin? 'badge-admin':'badge-user';
+        let roleTxt = u.is_admin? 'Admin':'User';
+        tb.append(`
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td>${u.email}</td>
+            <td>${formatDT(u.createdAt)}</td>
+            <td><span class="badge ${roleCls}">${roleTxt}</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary action-btn edit-btn" data-id="${u.id}">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger action-btn del-btn" data-id="${u.id}" data-username="${u.username}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `);
+      });
+      // 绑定按钮
+      $('.edit-btn').click(function(){
+        let id = $(this).data('id'), u = users.find(x=>x.id===id);
+        $('#edit_id').val(u.id);
+        $('#edit_username').val(u.username);
+        $('#edit_email').val(u.email);
+        $('#edit_password').val('');
+        $('#edit_isAdmin').prop('checked', u.is_admin);
+        $('#editUserModal').modal('show');
+      });
+      $('.del-btn').click(function(){
+        $('#del_id').val($(this).data('id'));
+        $('#del_username').text($(this).data('username'));
+        $('#deleteUserModal').modal('show');
+      });
+    }
+
+    // 渲染分页
+    function renderPager(page, total){
+      totalPages = total;
+      let pg = $('#pagination').empty();
+      pg.append(`<li class="page-item ${page===1?'disabled':''}">
+        <a class="page-link" href="#" data-page="${page-1}">&laquo;</a></li>`);
+      for(let i=1;i<=total;i++){
+        pg.append(`<li class="page-item ${i===page?'active':''}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a></li>`);
+      }
+      pg.append(`<li class="page-item ${page===total?'disabled':''}">
+        <a class="page-link" href="#" data-page="${page+1}">&raquo;</a></li>`);
+      $('.page-link').click(function(e){
+        e.preventDefault();
+        let p = $(this).data('page');
+        if(p>=1&&p<=totalPages) loadUsers(p, $('#searchInput').val());
+      });
+    }
+
+    // 添加用户
+    $('#btnAddUser').click(()=>{
+      let data = {
+        username: $('#add_username').val().trim(),
+        email: $('#add_email').val().trim(),
+        password: $('#add_password').val(),
+        is_admin: $('#add_isAdmin').is(':checked')
+      };
+      if(!data.username||!data.email||!data.password){
+        return showError('Please fill all required');
+      }
+      showLoading();
+      $.ajax({
+        url:`${API}/users`, method:'POST',
+        headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
+        data: JSON.stringify(data),
+        success(){
+          hideLoading();
+          $('#addUserModal').modal('hide');
+          loadUsers(currentPage);
+          $('#addUserForm')[0].reset();
+        },
+        error(xhr){
+          hideLoading();
+          showError(xhr.responseJSON?.detail || 'Add failed');
+        }
+      });
+    });
+
+    // 编辑用户
+    $('#btnEditUser').click(()=>{
+      let id = $('#edit_id').val();
+      let data = {
+        username: $('#edit_username').val().trim(),
+        email: $('#edit_email').val().trim(),
+        is_admin: $('#edit_isAdmin').is(':checked')
+      };
+      let pwd = $('#edit_password').val();
+      if(pwd) data.password = pwd;
+      showLoading();
+      $.ajax({
+        url:`${API}/users/${id}`, method:'PUT',
+        headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
+        data: JSON.stringify(data),
+        success(){
+          hideLoading();
+          $('#editUserModal').modal('hide');
+          loadUsers(currentPage);
+        },
+        error(xhr){
+          hideLoading();
+          showError(xhr.responseJSON?.detail || 'Update failed');
+        }
+      });
+    });
+
+    // 删除用户
+    $('#btnDeleteUser').click(()=>{
+      let id = $('#del_id').val();
+      showLoading();
+      $.ajax({
+        url:`${API}/users/${id}`, method:'DELETE',
+        headers:{'Authorization':TOKEN},
+        success(){
+          hideLoading();
+          $('#deleteUserModal').modal('hide');
+          loadUsers(currentPage);
+        },
+        error(xhr){
+          hideLoading();
+          showError(xhr.responseJSON?.detail || 'Delete failed');
+        }
+      });
+    });
+
+    // 搜索
+    let timer;
+    $('#searchInput').on('input',()=>{
+      clearTimeout(timer);
+      let kw = $('#searchInput').val();
+      timer = setTimeout(()=>{
+        if(kw.trim()) loadUsers(1,kw);
+        else loadUsers(1,'');
+      },300);
+    });
+
+    // 页面初始化
+    $(document).ready(()=> loadUsers(1,''));
+  </script>
+</body>
+</html>

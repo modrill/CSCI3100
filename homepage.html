@@ -15,122 +15,552 @@
     .glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.1); }
 
     /* Header */
-    header { position: sticky; top:0; z-index:100; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
-    .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
-    .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
-    .search-cart { display:flex; align-items:center; gap:2rem; }
-    .search-cart input { width:300px;padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .search-cart button { 
-      padding:.3rem 1rem; 
-      border:none; 
-      border-radius:20px; 
-      background:#FF6B6B; 
-      color:#fff; 
-      font-size:.85rem; 
-      cursor:pointer; 
+    header { 
+      position: sticky; 
+      top:0; 
+      z-index:100; 
+      background: rgba(255,255,255,0.8); 
+      backdrop-filter: blur(8px);
     }
-    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
-    .auth-buttons { display:flex; gap:1rem; }
-    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
-    .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
-    .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
-    .auth-buttons .btn:hover { opacity:.85; }
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      padding: 1rem 0;
+    }
+    .logo { 
+      font-size:1.5rem; 
+      font-weight:bold; 
+      color:#FF6B6B;
+      white-space: nowrap;
+    }
+
+    /* Search and Cart */
+    .search-cart {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-grow: 1;
+      max-width: 600px;
+    }
+    .search-cart input {
+      flex-grow: 1;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .search-cart button {
+      padding: 0.3rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #FF6B6B;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Auth Buttons */
     .auth-buttons {
       display: flex;
-      gap: 1rem;
       align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
     }
+    .auth-buttons .btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    .login-btn {
+      background: transparent;
+      border: 1px solid #1A1F36;
+      color: #1A1F36;
+    }
+    .register-btn {
+      background: #FF6B6B;
+      border: none;
+      color: #fff;
+    }
+    .auth-buttons .btn:hover { opacity: 0.85; }
     .cart-icon {
       font-size: 1.5rem;
       display: flex;
       align-items: center;
     }
 
-    /* Hero Banner */
-    .hero-banner { background: linear-gradient(135deg,#FF6B6B,#FFD93D); color:#fff; padding:4rem 0; }
-    .hero-banner .container { text-align:center; }
-    .hero-banner h1 { font-size:2.75rem; margin-bottom:.5rem; }
-    .hero-banner p { font-size:1.2rem; opacity:.9; }
+    /* Modal & Form Styles */
+    .modal {
+      position:fixed; 
+      top:0; 
+      left:0; 
+      width:100%; 
+      height:100%;
+      background:rgba(0,0,0,0.5); 
+      display:none; 
+      align-items:center; 
+      justify-content:center; 
+      z-index:200;
+    }
+    .modal.active { display:flex; }
+    .modal-content {
+      background:#fff; 
+      border-radius:12px; 
+      width:90%; 
+      max-width:400px; 
+      padding:2rem; 
+      position:relative;
+      box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    }
+    .modal-content h2 { 
+      text-align:center; 
+      margin-bottom:1.5rem; 
+      color:#333; 
+    }
+    .modal-content .close-btn {
+      position:absolute; 
+      top:1rem; 
+      right:1rem; 
+      font-size:1.5rem; 
+      cursor:pointer; 
+      color:#666;
+    }
+    .form-group { 
+      margin-bottom:1.2rem; 
+    }
+    .form-group label { 
+      display:block; 
+      margin-bottom:.5rem; 
+      color:#333; 
+      font-weight:500; 
+    }
+    .form-group input {
+      width:100%; 
+      padding:.8rem; 
+      border:2px solid #e1e1e1; 
+      border-radius:6px;
+      font-size:1rem; 
+      transition:border-color .3s;
+    }
+    .form-group input:focus { 
+      border-color:#F64601; 
+      outline:none; 
+    }
+    .password-requirements { 
+      font-size:.8rem; 
+      color:#666; 
+      margin-top:.5rem; 
+    }
+    .password-strength { 
+      display:flex; 
+      height:5px; 
+      margin-top:5px; 
+      border-radius:3px; 
+      overflow:hidden; 
+    }
+    .password-strength div { 
+      height:100%; 
+      width:25%; 
+      transition:all .3s ease; 
+      background:#e9ecef; 
+    }
+    .strength-weak { background:#dc3545; }
+    .strength-medium { background:#ffc107; }
+    .strength-strong { background:#28a745; }
+    .password-match-message { 
+      font-size:.8rem; 
+      margin-top:.3rem; 
+    }
+    .match { color:#28a745; }
+    .not-match { color:#dc3545; }
+    .send-code-btn {
+      padding:0 .8rem; 
+      background:#F64601; 
+      color:#fff; 
+      border:none; 
+      border-radius:6px;
+      cursor:pointer; 
+      font-size:.9rem; 
+      transition:background .3s; 
+      white-space:nowrap;
+    }
+    .send-code-btn:disabled { 
+      background:#ccc; 
+      cursor:not-allowed; 
+    }
+    .send-code-btn.countdown { 
+      background:#6c757d; 
+    }
+    button.submit-btn {
+      width:100%; 
+      padding:.8rem; 
+      background:#F64601; 
+      color:#fff; 
+      border:none; 
+      border-radius:6px;
+      font-size:1rem; 
+      font-weight:600; 
+      cursor:pointer; 
+      transition:background .3s; 
+      margin-top:1rem;
+    }
+    button.submit-btn:hover { 
+      background:#D03800; 
+    }
+    .error-message { 
+      color:#dc3545; 
+      text-align:center; 
+      margin-top:1rem; 
+      font-size:.9rem; 
+    }
+    .success-message { 
+      color:#28a745; 
+      text-align:center; 
+      margin-top:1rem; 
+      font-size:.9rem; 
+    }
 
-    /* Modified Related-to Banner */
-    .reco-banner { background: #F0F1F3; padding:2rem 0 4rem; }
-    .reco-banner .container { }
-    .reco-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-    .reco-header h2 { font-size:1.5rem; margin:0; color:#1A1F36; }
+    /* Hero Banner */
+    .hero-banner { 
+      background: linear-gradient(135deg,#FF6B6B,#FFD93D); 
+      color:#fff; 
+      padding:4rem 0; 
+    }
+    .hero-banner .container { 
+      text-align:center; 
+    }
+    .hero-banner h1 { 
+      font-size:2.75rem; 
+      margin-bottom:.5rem; 
+    }
+    .hero-banner p { 
+      font-size:1.2rem; 
+      opacity:.9; 
+    }
+
+    /* Related Products */
+    .reco-banner { 
+      background: #F0F1F3; 
+      padding:2rem 0 4rem; 
+    }
+    .reco-header { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      margin-bottom:1rem; 
+    }
+    .reco-header h2 { 
+      font-size:1.5rem; 
+      margin:0; 
+      color:#1A1F36; 
+    }
     .reco-header .refresh {
-      padding:.4rem .8rem;
-      border:1px solid #1A1F36;
+      padding:.4rem .8rem; 
+      border:1px solid #1A1F36; 
       border-radius:20px;
-      background:transparent;
-      font-size:.9rem;
-      cursor:pointer;
-      transition:.25s;
+      background:transparent; 
+      font-size:.9rem; 
+      cursor:pointer; 
+      transition:.25s; 
       color:#1A1F36;
     }
-    .reco-header .refresh:hover { background:#E5E7EB; }
+    .reco-header .refresh:hover { 
+      background:#E5E7EB; 
+    }
 
-    /* Carousel (single‐card view) */
-    .carousel-hero { position:relative; width:100%; overflow:hidden; }
-    .track { display:flex; justify-content:center; }
-    .reco-card { flex:0 0 260px; max-width:260px; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.1); transition:transform .25s; }
-    .reco-card.fade-in { animation: slideFadeIn .55s cubic-bezier(.25,.8,.35,1) both; }
-    .reco-card img { width:100%; aspect-ratio:1/1; object-fit:cover; }
-    .reco-body { padding:.5rem; color:#1A1F36; }
-    .reco-name { font-size:.75rem; font-weight:600; line-height:1.2em; height:2.4em; overflow:hidden; }
-    .reco-brand { font-size:.65rem; color:#6b7280; margin:.25rem 0; }
-    .reco-price { color:#d9230f; font-weight:700; font-size:.75rem; }
-    .nav-arrow { position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px;
-                 background:rgba(0,0,0,.3); color:#fff; border-radius:50%; display:flex;
-                 align-items:center; justify-content:center; cursor:pointer; transition:.25s; z-index:5; }
+    /* Carousel */
+    .carousel-hero { 
+      position:relative; 
+      width:100%; 
+      overflow:hidden; 
+    }
+    .track { 
+      display:flex; 
+      justify-content:center; 
+    }
+    .reco-card { 
+      flex:0 0 300px; 
+      max-width:300px; 
+      background:#fff; 
+      border-radius:12px;
+      overflow:hidden; 
+      box-shadow:0 4px 16px rgba(0,0,0,0.1); 
+      transition:transform .25s; 
+      margin:0 .5rem;
+    }
+    .reco-card.fade-in { 
+      animation: slideFadeIn .55s cubic-bezier(.25,.8,.35,1) both; 
+    }
+    .reco-card img { 
+      width:100%; 
+      aspect-ratio:1/1; 
+      object-fit:cover; 
+    }
+    .reco-body { 
+      padding:.5rem; 
+      color:#1A1F36; 
+    }
+    .reco-name { 
+      font-size:1rem; 
+      font-weight:600; 
+      line-height:1.6em; 
+      height:3.2em; 
+      overflow:hidden; 
+    }
+    .reco-brand { 
+      font-size:.8rem; 
+      color:#6b7280; 
+      margin:.25rem 0; 
+    }
+    .reco-price { 
+      color:#d9230f; 
+      font-weight:700; 
+      font-size:1rem; 
+    }
+    .nav-arrow { 
+      position:absolute; 
+      top:50%; 
+      transform:translateY(-50%); 
+      width:30px; 
+      height:30px;
+      background:rgba(0,0,0,.3); 
+      color:#fff; 
+      border-radius:50%;
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      cursor:pointer; 
+      transition:.25s; 
+      z-index:5; 
+    }
     .nav-prev { left:2%; }
     .nav-next { right:2%; }
-    .nav-arrow:hover { background:rgba(0,0,0,.5); }
-    .nav-arrow svg { width:18px; height:18px; fill:currentColor; }
+    .nav-arrow:hover { 
+      background:rgba(0,0,0,.5); 
+    }
+    .nav-arrow svg { 
+      width:18px; 
+      height:18px; 
+      fill:currentColor; 
+    }
     @keyframes slideFadeIn {
       0% { opacity:0; transform: translateX(40px) scale(.96); }
       100% { opacity:1; transform: none; }
     }
 
     /* Categories */
-    .categories { padding:2rem 0 4rem; }
-    .categories h2 { font-size:2rem; text-align:center; margin-bottom:2rem; color:#1A1F36; }
-    .cat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; }
-    .cat-card { position:relative; height:150px; overflow:hidden; border-radius:12px; cursor:pointer; transition:transform .3s,box-shadow .3s; }
-    .cat-card::before { content:attr(data-name); position:absolute; bottom:.5rem; left:.5rem; color:#fff; font-weight:bold; font-size:1.2rem; }
-    .cat-card:hover { transform:translateY(-5px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
-    .cat-1 { background:linear-gradient(45deg,#00C9FF,#92FE9D); }
-    .cat-2 { background:linear-gradient(45deg,#7F00FF,#E100FF); }
-    .cat-3 { background:linear-gradient(45deg,#FF512F,#DD2476); }
-    .cat-4 { background:linear-gradient(45deg,#36D1DC,#5B86E5); }
+    .categories { 
+      padding:2rem 0 4rem; 
+    }
+    .categories h2 { 
+      font-size:2rem; 
+      text-align:center; 
+      margin-bottom:2rem; 
+      color:#1A1F36; 
+    }
+    .cat-grid { 
+      display:grid; 
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); 
+      gap:1.5rem; 
+    }
+    .cat-card {
+      position:relative; 
+      height:150px; 
+      border-radius:12px; 
+      overflow:hidden;
+      cursor:pointer; 
+      transition:transform .3s,box-shadow .3s;
+    }
+    .cat-card:hover {
+      transform:translateY(-5px); 
+      box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    }
+    .cat-card img {
+      position:absolute; 
+      top:0; 
+      left:0; 
+      width:100%; 
+      aspect-ratio:1.95/1; 
+      object-fit:cover;
+    }
+    .cat-label {
+      position:absolute; 
+      bottom:0; 
+      left:0; 
+      right:0; 
+      padding:.5rem .5rem;
+      font-size:1.2rem; 
+      font-weight:bold; 
+      color:#fff;
+    }
+    .cat-1  .cat-label { background:linear-gradient(45deg,#00C9FF,#92FE9D); }
+    .cat-2  .cat-label { background:linear-gradient(45deg,#7F00FF,#E100FF); }
+    .cat-3  .cat-label { background:linear-gradient(45deg,#FF512F,#DD2476); }
+    .cat-4  .cat-label { background:linear-gradient(45deg,#F7971E,#FFD200); }
+    .cat-5  .cat-label { background:linear-gradient(45deg,#11998E,#38EF7D); }
+    .cat-6  .cat-label { background:linear-gradient(45deg,#6A11CB,#2575FC); }
+    .cat-7  .cat-label { background:linear-gradient(45deg,#36D1DC,#5B86E5); }
+    .cat-8  .cat-label { background:linear-gradient(45deg,#FF9A8B,#FF6A88); }
+    .cat-9  .cat-label { background:linear-gradient(45deg,#F953C6,#B91D73); }
+    .cat-10 .cat-label { background:linear-gradient(45deg,#43C6AC,#F8FFAE); }
+    .cat-11 .cat-label { background:linear-gradient(45deg,#833AB4,#FD1D1D); }
+    .cat-12 .cat-label { background:linear-gradient(45deg,#06BEB6,#48B1BF); }
 
     /* Hot Sellers */
-    .featured { padding:4rem 0; }
-    .featured h2 { font-size:2rem; text-align:center; margin-bottom:2rem; color:#1A1F36; }
-    .product-row { display:flex; gap:1rem; overflow-x:auto; scroll-behavior:smooth; padding-bottom:1rem; }
-    .product-card { flex:0 0 200px; background:#F7FFF7; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.1); transition:transform .3s; }
-    .product-card:hover { transform:translateY(-5px); }
-    .img-placeholder { width:100%; height:120px; background:#e0e0e0; border-radius:8px; margin-bottom:.8rem; }
-    .product-card h3 { font-size:1rem; margin-bottom:.5rem; }
-    .product-card .price { color:#FF6B6B; font-weight:bold; }
+    .featured { 
+      padding:4rem 0; 
+    }
+    .featured h2 { 
+      font-size:2rem; 
+      text-align:center; 
+      margin-bottom:2rem; 
+      color:#1A1F36; 
+    }
+    .product-row { 
+      display:flex; 
+      gap:1rem; 
+      overflow-x:auto; 
+      scroll-behavior:smooth; 
+      padding-bottom:1rem; 
+    }
+    .product-card { 
+      flex:0 0 200px; 
+      background:#F7FFF7; 
+      border-radius:12px; 
+      padding:1rem; 
+      text-align:center; 
+      box-shadow:0 4px 16px rgba(0,0,0,0.1); 
+      transition:transform .3s; 
+    }
+    .product-card:hover { 
+      transform:translateY(-5px); 
+    }
+    .img-placeholder { 
+      width:100%; 
+      height:120px; 
+      background:#e0e0e0; 
+      border-radius:8px; 
+      margin-bottom:.8rem; 
+    }
+    .product-card h3 { 
+      font-size:1rem; 
+      margin-bottom:.5rem; 
+    }
+    .product-card .price { 
+      color:#FF6B6B; 
+      font-weight:bold; 
+    }
 
     /* Subscribe */
-    .subscribe { text-align:center; padding:4rem 0; }
-    .subscribe .glass { display:inline-block; padding:2rem; max-width:400px; width:100%; }
-    .subscribe input { width:100%; padding:.8rem 1rem; border:none; border-radius:30px; margin-bottom:1rem; }
-    .subscribe button { padding:.8rem 2rem; border:none; border-radius:30px; background:#FF6B6B; color:#fff; cursor:pointer; }
+    .subscribe { 
+      text-align:center; 
+      padding:4rem 0; 
+    }
+    .subscribe .glass { 
+      background: linear-gradient(135deg, #f0f6fa 0%, #e8f1f8 100%); 
+      display:inline-block; 
+      padding:2rem; 
+      max-width:400px; 
+      width:100%; 
+    }
+    .subscribe input { 
+      width:100%; 
+      padding:.8rem 1rem; 
+      border:none; 
+      border-radius:30px; 
+      margin-bottom:1rem; 
+    }
+    .subscribe button { 
+      padding:.8rem 2rem; 
+      border:none; 
+      border-radius:30px; 
+      background:#FF6B6B; 
+      color:#fff; 
+      cursor:pointer; 
+    }
+    .subscribe-message { 
+      margin-top:1rem; 
+      font-size:0.9rem; 
+    }
+    .subscribe-message.error { 
+      color:#d9230f; 
+    }
+    .subscribe-message.success { 
+      color:#28a745; 
+    }
 
     /* Footer */
-    footer { background:#1A1F36; color:#fff; padding:2rem 0; }
-    .footer-cols { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; }
-    .footer-col { min-width:150px; }
-    .footer-col h4 { margin-bottom:1rem; }
-    .footer-col ul { list-style:none; }
-    .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
-    footer p { text-align:center; color:#6b7280; margin-top:1rem; }
+    footer { 
+      background:#1A1F36; 
+      color:#fff; 
+      padding:2rem 0; 
+    }
+    .footer-cols { 
+      display:flex; 
+      flex-wrap:wrap; 
+      gap:2rem; 
+      justify-content:center; 
+    }
+    .footer-col { 
+      min-width:150px; 
+    }
+    .footer-col h4 { 
+      margin-bottom:1rem; 
+    }
+    .footer-col ul { 
+      list-style:none; 
+    }
+    .footer-col li { 
+      margin-bottom:.5rem; 
+      font-size:.9rem; 
+    }
+    footer p { 
+      text-align:center; 
+      color:#6b7280; 
+      margin-top:1rem; 
+    }
 
-    /* Responsive tweaks */
-    @media(max-width:768px){ .product-row { gap:.5rem; } }
-    @media(max-width:480px){ .nav-arrow { display:none; } }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-wrapper { 
+        flex-wrap: wrap; 
+      }
+      .search-cart { 
+        order: 2; 
+        width: 100%;
+        margin-top: 1rem;
+      }
+      .auth-buttons { 
+        order: 1;
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .hero-banner h1 { 
+        font-size: 2rem; 
+      }
+      .hero-banner p { 
+        font-size: 1rem; 
+      }
+      .categories h2,
+      .featured h2 {
+        font-size: 1.5rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .nav-arrow { 
+        display:none; 
+      }
+      .reco-card {
+        flex: 0 0 250px;
+      }
+      .cat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
@@ -141,17 +571,79 @@
         <input type="text" id="searchInput" placeholder="Search…">
         <button onclick="redirectToSearch()">Search</button>
       </div>
-
       <div class="auth-buttons">
         <div id="auth-status">
-          <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
-          <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
+          <button class="btn login-btn" id="openLogin">Login</button>
+          <button class="btn register-btn" id="openRegister">Register</button>
         </div>
         <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
         <button class="btn" onclick="window.location.href='orders.html'">My Orders</button>
       </div>
     </div>
   </header>
+
+  <!-- Login Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <span class="close-btn" data-close="loginModal">&times;</span>
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit" class="submit-btn">Login</button>
+        <div class="error-message" id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal" id="registerModal">
+    <div class="modal-content">
+      <span class="close-btn" data-close="registerModal">&times;</span>
+      <h2>Register</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="registerUsername">Username</label>
+          <input type="text" id="registerUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" required>
+          <div class="password-requirements">
+            At least 8 chars, 1 uppercase, 1 lowercase, 1 number
+          </div>
+          <div class="password-strength">
+            <div id="str1"></div><div id="str2"></div><div id="str3"></div><div id="str4"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" required>
+          <div id="passwordMatchMessage" class="password-match-message"></div>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <div style="display:flex;gap:8px;">
+            <input type="email" id="registerEmail" required style="flex:3;">
+            <button type="button" id="sendCodeBtn" class="send-code-btn">Send Code</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="verificationCode">Verification Code</label>
+          <input type="text" id="verificationCode" maxlength="6" placeholder="6-digit" required>
+        </div>
+        <button type="submit" class="submit-btn" id="registerButton" disabled>Register</button>
+        <div class="error-message" id="registerError"></div>
+        <div class="success-message" id="registerSuccess"></div>
+      </form>
+    </div>
+  </div>
 
   <main>
     <!-- Hero Banner -->
@@ -162,7 +654,7 @@
       </div>
     </section>
 
-    <!-- Related-to Banner (modified) -->
+    <!-- Related-to Banner -->
     <section class="reco-banner">
       <div class="container">
         <div class="reco-header">
@@ -185,22 +677,61 @@
     <section class="categories container">
       <h2>Shop by Category</h2>
       <div class="cat-grid">
-        <div class="cat-card cat-1" data-name="Apparel"></div>
-        <div class="cat-card cat-2" data-name="Footwear"></div>
-        <div class="cat-card cat-3" data-name="Accessories"></div>
-        <div class="cat-card cat-4" data-name="Gadgets"></div>
+        <a href="cart.html" class="cat-card cat-1">
+          <img src="/images/cat-electronics.jpeg" alt="Electronics">
+          <div class="cat-label">Electronics</div>
+        </a>
+        <a href="#" class="cat-card cat-2">
+          <img src="/images/cat-apparel.jpeg" alt="Apparel">
+          <div class="cat-label">Apparel</div>
+        </a>
+        <a href="#" class="cat-card cat-3">
+          <img src="/images/cat-beauty.jpeg" alt="Beauty">
+          <div class="cat-label">Beauty</div>
+        </a>
+        <a href="#" class="cat-card cat-4">
+          <img src="/images/cat-home.jpeg" alt="Home">
+          <div class="cat-label">Home</div>
+        </a>
+        <a href="#" class="cat-card cat-5">
+          <img src="/images/cat-grocery.jpeg" alt="Grocery">
+          <div class="cat-label">Grocery</div>
+        </a>
+        <a href="#" class="cat-card cat-6">
+          <img src="/images/cat-toys.jpeg" alt="Toys">
+          <div class="cat-label">Toys</div>
+        </a>
+        <a href="#" class="cat-card cat-7">
+          <img src="/images/cat-sports.jpeg" alt="Sports">
+          <div class="cat-label">Sports</div>
+        </a>
+        <a href="#" class="cat-card cat-8">
+          <img src="/images/cat-automotive.jpeg" alt="Automotive">
+          <div class="cat-label">Automotive</div>
+        </a>
+        <a href="#" class="cat-card cat-9">
+          <img src="/images/cat-books.jpeg" alt="Books">
+          <div class="cat-label">Books</div>
+        </a>
+        <a href="#" class="cat-card cat-10">
+          <img src="/images/cat-health.jpeg" alt="Health">
+          <div class="cat-label">Health</div>
+        </a>
+        <a href="#" class="cat-card cat-11">
+          <img src="/images/cat-luxury.jpeg" alt="Luxury">
+          <div class="cat-label">Luxury</div>
+        </a>
+        <a href="#" class="cat-card cat-12">
+          <img src="/images/cat-tools.jpeg" alt="Tools">
+          <div class="cat-label">Tools</div>
+        </a>
       </div>
     </section>
 
     <!-- Hot Sellers -->
     <section class="featured container">
       <h2>Hot Sellers</h2>
-      <div class="product-row">
-        <div class="product-card"><div class="img-placeholder"></div><h3>Product A</h3><div class="price">HK$49.99</div></div>
-        <div class="product-card"><div class="img-placeholder"></div><h3>Product B</h3><div class="price">HK$39.99</div></div>
-        <div class="product-card"><div class="img-placeholder"></div><h3>Product C</h3><div class="price">HK$29.99</div></div>
-        <div class="product-card"><div class="img-placeholder"></div><h3>Product D</h3><div class="price">HK$59.99</div></div>
-      </div>
+      <div class="product-row" id="hotProducts"></div>
     </section>
 
     <!-- Subscribe -->
@@ -208,8 +739,11 @@
       <div class="glass">
         <h2>Stay in the Loop</h2>
         <p>Subscribe to get the latest trends & offers</p>
-        <input type="email" placeholder="Your email address">
-        <button>Subscribe</button>
+        <form id="subscribeForm" novalidate>
+          <input type="email" id="subscribeEmail" placeholder="Your email address" required>
+          <button type="submit" id="subscribeBtn">Subscribe</button>
+          <div id="subscribeMessage" class="subscribe-message"></div>
+        </form>
       </div>
     </section>
   </main>
@@ -224,21 +758,240 @@
   </footer>
 
   <script>
-    const API      = '/api/home_reco?k=8';
+    // 搜索功能
+    function redirectToSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
+      } else {
+        alert("Please enter a search term!");
+      }
+    }
+
+    // 登录状态管理
+    function checkLoginStatus() {
+      const authStatus = document.getElementById('auth-status');
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+      // Check if user has admin information stored
+      const isAdmin = user.is_admin === true;
+    
+      authStatus.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 1rem;">
+         <span style="color: #1A1F36;">Welcome, ${user.username}</span>
+        ${isAdmin ? '<button class="btn register-btn" onclick="goToAdmin()">Admin Panel</button>' : ''}
+        <button class="btn login-btn" onclick="logout()">Logout</button>
+        </div>
+      `;
+      }
+    }
+
+    // Add function to navigate to admin page
+function goToAdmin() {
+  window.location.href = '/static/admin_user.html';
+}
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.reload();
+    }
+
+    // 购物车处理
+    function handleCartClick() {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        window.location.href = 'cart.html';
+      } else {
+        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+      }
+    }
+
+    // 原有模态框功能
+    document.querySelectorAll('#openLogin, #openRegister').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.id === 'openLogin' ? 'loginModal' : 'registerModal';
+        document.getElementById(id).classList.add('active');
+        clearMessages();
+      });
+    });
+
+    document.querySelectorAll('.close-btn').forEach(span => {
+      span.addEventListener('click', () => {
+        document.getElementById(span.dataset.close).classList.remove('active');
+      });
+    });
+
+    function clearMessages() {
+      ['loginError','registerError','registerSuccess'].forEach(id => {
+        document.getElementById(id).textContent = '';
+      });
+    }
+
+    // 登录逻辑
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value;
+      const p = document.getElementById('loginPassword').value;
+      const err = document.getElementById('loginError');
+      err.textContent = '';
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+        localStorage.setItem('user', JSON.stringify(data.user));
+        document.getElementById('loginModal').classList.remove('active');
+        checkLoginStatus();
+        alert('Login successful');
+      } catch (err) {
+        document.getElementById('loginError').textContent = err.message;
+      }
+    });
+
+    // 注册逻辑
+    const pw = document.getElementById('registerPassword'),
+          cpw = document.getElementById('confirmPassword'),
+          msgMatch = document.getElementById('passwordMatchMessage'),
+          btnReg = document.getElementById('registerButton');
+
+    function updateStrength() {
+      let s = 0;
+      const checks = {
+        length: pw.value.length >= 8,
+        upper: /[A-Z]/.test(pw.value),
+        lower: /[a-z]/.test(pw.value),
+        number: /[0-9]/.test(pw.value)
+      };
+      s = Object.values(checks).filter(v => v).length;
+      ['str1','str2','str3','str4'].forEach((id, i) => {
+        const div = document.getElementById(id);
+        div.className = i < s ? (s < 4 ? 'strength-medium' : 'strength-strong') : '';
+      });
+    }
+
+    function checkMatch() {
+      if (!pw.value || !cpw.value) { 
+        msgMatch.textContent = '';
+        btnReg.disabled = true;
+        return;
+      }
+      if (pw.value !== cpw.value) {
+        msgMatch.textContent = 'Passwords do not match';
+        msgMatch.className = 'password-match-message not-match';
+        btnReg.disabled = true;
+      } else if (pw.value.length >= 8 && /[A-Z]/.test(pw.value) && /[a-z]/.test(pw.value) && /[0-9]/.test(pw.value)) {
+        msgMatch.textContent = 'Passwords match';
+        msgMatch.className = 'password-match-message match';
+        btnReg.disabled = false;
+      } else {
+        msgMatch.textContent = 'Password does not meet requirements';
+        msgMatch.className = 'password-match-message not-match';
+        btnReg.disabled = true;
+      }
+    }
+
+    pw.addEventListener('input', () => { updateStrength(); checkMatch(); });
+    cpw.addEventListener('input', checkMatch);
+
+    // 发送验证码
+    document.getElementById('sendCodeBtn').addEventListener('click', async () => {
+      const email = document.getElementById('registerEmail').value;
+      const err = document.getElementById('registerError');
+      err.textContent = '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        err.textContent = 'Enter a valid email';
+        return;
+      }
+      const btn = document.getElementById('sendCodeBtn');
+      btn.disabled = true;
+      btn.classList.add('countdown');
+      try {
+        const res = await fetch('/api/send-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to send code');
+        let c = 60;
+        btn.textContent = `Resend (${c}s)`;
+        const timer = setInterval(() => {
+          c--;
+          if (c < 0) {
+            clearInterval(timer);
+            btn.disabled = false;
+            btn.classList.remove('countdown');
+            btn.textContent = 'Send Code';
+          } else {
+            btn.textContent = `Resend (${c}s)`;
+          }
+        }, 1000);
+      } catch (e) {
+        err.textContent = e.message;
+        btn.disabled = false;
+        btn.classList.remove('countdown');
+        btn.textContent = 'Send Code';
+      }
+    });
+
+    // 注册提交
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const u = document.getElementById('registerUsername').value;
+      const pwv = pw.value;
+      const em = document.getElementById('registerEmail').value;
+      const code = document.getElementById('verificationCode').value;
+      const err = document.getElementById('registerError');
+      const suc = document.getElementById('registerSuccess');
+      err.textContent = '';
+      suc.textContent = '';
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: pwv, email: em, verificationCode: code })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+        suc.textContent = 'Registration successful';
+        setTimeout(() => {
+          document.getElementById('registerModal').classList.remove('active');
+          checkLoginStatus();
+        }, 1000);
+      } catch (e) {
+        err.textContent = e.message;
+      }
+    });
+
+    // 推荐和热卖商品逻辑
+    const API = '/api/home_reco?k=8';
     const perBatch = 4;
-    const autoGap  = 6000;
-    const track    = document.getElementById('track');
-    const btnPrev  = document.getElementById('btnPrev');
-    const btnNext  = document.getElementById('btnNext');
+    const autoGap = 6000;
+    const track = document.getElementById('track');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
     const btnBatch = document.getElementById('btnBatch');
     let uid, rawList = [], batchIdx = 0, slideIdx = 0, timer;
 
-    function getCookie(n){ const m=document.cookie.match('(?:^|; )'+n+'=([^;]+)'); return m?decodeURIComponent(m[1]):null; }
-    function setCookie(n,v,d=365){ document.cookie = `${n}=${encodeURIComponent(v)};expires=${new Date(Date.now()+d*864e5).toUTCString()};path=/`; }
-    function genAnon(){ return 'sess_'+Date.now().toString(36)+'_'+Math.random().toString(16).slice(2,6); }
+    function getCookie(n) {
+      const m = document.cookie.match('(?:^|; )' + n + '=([^;]+)');
+      return m ? decodeURIComponent(m[1]) : null;
+    }
 
-    function renderSkeleton(){
-      track.innerHTML = Array(perBatch).fill().map(_=>`
+    function setCookie(n, v, d = 365) {
+      document.cookie = `${n}=${encodeURIComponent(v)};expires=${new Date(Date.now() + d * 864e5).toUTCString()};path=/`;
+    }
+
+    function genAnon() {
+      return 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(16).slice(2, 6);
+    }
+
+    function renderSkeleton() {
+      track.innerHTML = Array(perBatch).fill().map(_ => `
         <div class="reco-card" style="opacity:.3">
           <div style="height:100px;background:#e0e0e0"></div>
           <div class="reco-body">
@@ -249,11 +1002,11 @@
         </div>`).join('');
     }
 
-    function renderCurrent(){
+    function renderCurrent() {
       const start = batchIdx * perBatch;
       track.innerHTML = '';
       const p = rawList[start + slideIdx];
-      if(!p){
+      if (!p) {
         track.innerHTML = '<p style="color:#1A1F36;text-align:center;">No recommendations</p>';
         return;
       }
@@ -264,35 +1017,48 @@
           <img src="/images/${p.img}" alt="${p.productName}">
           <div class="reco-body">
             <div class="reco-name">${p.productName}</div>
-            <div class="reco-brand">${p.brandName||''}</div>
+            <div class="reco-brand">${p.brandName || ''}</div>
             <div class="reco-price">HK$${(+p.price).toFixed(2)}</div>
           </div>
         </a>`;
       track.appendChild(card);
     }
 
-    function startAuto(){
+    function startAuto() {
       clearInterval(timer);
-      timer = setInterval(()=>{
+      timer = setInterval(() => {
         slideIdx = (slideIdx + 1) % perBatch;
         renderCurrent();
       }, autoGap);
     }
-    function nextSlide(){ slideIdx = (slideIdx + 1) % perBatch; renderCurrent(); }
-    function prevSlide(){ slideIdx = (slideIdx - 1 + perBatch) % perBatch; renderCurrent(); }
-    function switchBatch(){
+
+    function nextSlide() {
+      slideIdx = (slideIdx + 1) % perBatch;
+      renderCurrent();
+    }
+
+    function prevSlide() {
+      slideIdx = (slideIdx - 1 + perBatch) % perBatch;
+      renderCurrent();
+    }
+
+    function switchBatch() {
       batchIdx = (batchIdx + 1) % Math.ceil(rawList.length / perBatch);
       slideIdx = 0;
       renderCurrent();
       startAuto();
     }
 
-    async function loadReco(){
+    async function loadReco() {
       renderSkeleton();
       uid = localStorage.getItem('userID') || getCookie('SESSIONID');
-      if(!uid){ uid = genAnon(); localStorage.setItem('userID', uid); setCookie('SESSIONID', uid); }
+      if (!uid) {
+        uid = genAnon();
+        localStorage.setItem('userID', uid);
+        setCookie('SESSIONID', uid);
+      }
       try {
-        const res = await fetch(API, { headers:{ 'X-UserID': uid } });
+        const res = await fetch(API, { headers: { 'X-UserID': uid } });
         rawList = (await res.json()).list || [];
         batchIdx = slideIdx = 0;
         renderCurrent();
@@ -302,54 +1068,86 @@
       }
     }
 
-    btnPrev.onclick = ()=>{ prevSlide(); startAuto(); };
-    btnNext.onclick = ()=>{ nextSlide(); startAuto(); };
+    async function loadHotProducts() {
+      const container = document.getElementById('hotProducts');
+      container.innerHTML = '';
+      try {
+        const res = await fetch('/api/hot_products?k=8');
+        const { list } = await res.json();
+        if (!list.length) {
+          container.innerHTML = '<p style="color:#1A1F36">暂无热卖商品</p>';
+          return;
+        }
+        list.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'reco-card small fade-in';
+          card.innerHTML = `
+            <a href="product.html?id=${p.productID}">
+              <img src="/images/${p.img}" alt="${p.productName}">
+              <div class="reco-body">
+                <div class="reco-name small">${p.productName}</div>
+                <div class="reco-brand small">${p.brandName || ''}</div>
+                <div class="reco-price small">HK$${(+p.price).toFixed(2)}</div>
+              </div>
+            </a>`;
+          container.appendChild(card);
+        });
+      } catch {
+        container.innerHTML = '<p style="color:#1A1F36">加载失败，请稍后重试</p>';
+      }
+    }
+
+    btnPrev.onclick = () => { prevSlide(); startAuto(); };
+    btnNext.onclick = () => { nextSlide(); startAuto(); };
     btnBatch.onclick = switchBatch;
-    document.addEventListener('visibilitychange', ()=>{
+    document.addEventListener('visibilitychange', () => {
       document.visibilityState === 'visible' ? startAuto() : clearInterval(timer);
     });
-    document.addEventListener('DOMContentLoaded', loadReco);
 
-    function redirectToSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-        window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
-      } else {
-        alert("Please enter a search term!");
+    // 订阅功能
+    document.getElementById('subscribeForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('subscribeEmail').value.trim();
+      const btn = document.getElementById('subscribeBtn');
+      const msg = document.getElementById('subscribeMessage');
+      msg.textContent = '';
+      msg.className = '';
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.textContent = 'Please enter a valid email address.';
+        msg.className = 'subscribe-message error';
+        return;
       }
-    }
 
-    function checkLoginStatus() {
-      const authStatus = document.getElementById('auth-status');
-      const userStr = localStorage.getItem('user');
-      
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        authStatus.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <span style="color: #1A1F36;">Welcome, ${user.username}</span>
-            <button class="btn login" onclick="logout()">Logout</button>
-          </div>
-        `;
+      btn.disabled = true;
+      btn.textContent = 'Subscribing…';
+
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Subscription failed');
+        msg.textContent = 'Thank you for subscribing!';
+        msg.className = 'subscribe-message success';
+        document.getElementById('subscribeForm').reset();
+      } catch (err) {
+        msg.textContent = err.message;
+        msg.className = 'subscribe-message error';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Subscribe';
       }
-    }
+    });
 
-    function logout() {
-      localStorage.removeItem('user');
-      window.location.reload();
-    }
-
-    document.addEventListener('DOMContentLoaded', checkLoginStatus);
-
-    function handleCartClick() {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        window.location.href = 'shoppingCart.html';
-      } else {
-        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.origin + '/shoppingCart.html');
-      }
-    }
-
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      checkLoginStatus();
+      loadHotProducts();
+      loadReco();
+    });
   </script>
 </body>
 </html>
