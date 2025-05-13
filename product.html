@@ -85,6 +85,87 @@
     .footer-col ul { list-style:none; }
     .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
     footer p { text-align:center; color:#6b7280; margin-top:1rem; }
+
+    /* Modal & Form Styles */
+    .modal {
+      position:fixed; 
+      top:0; 
+      left:0; 
+      width:100%; 
+      height:100%;
+      background:rgba(0,0,0,0.5); 
+      display:none; 
+      align-items:center; 
+      justify-content:center; 
+      z-index:200;
+    }
+    .modal.active { display:flex; }
+    .modal-content {
+      background:#fff; 
+      border-radius:12px; 
+      width:90%; 
+      max-width:400px; 
+      padding:2rem; 
+      position:relative;
+      box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    }
+    .modal-content h2 { 
+      text-align:center; 
+      margin-bottom:1.5rem; 
+      color:#333; 
+    }
+    .modal-content .close-btn {
+      position:absolute; 
+      top:1rem; 
+      right:1rem; 
+      font-size:1.5rem; 
+      cursor:pointer; 
+      color:#666;
+    }
+    .form-group { 
+      margin-bottom:1.2rem; 
+    }
+    .form-group label { 
+      display:block; 
+      margin-bottom:.5rem; 
+      color:#333; 
+      font-weight:500; 
+    }
+    .form-group input {
+      width:100%; 
+      padding:.8rem; 
+      border:2px solid #e1e1e1; 
+      border-radius:6px;
+      font-size:1rem; 
+      transition:border-color .3s;
+    }
+    .form-group input:focus { 
+      border-color:#F64601; 
+      outline:none; 
+    }
+    button.submit-btn {
+      width:100%; 
+      padding:.8rem; 
+      background:#F64601; 
+      color:#fff; 
+      border:none; 
+      border-radius:6px;
+      font-size:1rem; 
+      font-weight:600; 
+      cursor:pointer; 
+      transition:background .3s; 
+      margin-top:1rem;
+    }
+    button.submit-btn:hover { 
+      background:#D03800; 
+    }
+    .error-message { 
+      color:#dc3545; 
+      text-align:center; 
+      margin-top:1rem; 
+      font-size:.9rem; 
+    }
+    
   </style>
 </head>
 <body>
@@ -94,12 +175,13 @@
       <div class="search-cart">
         <input type="text" id="searchInput" placeholder="Search…">
         <button onclick="redirectToSearch()">Search</button>
-      </div>
-      <div class="auth-buttons">
-        <button class="btn login">Login</button>
-        <button class="btn register">Register</button>
-        <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
-      </div>
+        <div class="auth-buttons">
+          <div id="auth-status">
+            <button class="btn login" id="openLogin">Login</button>
+            <button class="btn register" id="openRegister">Register</button>
+          </div>
+          <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
+        </div>
     </div>
   </header>
   
@@ -146,6 +228,50 @@
     <p>&copy; 2025 Buyzu. All rights reserved.</p>
   </footer>
 
+    <!-- Login Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <span class="close-btn" data-close="loginModal">&times;</span>
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit" class="submit-btn">Login</button>
+        <div class="error-message" id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal" id="registerModal">
+    <div class="modal-content">
+      <span class="close-btn" data-close="registerModal">&times;</span>
+      <h2>Register</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="regConfirmPassword">Confirm Password</label>
+          <input type="password" id="regConfirmPassword" required>
+        </div>
+        <button type="submit" class="submit-btn">Register</button>
+        <div class="error-message" id="registerError"></div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // Helper: 获取 URL query 参数
     function getQueryParam(name) {
@@ -154,13 +280,50 @@
     }
 
     // 1. 验证登录、取用户 
-    
+    /*
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     if (!currentUser.id) {
       window.location.href = '/login.html';
       throw new Error('Not logged in');
     }
    const USER_ID = String(currentUser.id);
+    */
+    let USER_ID = null;
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (currentUser.id) {
+      USER_ID = String(currentUser.id);
+    }
+
+    // 检查登录状态并更新导航栏
+    function checkLoginStatus() {
+      const authStatus = document.getElementById('auth-status');
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        // 检查用户是否有管理员信息
+        const isAdmin = user.is_admin === true;
+        
+        authStatus.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+          <span style="color: #1A1F36;">Welcome, ${user.username}</span>
+          ${isAdmin ? '<button class="btn register-btn" onclick="goToAdmin()">Admin Panel</button>' : ''}
+          <button class="btn login-btn" onclick="logout()">Logout</button>
+          </div>
+        `;
+      }
+    }
+
+    // 登出功能
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.reload();
+    }
+
+    // 管理员面板导航
+    function goToAdmin() {
+      window.location.href = '/static/admin_user.html';
+    }
+
 
     // 2. 拉商品详情
     async function loadProduct() {
@@ -209,7 +372,14 @@
     }
 
     // 3. Add to Cart
-    document.getElementById('btnAdd').addEventListener('click', async ()=>{
+    document.getElementById('btnAdd').addEventListener('click', async ()=> {
+      // 检查是否已登录
+      if (!USER_ID) {
+        // 未登录时重定向到登录页面，并设置返回URL
+        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+        return;
+      }
+      
       const id = getQueryParam('id'),
             qty = Math.max(1, parseInt(document.getElementById('qty').value)||1);
       try {
@@ -228,6 +398,7 @@
         alert('Failed to add to cart: '+e.message);
       }
     });
+    
 
     // 搜索功能
   function redirectToSearch() {
@@ -245,12 +416,18 @@
     if (userStr) {
       window.location.href = 'cart.html';
     } else {
+      // 保存当前URL作为重定向目标
       window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
     }
-  }
+}
 
 
-    document.addEventListener('DOMContentLoaded', loadProduct);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadProduct();  // 加载产品信息
+    checkLoginStatus();  // 检查并更新登录状态
+  });
+
   </script>
 </body>
 </html>
