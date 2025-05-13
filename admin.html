@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyzu · Admin Panel</title>
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #F0F5FF;
+      color: #1A1F36;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { text-decoration:none; color:inherit; }
+    .container { width:90%; max-width:1200px; margin:0 auto; padding:2rem 0; }
+    
+    /* Header */
+    header {
+      background: #1A1F36;
+      color: white;
+      padding: 1rem 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #FF6B6B;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo-icon {
+      font-size: 1.75rem;
+    }
+    .admin-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+    }
+    .admin-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #FF6B6B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .admin-action {
+      padding: 0.5rem 1rem;
+      background: #FF6B6B;
+      color: white;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .admin-action:hover {
+      background: #ff5252;
+    }
+    
+    /* Main Content */
+    .admin-dashboard {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin-top: 1rem;
+      flex: 1;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .page-title {
+      font-size: 2rem;
+      color: #1A1F36;
+      font-weight: 600;
+    }
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #6B7280;
+      font-size: 0.9rem;
+    }
+    .breadcrumb-separator {
+      color: #9CA3AF;
+    }
+    
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #FF6B6B;
+    }
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #1A1F36;
+    }
+    .stat-label {
+      color: #6B7280;
+      font-size: 1rem;
+    }
+    
+    .admin-modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+    .admin-module {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-module:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .module-header {
+      padding: 1.5rem;
+      background: #F9FAFB;
+      border-bottom: 1px solid #E5E7EB;
+    }
+    .module-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1A1F36;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .module-icon {
+      width: 24px;
+      height: 24px;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FF6B6B;
+    }
+    .module-body {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .module-desc {
+      color: #6B7280;
+      margin-bottom: auto;
+      flex: 1;
+    }
+    .module-actions {
+      margin-top: 1rem;
+    }
+    .module-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: #FF6B6B;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .module-btn:hover {
+      background: #ff5252;
+    }
+    
+    /* Footer */
+    footer {
+      background: #1A1F36;
+      color: #9CA3AF;
+      padding: 1.5rem 0;
+      margin-top: 2rem;
+    }
+    .footer-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-stats {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      .admin-modules {
+        grid-template-columns: 1fr;
+      }
+      .admin-user span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="homepage.html" class="logo">
+        <span class="logo-icon">🛍️</span>
+        <span>Buyzu Admin</span>
+      </a>
+      <div class="admin-controls">
+        <div class="admin-user" id="adminUser">
+          <div class="admin-avatar" id="adminAvatar">A</div>
+          <span id="adminName">Admin</span>
+        </div>
+        <button class="admin-action" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="admin-dashboard">
+      <div class="dashboard-header">
+        <h1 class="page-title">Admin Dashboard</h1>
+        <div class="breadcrumbs">
+          <a href="homepage.html">Buyzu</a>
+          <span class="breadcrumb-separator">›</span>
+          <span>Admin Dashboard</span>
+        </div>
+      </div>
+      
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-value" id="productCount">0</div>
+          <div class="stat-label">Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="userCount">0</div>
+          <div class="stat-label">Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-value" id="orderCount">0</div>
+          <div class="stat-label">Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="revenueValue">$0</div>
+          <div class="stat-label">Revenue</div>
+        </div>
+      </div>
+      
+      <div class="admin-modules">
+        <div class="admin-module">
+          <div class="module-header">
+            <h2 class="module-title">
+              <span class="module-icon">📦</span>
+              <span>Product Management</span>
+            </h2>
+          </div>
+          <div class="module-body">
+            <p class="module-desc">
+              Manage product inventory, add new products, update existing ones, and control pricing and availability.
+            </p>
+            <div class="module-actions">
+              <a href="admin_items.html" class="module-btn">Manage Products</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="admin-module">
+          <div class="module-header">
+            <h2 class="module-title">
+              <span class="module-icon">👥</span>
+              <span>User Management</span>
+            </h2>
+          </div>
+          <div class="module-body">
+            <p class="module-desc">
+              Manage user accounts, view customer information, and handle permissions and access controls.
+            </p>
+            <div class="module-actions">
+              <a href="admin_users.html" class="module-btn">Manage Users</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="admin-module">
+          <div class="module-header">
+            <h2 class="module-title">
+              <span class="module-icon">🛒</span>
+              <span>Order Management</span>
+            </h2>
+          </div>
+          <div class="module-body">
+            <p class="module-desc">
+              View and process customer orders, handle shipping status, refunds, and order histories.
+            </p>
+            <div class="module-actions">
+              <a href="admin_orders.html" class="module-btn">Manage Orders</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="admin-module">
+          <div class="module-header">
+            <h2 class="module-title">
+              <span class="module-icon">📊</span>
+              <span>Analytics & Reports</span>
+            </h2>
+          </div>
+          <div class="module-body">
+            <p class="module-desc">
+              View sales statistics, customer behavior analytics, and generate business reports.
+            </p>
+            <div class="module-actions">
+              <a href="admin_analytics.html" class="module-btn">View Analytics</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <p>&copy; 2025 Buyzu Admin Panel. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Check if user is logged in and is admin
+    function checkAdminAccess() {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        // Not logged in
+        alert("Please login to access the admin panel");
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
+      if (!user.is_admin) {
+        // Not an admin
+        alert("You don't have admin privileges");
+        window.location.href = 'homepage.html';
+        return;
+      }
+      
+      // Update admin info
+      document.getElementById('adminName').textContent = user.username;
+      document.getElementById('adminAvatar').textContent = user.username.charAt(0).toUpperCase();
+    }
+    
+    // Logout function
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'homepage.html';
+    }
+    
+    // Fetch dashboard stats
+    async function fetchDashboardStats() {
+      try {
+        // In a real implementation, these would be fetched from the server
+        // For demo purposes, using placeholder data
+        document.getElementById('productCount').textContent = '245';
+        document.getElementById('userCount').textContent = '1,842';
+        document.getElementById('orderCount').textContent = '356';
+        document.getElementById('revenueValue').textContent = 'HK$128,495';
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAccess();
+      fetchDashboardStats();
+    });
+  </script>
+</body>
+</html>
