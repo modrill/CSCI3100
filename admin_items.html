@@ -1,1071 +1,620 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buyzu · Product Management</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #F0F5FF;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        /* Admin Header */
-        .admin-header {
-            background: #1A1F36;
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-        .admin-logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #FF6B6B;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-        }
-        .admin-nav {
-            display: flex;
-            gap: 20px;
-        }
-        .admin-nav a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-        .admin-nav a:hover, .admin-nav a.active {
-            background: rgba(255,255,255,0.1);
-        }
-        .admin-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        .admin-user {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 6px;
-        }
-        .admin-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #FF6B6B;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        .admin-action {
-            padding: 0.5rem 1rem;
-            background: #FF6B6B;
-            color: white;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-        .admin-action:hover {
-            background: #ff5252;
-        }
-        
-        /* Content styles */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            background-color: white;
-        }
-        .card-header {
-            background-color: #4a69bd;
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 15px 20px;
-            font-weight: bold;
-        }
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .search-box .form-control {
-            padding-left: 40px;
-            border-radius: 20px;
-        }
-        .search-box .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 10px;
-            color: #6c757d;
-        }
-        .table th {
-            background-color: #f1f2f6;
-        }
-        .action-btn {
-            margin-right: 5px;
-        }
-        .pagination {
-            justify-content: center;
-        }
-        .modal-header {
-            background-color: #4a69bd;
-            color: white;
-        }
-        .modal-footer {
-            border-top: none;
-            padding: 15px 20px;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            visibility: hidden;
-        }
-        .loading-spinner {
-            width: 3rem;
-            height: 3rem;
-        }
-        .product-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-        .status-active {
-            color: #2ecc71;
-        }
-        .status-inactive {
-            color: #e74c3c;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .image-preview {
-            max-width: 200px;
-            max-height: 200px;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-        
-        .breadcrumb {
-            margin-bottom: 20px;
-            background: transparent;
-        }
-        .breadcrumb-item a {
-            color: #4a69bd;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Management System</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Arial', sans-serif; }
+    .container { max-width: 1200px; margin: 20px auto; }
+    .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom:20px; }
+    .card-header { background-color: #4a69bd; color: white; border-radius:10px 10px 0 0; }
+    .search-box { position: relative; margin-bottom:20px; }
+    .search-box .form-control { padding-left:40px; border-radius:20px; }
+    .search-box .search-icon { position:absolute; left:15px; top:10px; color:#6c757d; }
+    .table th { background-color: #f1f2f6; }
+    .action-btn { margin-right:5px; }
+    .pagination { justify-content:center; }
+    .badge-active { background-color:#2ecc71; color:white; }
+    .badge-inactive { background-color:#e74c3c; color:white; }
+    .loading-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(255,255,255,0.8); display:flex;
+      align-items:center; justify-content:center; visibility:hidden; z-index:9999;
+    }
+    .product-img { width: 50px; height: 50px; object-fit: cover; }
+  </style>
 </head>
 <body>
-    <!-- Admin Header -->
-    <header class="admin-header">
-        <div class="header-container">
-            <a href="admin.html" class="admin-logo">
-                <span>🛍️</span>
-                <span>Buyzu Admin</span>
-            </a>
-            <div class="admin-nav">
-                <a href="admin.html">Dashboard</a>
-                <a href="admin_items.html" class="active">Products</a>
-                <a href="admin_users.html">Users</a>
-                <a href="admin_orders.html">Orders</a>
-                <a href="admin_analytics.html">Analytics</a>
-            </div>
-            <div class="admin-controls">
-                <div class="admin-user" id="adminUser">
-                    <div class="admin-avatar" id="adminAvatar">A</div>
-                    <span id="adminName">Admin</span>
-                </div>
-                <button class="admin-action" onclick="logout()">Logout</button>
-            </div>
+  <div class="container">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center p-3">
+        <h2><i class="fas fa-box me-2"></i>Product Management</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+          <i class="fas fa-plus me-1"></i> Add Product
+        </button>
+      </div>
+      <div class="card-body p-3">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="form-control" id="searchInput" placeholder="Search product name or description...">
         </div>
-    </header>
-
-    <div class="container">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="admin.html">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Product Management</li>
-            </ol>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody"></tbody>
+          </table>
+        </div>
+        <nav>
+          <ul class="pagination" id="pagination"></ul>
         </nav>
-        
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-boxes me-2"></i>Product Management</h2>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                    <i class="fas fa-plus me-1"></i> Add Product
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="search-box">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search product ID, name or description...">
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Category</th>
-                                <th>Brand</th>
-                                <th>Inventory</th>
-                                <th>Status</th>
-                                <th>Rating</th>
-                                <th>Sales</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productTableBody">
-                            <!-- Product data will be loaded dynamically with JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <nav>
-                    <ul class="pagination" id="pagination">
-                        <!-- Pagination links will be loaded dynamically with JavaScript -->
-                    </ul>
-                </nav>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Add Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add New Product</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addProductForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="productID" class="form-label">Product ID*</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="productID" required>
-                                        <button class="btn btn-outline-secondary" type="button" id="generateID">Generate</button>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="productName" class="form-label">Product Name*</label>
-                                    <input type="text" class="form-control" id="productName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="price" class="form-label">Price*</label>
-                                    <input type="number" class="form-control" id="price" min="0.01" step="0.01" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="category" class="form-label">Category</label>
-                                    <select class="form-select" id="category">
-                                        <option value="">Select Category</option>
-                                        <!-- Categories will be loaded dynamically -->
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="brand" class="form-label">Brand</label>
-                                    <select class="form-select" id="brand">
-                                        <option value="">Select Brand</option>
-                                        <!-- Brands will be loaded dynamically -->
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="imageUrl" class="form-label">Image URL*</label>
-                                    <input type="text" class="form-control" id="imageUrl" required>
-                                    <img id="imagePreview" class="image-preview mt-2 d-none" alt="Product Image Preview">
-                                </div>
-                                <div class="form-group">
-                                    <label for="inventory" class="form-label">Inventory Count</label>
-                                    <input type="number" class="form-control" id="inventory" min="0" value="0">
-                                </div>
-                                <div class="form-group">
-                                    <label for="status" class="form-label">Status</label>
-                                    <select class="form-select" id="status">
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="rating" class="form-label">Rating</label>
-                                    <input type="number" class="form-control" id="rating" min="0" max="5" step="0.1" value="0">
-                                </div>
-                                <div class="form-group">
-                                    <label for="sales" class="form-label">Sales</label>
-                                    <input type="number" class="form-control" id="sales" min="0" value="0">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitAddProduct">Save</button>
-                </div>
+  <!-- Add Product Modal -->
+  <div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add New Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addProductForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Product Name</label>
+              <input type="text" class="form-control" id="add_productName" required>
             </div>
-        </div>
-    </div>
-
-    <!-- Edit Product Modal -->
-    <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Product</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editProductForm">
-                        <input type="hidden" id="editProductID">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="editProductName" class="form-label">Product Name*</label>
-                                    <input type="text" class="form-control" id="editProductName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editPrice" class="form-label">Price*</label>
-                                    <input type="number" class="form-control" id="editPrice" min="0.01" step="0.01" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editCategory" class="form-label">Category</label>
-                                    <select class="form-select" id="editCategory">
-                                        <option value="">Select Category</option>
-                                        <!-- Categories will be loaded dynamically -->
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editBrand" class="form-label">Brand</label>
-                                    <select class="form-select" id="editBrand">
-                                        <option value="">Select Brand</option>
-                                        <!-- Brands will be loaded dynamically -->
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="editImageUrl" class="form-label">Image URL*</label>
-                                    <input type="text" class="form-control" id="editImageUrl" required>
-                                    <img id="editImagePreview" class="image-preview mt-2" alt="Product Image Preview">
-                                </div>
-                                <div class="form-group">
-                                    <label for="editInventory" class="form-label">Inventory Count</label>
-                                    <input type="number" class="form-control" id="editInventory" min="0">
-                                </div>
-                                <div class="form-group">
-                                    <label for="editStatus" class="form-label">Status</label>
-                                    <select class="form-select" id="editStatus">
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editRating" class="form-label">Rating</label>
-                                    <input type="number" class="form-control" id="editRating" min="0" max="5" step="0.1">
-                                </div>
-                                <div class="form-group">
-                                    <label for="editSales" class="form-label">Sales</label>
-                                    <input type="number" class="form-control" id="editSales" min="0">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="editDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="editDescription" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitEditProduct">Save</button>
-                </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Price</label>
+              <input type="number" step="0.01" min="0.01" class="form-control" id="add_price" required>
             </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Delete Product</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this product? This action cannot be undone.</p>
-                    <p><strong>Product ID: <span id="deleteProductIDText"></span></strong></p>
-                    <p><strong>Product Name: <span id="deleteProductName"></span></strong></p>
-                    <input type="hidden" id="deleteProductID">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
-                </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Brand</label>
+              <select class="form-select" id="add_brandID" required>
+                <!-- Options will be loaded dynamically -->
+              </select>
             </div>
-        </div>
-    </div>
-
-    <!-- Product Details Modal -->
-    <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>Product Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <img id="detailsImage" class="img-fluid rounded" alt="Product Image">
-                        </div>
-                        <div class="col-md-7">
-                            <h4 id="detailsName" class="mb-3"></h4>
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th width="30%">Product ID</th>
-                                    <td id="detailsID"></td>
-                                </tr>
-                                <tr>
-                                    <th>Price</th>
-                                    <td id="detailsPrice"></td>
-                                </tr>
-                                <tr>
-                                    <th>Category</th>
-                                    <td id="detailsCategory"></td>
-                                </tr>
-                                <tr>
-                                    <th>Brand</th>
-                                    <td id="detailsBrand"></td>
-                                </tr>
-                                <tr>
-                                    <th>Inventory</th>
-                                    <td id="detailsInventory"></td>
-                                </tr>
-                                <tr>
-                                    <th>Status</th>
-                                    <td id="detailsStatus"></td>
-                                </tr>
-                                <tr>
-                                    <th>Rating</th>
-                                    <td id="detailsRating"></td>
-                                </tr>
-                                <tr>
-                                    <th>Sales</th>
-                                    <td id="detailsSales"></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <h5>Description</h5>
-                            <p id="detailsDescription" class="text-muted"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="editFromDetails">Edit</button>
-                </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="add_categoryID" required>
+                <!-- Options will be loaded dynamically -->
+              </select>
             </div>
-        </div>
-    </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Inventory Count</label>
+              <input type="number" min="0" class="form-control" id="add_inventoryCount" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" id="add_currentStatus">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="add_img" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="add_descri" rows="3"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Rating</label>
+              <input type="number" step="0.1" min="0" max="5" class="form-control" id="add_rating" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Sales</label>
+              <input type="number" min="0" class="form-control" id="add_sales" required>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" id="btnAddProduct">Save</button>
+      </div>
+    </div></div>
+  </div>
 
-    <!-- Loading Animation -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner-border loading-spinner text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
+  <!-- Edit Product Modal -->
+  <div class="modal fade" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editProductForm">
+          <input type="hidden" id="edit_productID">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Product Name</label>
+              <input type="text" class="form-control" id="edit_productName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Price</label>
+              <input type="number" step="0.01" min="0.01" class="form-control" id="edit_price" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Brand</label>
+              <select class="form-select" id="edit_brandID" required>
+                <!-- Options will be loaded dynamically -->
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="edit_categoryID" required>
+                <!-- Options will be loaded dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Inventory Count</label>
+              <input type="number" min="0" class="form-control" id="edit_inventoryCount" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" id="edit_currentStatus">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="edit_img" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="edit_descri" rows="3"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Rating</label>
+              <input type="number" step="0.1" min="0" max="5" class="form-control" id="edit_rating" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Sales</label>
+              <input type="number" min="0" class="form-control" id="edit_sales" required>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" id="btnUpdateProduct">Update</button>
+      </div>
+    </div></div>
+  </div>
 
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Global variables
+    const ADMIN_TOKEN = 'admin-token';
+    const API_BASE_URL = '/api';
+    const ITEMS_PER_PAGE = 10;
+    let currentPage = 1;
+    let totalPages = 1;
+    let allProducts = [];
+    let filteredProducts = [];
+    let brands = [];
+    let categories = [];
+
+    // DOM elements
+    const productTableBody = document.getElementById('productTableBody');
+    const pagination = document.getElementById('pagination');
+    const searchInput = document.getElementById('searchInput');
+    const loadingOverlay = document.getElementById('loadingOverlay');
     
-    <script>
-        const API_BASE_URL = '/api/admin';  // 去掉了http://localhost:5003，使用相对路径
-    
-    // 认证Token
-    const AUTH_TOKEN = 'admin-token';
+    // Modals
+    const addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+    const editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
 
-        
-        // 全局变量
-        let currentPage = 1;
-        let totalPages = 1;
-        let perPage = 10;
-        let products = [];
-        let categories = [];
-        let brands = [];
-        
-        // DOM加载完成后执行
-        $(document).ready(function() {
-            console.log('页面加载完成，开始初始化...');
-            
-            // 检查管理员权限
-            checkAdminAccess();
-            
-            // 初始化数据
-            loadCategories();
-            loadBrands();
-            loadProducts(currentPage);
-            
-            // 绑定事件
-            bindEvents();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        showLoading();
+        await Promise.all([
+          fetchBrands(),
+          fetchCategories(),
+          fetchProducts()
+        ]);
+        renderProducts();
+        hideLoading();
+      } catch (error) {
+        console.error('Initialization error:', error);
+        hideLoading();
+        alert('Failed to load data. Please try again.');
+      }
+    });
+
+    // Event listeners
+    searchInput.addEventListener('input', handleSearch);
+    document.getElementById('btnAddProduct').addEventListener('click', handleAddProduct);
+    document.getElementById('btnUpdateProduct').addEventListener('click', handleUpdateProduct);
+
+    // API Functions
+    async function fetchProducts() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/products`, {
+          headers: { 'Authorization': ADMIN_TOKEN }
         });
-        
-        // 检查管理员权限
-        function checkAdminAccess() {
-            const userStr = localStorage.getItem('user');
-            if (!userStr) {
-                alert("Please login to access the admin panel");
-                window.location.href = 'login.html';
-                return;
-            }
-      
-            const user = JSON.parse(userStr);
-            if (!user.is_admin) {
-                alert("You don't have admin privileges");
-                window.location.href = 'homepage.html';
-                return;
-            }
-      
-            // Update admin info
-            document.getElementById('adminName').textContent = user.username;
-            document.getElementById('adminAvatar').textContent = user.username.charAt(0).toUpperCase();
-        }
-        
-        // Logout function
-        function logout() {
-            localStorage.removeItem('user');
-            window.location.href = 'homepage.html';
-        }
-        
-        // 绑定各种事件处理
-        function bindEvents() {
-            // 搜索功能
-            $('#searchInput').on('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    const keyword = $(this).val().trim();
-                    if (keyword) {
-                        searchProducts(keyword);
-                    } else {
-                        loadProducts(1);
-                    }
-                }
-            });
-            
-            // 生成产品ID
-            $('#generateID').on('click', function() {
-                generateProductID();
-            });
-            
-            // 图片预览
-            $('#imageUrl').on('change', function() {
-                previewImage('#imageUrl', '#imagePreview');
-            });
-            
-            $('#editImageUrl').on('change', function() {
-                previewImage('#editImageUrl', '#editImagePreview');
-            });
-            
-            // 添加产品
-            $('#submitAddProduct').on('click', function() {
-                addProduct();
-            });
-            
-            // 编辑产品
-            $('#submitEditProduct').on('click', function() {
-                updateProduct();
-            });
-            
-            // 确认删除
-            $('#confirmDelete').on('click', function() {
-                deleteProduct();
-            });
-            
-            // 从详情页编辑
-            $('#editFromDetails').on('click', function() {
-                const productID = $('#detailsID').text();
-                loadProductForEdit(productID);
-                $('#productDetailsModal').modal('hide');
-                $('#editProductModal').modal('show');
-            });
-        }
-        
-        // 加载用户列表或搜索
-    function loadUsers(page=1, keyword='') {
-      showLoading(); currentPage = page;
-      let url = keyword.trim()
-        ? `${API}/search-products?keyword=${encodeURIComponent(keyword)}`
-        : `${API}/users?products=${page}&per_page=10`;
-      $.ajax({
-        url, method:'GET',
-        headers:{'Authorization': TOKEN},
-        success(res){
-          users = res.users;
-          renderTable(users);
-          if (!keyword.trim()) renderPager(res.page, res.total_pages);
-          else $('#pagination').empty();
-          hideLoading();
-        },
-        error(xhr){
-          hideLoading();
-          showError(xhr.responseJSON?.detail || 'Load failed');
-        }
-      });
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        allProducts = data.products;
+        filteredProducts = [...allProducts];
+        totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+      }
     }
 
+    async function fetchBrands() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/brands`, {
+          headers: { 'Authorization': ADMIN_TOKEN }
+        });
+        if (!response.ok) throw new Error('Failed to fetch brands');
+        const data = await response.json();
+        brands = data.brands;
+        populateBrandDropdowns();
+      } catch (error) {
+        console.error('Error fetching brands:', error);
+        throw error;
+      }
+    }
+
+    async function fetchCategories() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/categories`, {
+          headers: { 'Authorization': ADMIN_TOKEN }
+        });
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        const data = await response.json();
+        categories = data.categories;
+        populateCategoryDropdowns();
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw error;
+      }
+    }
+
+    async function addProduct(productData) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/products`, {
+          method: 'POST',
+          headers: {
+            'Authorization': ADMIN_TOKEN,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(productData)
+        });
+        if (!response.ok) throw new Error('Failed to add product');
+        return await response.json();
+      } catch (error) {
+        console.error('Error adding product:', error);
+        throw error;
+      }
+    }
+
+    async function updateProduct(productID, productData) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/products/${productID}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': ADMIN_TOKEN,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(productData)
+        });
+        if (!response.ok) throw new Error('Failed to update product');
+        return await response.json();
+      } catch (error) {
+        console.error('Error updating product:', error);
+        throw error;
+      }
+    }
+
+    async function deleteProduct(productID) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/products/${productID}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': ADMIN_TOKEN }
+        });
+        if (!response.ok) throw new Error('Failed to delete product');
+        return await response.json();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        throw error;
+      }
+    }
+
+    // Helper Functions
+    function showLoading() {
+      loadingOverlay.style.visibility = 'visible';
+    }
+
+    function hideLoading() {
+      loadingOverlay.style.visibility = 'hidden';
+    }
+
+    function populateBrandDropdowns() {
+      const addSelect = document.getElementById('add_brandID');
+      const editSelect = document.getElementById('edit_brandID');
+      
+      const options = brands.map(brand => 
+        `<option value="${brand.brandID}">${brand.brandName}</option>`
+      ).join('');
+      
+      addSelect.innerHTML = '<option value="">Select Brand</option>' + options;
+      editSelect.innerHTML = '<option value="">Select Brand</option>' + options;
+    }
+
+    function populateCategoryDropdowns() {
+      const addSelect = document.getElementById('add_categoryID');
+      const editSelect = document.getElementById('edit_categoryID');
+      
+      const options = categories.map(category => 
+        `<option value="${category.categoryID}">${category.categoryName}</option>`
+      ).join('');
+      
+      addSelect.innerHTML = '<option value="">Select Category</option>' + options;
+      editSelect.innerHTML = '<option value="">Select Category</option>' + options;
+    }
+
+    function handleSearch() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      
+      if (searchTerm === '') {
+        filteredProducts = [...allProducts];
+      } else {
+        filteredProducts = allProducts.filter(product => 
+          product.productName.toLowerCase().includes(searchTerm) || 
+          (product.descri && product.descri.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+      currentPage = 1;
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const currentProducts = filteredProducts.slice(startIndex, endIndex);
+      
+      productTableBody.innerHTML = '';
+      
+      if (currentProducts.length === 0) {
+        productTableBody.innerHTML = `
+          <tr>
+            <td colspan="9" class="text-center">No products found</td>
+          </tr>
+        `;
+        pagination.innerHTML = '';
+        return;
+      }
+      
+      currentProducts.forEach(product => {
+        const brandName = brands.find(b => b.brandID == product.brandID)?.brandName || 'N/A';
+        const categoryName = categories.find(c => c.categoryID == product.categoryID)?.categoryName || 'N/A';
         
-        // 加载类别列表
-        function loadCategories() {
-            $.ajax({
-                url: `${API_BASE_URL}/categories`,
-                method: 'GET',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(response) {
-                    categories = response;
-                    renderCategoryOptions(categories);
-                },
-                error: function(xhr, status, error) {
-                    console.error('获取类别列表失败:', error);
-                }
-            });
-        }
-        
-        // 加载品牌列表
-        function loadBrands() {
-            $.ajax({
-                url: `${API_BASE_URL}/brands`,
-                method: 'GET',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(response) {
-                    brands = response;
-                    renderBrandOptions(brands);
-                },
-                error: function(xhr, status, error) {
-                    console.error('获取品牌列表失败:', error);
-                }
-            });
-        }
-        
-        // 渲染产品表格
-        function renderProductsTable(products) {
-            const tableBody = $('#productTableBody');
-            tableBody.empty();
-            
-            if (products.length === 0) {
-                tableBody.html('<tr><td colspan="11" class="text-center">暂无产品数据</td></tr>');
-                return;
-            }
-            
-            products.forEach(product => {
-                const statusClass = product.currentStatus ? 'status-active' : 'status-inactive';
-                const statusText = product.currentStatus ? '上架' : '下架';
-                
-                const row = `
-                    <tr>
-                        <td>${product.productID}</td>
-                        <td><img src="${product.img}" class="product-image" alt="${product.productName}"></td>
-                        <td>${product.productName}</td>
-                        <td>HK$${product.price.toFixed(2)}</td>
-                        <td>${product.categoryName || '-'}</td>
-                        <td>${product.brandName || '-'}</td>
-                        <td>${product.inventoryCount}</td>
-                        <td><span class="${statusClass}"><i class="fas ${product.currentStatus ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${statusText}</span></td>
-                        <td>${product.rating.toFixed(1)}</td>
-                        <td>${product.sales}</td>
-                        <td>
-                            <button class="btn btn-sm btn-info action-btn" onclick="viewProductDetails('${product.productID}')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-sm btn-primary action-btn" onclick="loadProductForEdit('${product.productID}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger action-btn" onclick="confirmDelete('${product.productID}', '${product.productName}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                
-                tableBody.append(row);
-            });
-        }
-        
-        // 渲染分页
-        function renderPagination(currentPage, totalPages) {
-            const pagination = $('#pagination');
-            pagination.empty();
-            
-            // 无数据时不显示分页
-            if (totalPages === 0) {
-                return;
-            }
-            
-            // 上一页按钮
-            pagination.append(`
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="javascript:void(0)" onclick="loadProducts(${currentPage - 1})">Previous</a>
-                </li>
-            `);
-            
-            // 页码按钮
-            const maxPageButtons = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
-            let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
-            
-            if (endPage - startPage + 1 < maxPageButtons && startPage > 1) {
-                startPage = Math.max(1, endPage - maxPageButtons + 1);
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                pagination.append(`
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="javascript:void(0)" onclick="loadProducts(${i})">${i}</a>
-                    </li>
-                `);
-            }
-            
-            // 下一页按钮
-            pagination.append(`
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="javascript:void(0)" onclick="loadProducts(${currentPage + 1})">Next</a>
-                </li>
-            `);
-        }
-        
-        // 渲染类别选项
-        function renderCategoryOptions(categories) {
-            const categorySelects = $('#category, #editCategory');
-            
-            categories.forEach(category => {
-                const option = `<option value="${category.categoryID}">${category.categoryName}</option>`;
-                categorySelects.append(option);
-            });
-        }
-        
-        // 渲染品牌选项
-        function renderBrandOptions(brands) {
-            const brandSelects = $('#brand, #editBrand');
-            
-            brands.forEach(brand => {
-                const option = `<option value="${brand.brandID}">${brand.brandName}</option>`;
-                brandSelects.append(option);
-            });
-        }
-        
-        // 图片预览
-        function previewImage(inputSelector, previewSelector) {
-            const imageUrl = $(inputSelector).val();
-            const preview = $(previewSelector);
-            
-            if (imageUrl) {
-                preview.attr('src', imageUrl).removeClass('d-none');
-            } else {
-                preview.addClass('d-none');
-            }
-        }
-        
-        // 生成产品ID
-        function generateProductID() {
-            $.ajax({
-                url: `${API_BASE_URL}/generate-product-id`,
-                method: 'GET',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(response) {
-                    $('#productID').val(response.productID);
-                },
-                error: function(xhr, status, error) {
-                    console.error('生成产品ID失败:', error);
-                    alert('生成产品ID失败: ' + (xhr.responseJSON?.error || error));
-                }
-            });
-        }
-        
-        // 添加产品
-        function addProduct() {
-            // 获取表单数据
-            const productData = {
-                productID: $('#productID').val(),
-                productName: $('#productName').val(),
-                descri: $('#description').val(),
-                price: parseFloat($('#price').val()),
-                categoryID: $('#category').val() ? parseInt($('#category').val()) : null,
-                brandID: $('#brand').val() ? parseInt($('#brand').val()) : null,
-                img: $('#imageUrl').val(),
-                currentStatus: parseInt($('#status').val()),
-                inventoryCount: parseInt($('#inventory').val()),
-                rating: parseFloat($('#rating').val()),
-                sales: parseInt($('#sales').val())
-            };
-            
-            // 验证必填字段
-            if (!productData.productID || !productData.productName || !productData.price || !productData.img) {
-                alert('Please fill in all required fields (Product ID, Name, Price, Image)');
-                return;
-            }
-            
-            showLoading();
-            
-            $.ajax({
-                url: `${API_BASE_URL}/items`,
-                method: 'POST',
-                headers: {
-                    'Authorization': AUTH_TOKEN,
-                    'Content-Type': 'application/json'
-                },
-                data: JSON.stringify(productData),
-                success: function(response) {
-                    alert('Product added successfully');
-                    $('#addProductModal').modal('hide');
-                    $('#addProductForm')[0].reset();
-                    $('#imagePreview').addClass('d-none');
-                    loadProducts(currentPage);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to add product:', error);
-                    alert('Failed to add product: ' + (xhr.responseJSON?.error || error));
-                    hideLoading();
-                }
-            });
-        }
-        
-        // 查看产品详情
-        function viewProductDetails(productID) {
-            showLoading();
-            
-            $.ajax({
-                url: `${API_BASE_URL}/items/${productID}`,
-                method: 'GET',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(product) {
-                    // 填充详情
-                    $('#detailsName').text(product.productName);
-                    $('#detailsID').text(product.productID);
-                    $('#detailsPrice').text(`HK$${product.price.toFixed(2)}`);
-                    $('#detailsCategory').text(product.categoryName || '-');
-                    $('#detailsBrand').text(product.brandName || '-');
-                    $('#detailsInventory').text(product.inventoryCount);
-                    $('#detailsStatus').html(`<span class="${product.currentStatus ? 'text-success' : 'text-danger'}">
-                        <i class="fas ${product.currentStatus ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                        ${product.currentStatus ? 'Active' : 'Inactive'}
-                    </span>`);
-                    $('#detailsRating').text(product.rating.toFixed(1));
-                    $('#detailsSales').text(product.sales);
-                    $('#detailsDescription').text(product.descri || 'No description available');
-                    $('#detailsImage').attr('src', product.img);
-                    
-                    // 显示模态框
-                    $('#productDetailsModal').modal('show');
-                    hideLoading();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to get product details:', error);
-                    alert('Failed to get product details: ' + (xhr.responseJSON?.error || error));
-                    hideLoading();
-                }
-            });
-        }
-        
-        // 加载产品进行编辑
-        function loadProductForEdit(productID) {
-            showLoading();
-            
-            $.ajax({
-                url: `${API_BASE_URL}/items/${productID}`,
-                method: 'GET',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(product) {
-                    // 填充表单
-                    $('#editProductID').val(product.productID);
-                    $('#editProductName').val(product.productName);
-                    $('#editPrice').val(product.price);
-                    $('#editCategory').val(product.categoryID);
-                    $('#editBrand').val(product.brandID);
-                    $('#editImageUrl').val(product.img);
-                    $('#editInventory').val(product.inventoryCount);
-                    $('#editStatus').val(product.currentStatus);
-                    $('#editRating').val(product.rating);
-                    $('#editSales').val(product.sales);
-                    $('#editDescription').val(product.descri);
-                    
-                    // 预览图片
-                    $('#editImagePreview').attr('src', product.img).removeClass('d-none');
-                    
-                    // 显示模态框
-                    $('#editProductModal').modal('show');
-                    hideLoading();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to get product details:', error);
-                    alert('Failed to get product details: ' + (xhr.responseJSON?.error || error));
-                    hideLoading();
-                }
-            });
-        }
-        
-        // 更新产品
-        function updateProduct() {
-            const productID = $('#editProductID').val();
-            
-            // 获取表单数据
-            const productData = {
-                productName: $('#editProductName').val(),
-                descri: $('#editDescription').val(),
-                price: parseFloat($('#editPrice').val()),
-                categoryID: $('#editCategory').val() ? parseInt($('#editCategory').val()) : null,
-                brandID: $('#editBrand').val() ? parseInt($('#editBrand').val()) : null,
-                img: $('#editImageUrl').val(),
-                currentStatus: parseInt($('#editStatus').val()),
-                inventoryCount: parseInt($('#editInventory').val()),
-                rating: parseFloat($('#editRating').val()),
-                sales: parseInt($('#editSales').val())
-            };
-            
-            // 验证必填字段
-            if (!productData.productName || !productData.price || !productData.img) {
-                alert('Please fill in all required fields (Name, Price, Image)');
-                return;
-            }
-            
-            showLoading();
-            
-            $.ajax({
-                url: `${API_BASE_URL}/items/${productID}`,
-                method: 'PUT',
-                headers: {
-                    'Authorization': AUTH_TOKEN,
-                    'Content-Type': 'application/json'
-                },
-                data: JSON.stringify(productData),
-                success: function(response) {
-                    alert('Product updated successfully');
-                    $('#editProductModal').modal('hide');
-                    loadProducts(currentPage);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to update product:', error);
-                    alert('Failed to update product: ' + (xhr.responseJSON?.error || error));
-                    hideLoading();
-                }
-            });
-        }
-        
-        // 确认删除对话框
-        function confirmDelete(productID, productName) {
-            $('#deleteProductID').val(productID);
-            $('#deleteProductIDText').text(productID);
-            $('#deleteProductName').text(productName);
-            $('#deleteProductModal').modal('show');
-        }
-        
-        // 删除产品
-        function deleteProduct() {
-            const productID = $('#deleteProductID').val();
-            
-            showLoading();
-            
-            $.ajax({
-                url: `${API_BASE_URL}/items/${productID}`,
-                method: 'DELETE',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(response) {
-                    alert('Product deleted successfully');
-                    $('#deleteProductModal').modal('hide');
-                    loadProducts(currentPage);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to delete product:', error);
-                    alert('Failed to delete product: ' + (xhr.responseJSON?.error || error));
-                    hideLoading();
-                }
-            });
-        }
-        
-        // 搜索产品
-        function searchProducts(keyword) {
-            showLoading();
-            
-            $.ajax({
-                url: `${API_BASE_URL}/search-items?keyword=${encodeURIComponent(keyword)}`,
-                method: 'GET',
-                headers: {
-                    'Authorization': AUTH_TOKEN
-                },
-                success: function(response) {
-                    products = response.products;
-                    renderProductsTable(products);
-                    // 搜索结果不显示分页
-                    $('#pagination').empty();
-                    hideLoading();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to search products:', error);
-                    alert('Failed to search products: ' + (xhr.responseJSON?.error || error));
-                    hideLoading();
-                }
-            });
-        }
-        
-        // 显示加载动画
-        function showLoading() {
-            $('#loadingOverlay').css('visibility', 'visible');
-        }
-        
-        // 隐藏加载动画
-        function hideLoading() {
-            $('#loadingOverlay').css('visibility', 'hidden');
-        }
-    </script>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product.productID}</td>
+          <td><img src="${product.img}" alt="${product.productName}" class="product-img"></td>
+          <td>${product.productName}</td>
+          <td>$${parseFloat(product.price).toFixed(2)}</td>
+          <td>${brandName}</td>
+          <td>${categoryName}</td>
+          <td>${product.inventoryCount}</td>
+          <td>
+            <span class="badge ${product.currentStatus == 1 ? 'badge-active' : 'badge-inactive'}">
+              ${product.currentStatus == 1 ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary action-btn" onclick="openEditModal('${product.productID}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger action-btn" onclick="confirmDelete('${product.productID}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        productTableBody.appendChild(row);
+      });
+      
+      renderPagination();
+    }
+
+    function renderPagination() {
+      pagination.innerHTML = '';
+      
+      if (totalPages <= 1) return;
+      
+      // Previous button
+      const prevLi = document.createElement('li');
+      prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+      prevLi.innerHTML = `
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      `;
+      pagination.appendChild(prevLi);
+      
+      // Page numbers
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + 4);
+      
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageLi = document.createElement('li');
+        pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        pageLi.innerHTML = `
+          <a class="page-link" href="#" onclick="changePage(${i}); return false;">
+            ${i}
+          </a>
+        `;
+        pagination.appendChild(pageLi);
+      }
+      
+      // Next button
+      const nextLi = document.createElement('li');
+      nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+      nextLi.innerHTML = `
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      `;
+      pagination.appendChild(nextLi);
+    }
+
+    function changePage(page) {
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderProducts();
+    }
+
+    function openEditModal(productID) {
+      const product = allProducts.find(p => p.productID == productID);
+      if (!product) return;
+      
+      document.getElementById('edit_productID').value = product.productID;
+      document.getElementById('edit_productName').value = product.productName;
+      document.getElementById('edit_price').value = product.price;
+      document.getElementById('edit_brandID').value = product.brandID || '';
+      document.getElementById('edit_categoryID').value = product.categoryID || '';
+      document.getElementById('edit_inventoryCount').value = product.inventoryCount;
+      document.getElementById('edit_currentStatus').value = product.currentStatus;
+      document.getElementById('edit_img').value = product.img;
+      document.getElementById('edit_descri').value = product.descri || '';
+      document.getElementById('edit_rating').value = product.rating;
+      document.getElementById('edit_sales').value = product.sales;
+      
+      editProductModal.show();
+    }
+
+    function confirmDelete(productID) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        deleteProductHandler(productID);
+      }
+    }
+
+    async function handleAddProduct() {
+      const productData = {
+        productName: document.getElementById('add_productName').value,
+        price: parseFloat(document.getElementById('add_price').value),
+        brandID: parseInt(document.getElementById('add_brandID').value),
+        categoryID: parseInt(document.getElementById('add_categoryID').value),
+        inventoryCount: parseInt(document.getElementById('add_inventoryCount').value),
+        currentStatus: parseInt(document.getElementById('add_currentStatus').value),
+        img: document.getElementById('add_img').value,
+        descri: document.getElementById('add_descri').value,
+        rating: parseFloat(document.getElementById('add_rating').value),
+        sales: parseInt(document.getElementById('add_sales').value)
+      };
+      
+      try {
+        showLoading();
+        await addProduct(productData);
+        await fetchProducts();
+        renderProducts();
+        addProductModal.hide();
+        document.getElementById('addProductForm').reset();
+        hideLoading();
+        alert('Product added successfully!');
+      } catch (error) {
+        hideLoading();
+        alert('Failed to add product: ' + error.message);
+      }
+    }
+
+    async function handleUpdateProduct() {
+      const productID = document.getElementById('edit_productID').value;
+      const productData = {
+        productName: document.getElementById('edit_productName').value,
+        price: parseFloat(document.getElementById('edit_price').value),
+        brandID: parseInt(document.getElementById('edit_brandID').value),
+        categoryID: parseInt(document.getElementById('edit_categoryID').value),
+        inventoryCount: parseInt(document.getElementById('edit_inventoryCount').value),
+        currentStatus: parseInt(document.getElementById('edit_currentStatus').value),
+        img: document.getElementById('edit_img').value,
+        descri: document.getElementById('edit_descri').value,
+        rating: parseFloat(document.getElementById('edit_rating').value),
+        sales: parseInt(document.getElementById('edit_sales').value)
+      };
+      
+      try {
+        showLoading();
+        await updateProduct(productID, productData);
+        await fetchProducts();
+        renderProducts();
+        editProductModal.hide();
+        hideLoading();
+        alert('Product updated successfully!');
+      } catch (error) {
+        hideLoading();
+        alert('Failed to update product: ' + error.message);
+      }
+    }
+
+    async function deleteProductHandler(productID) {
+      try {
+        showLoading();
+        await deleteProduct(productID);
+        await fetchProducts();
+        renderProducts();
+        hideLoading();
+        alert('Product deleted successfully!');
+      } catch (error) {
+        hideLoading();
+        alert('Failed to delete product: ' + error.message);
+      }
+    }
+
+    // Make functions available globally
+    window.changePage = changePage;
+    window.openEditModal = openEditModal;
+    window.confirmDelete = confirmDelete;
+  </script>
 </body>
 </html>

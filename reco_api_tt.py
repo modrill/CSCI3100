@@ -113,7 +113,7 @@ def fallback_hot(k: int) -> List[Dict]:
 
 def save_to_db(rec_dict: Dict[str, List[int]], algo: str = "mix") -> None:
     sql = """REPLACE INTO recommend_home
-             (userKey, productID, rankNo, algoTag, score, createdAt)
+             (userID, productID, rankNo, algoTag, score, createdAt)
              VALUES (%s,%s,%s,%s,%s,%s)"""
     now = datetime.now()
     rows = []
@@ -154,15 +154,55 @@ def enrich(pid_list: List[int]) -> List[Dict]:
 templates = Jinja2Templates(directory="static/")
 
 @app.get("/homepage.html", response_class=HTMLResponse)
-def serve_home(request: Request):
+async def serve_home(request: Request):
+    # 1) 预热 demo 推荐（保持原有逻辑）
     demo.main()
-    return templates.TemplateResponse("homepage.html", {"request": request})
 
+    # 2) 读取当前用户购物车
+    try:
+        user_id = get_owner_key(request)
+        with db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                  SELECT 
+                    p.productID,
+                    p.productName,
+                    p.price,
+                    p.img,
+                    b.brandName,
+                    c.quantity
+                  FROM carts c
+                  JOIN products p ON c.productID = p.productID
+                  LEFT JOIN brand b ON p.brandID = b.brandID
+                  WHERE c.userID = %s
+                  ORDER BY c.createdAt DESC
+                """, (user_id,))
+                cart_items = cur.fetchall()
+    except HTTPException:
+        # 未登录或 header 缺失，则不报错，只返回空列表
+        cart_items = []
+
+    # 3) 调用现有的 home_reco 接口获取推荐列表
+    #    利用 fastapi 内部调用，直接传入 request
+    reco_resp = await home_reco(request, k=8, refresh=False)
+    print("reco_resp")
+    print(reco_resp)
+    reco_list = reco_resp.get("list", [])
+
+    # 4) 渲染模板，带上 cart_items 和 reco_list
+    return templates.TemplateResponse(
+      "homepage.html",
+      {
+        "request": request,
+        "cartItems": cart_items,
+        "recoList": reco_list
+      }
+    )
 # ──────────────────────────────────────────────────────────────
 # 6. 核心推荐、商品、购物车、邮件接口
 # ──────────────────────────────────────────────────────────────
 @app.get("/api/home_reco")
-async def home_reco(request: Request, k: int = 10, refresh: bool = False):
+async def home_reco(request: Request, k: int = 8, refresh: bool = False):
     """
     基于 userID（session）获取首页推荐：
       - 未登录：popular
@@ -174,6 +214,7 @@ async def home_reco(request: Request, k: int = 10, refresh: bool = False):
         user_id = get_owner_key(request)
     except HTTPException:
         # 未登录，返回热门
+        print("NO NO NO")
         return {"source": "popular", "list": fallback_hot(k)}
 
     algo = "mix"
@@ -235,6 +276,7 @@ def get_owner_key(request: Request) -> int:
     必须登录才能操作购物车，
     从请求头 X-UserID 获取用户 ID（int）
     """
+    print(request.headers)
     user_id = request.headers.get("X-UserID") or request.headers.get("x-userid")
     print(f">>> DEBUG: Received X-UserID header = {user_id!r}")
     if not user_id:
@@ -608,8 +650,8 @@ class EmailRequest(BaseModel):
 
 @app.get("/admin", response_class=FileResponse)
 async def serve_admin():
-    # 静态目录 static 下的 admin_user.html
-    return FileResponse("static/admin_user.html")
+    # 静态目录 static 下的 admin.html
+    return FileResponse("static/admin.html")
 
 @app.get("/create-admin")
 async def create_admin():
@@ -951,6 +993,7 @@ def search_users(keyword: str = Query(..., min_length=1)):
         return {"users": users}
     except Exception as e:
         raise HTTPException(500, f"服务器错误: {e}")
+
 
 # ──────────────────────────────────────────────────────────────
 # 8. 静态资源挂载（放在所有 API 路由之后，避免 404）

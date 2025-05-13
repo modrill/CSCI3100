@@ -40,15 +40,13 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    /* 购物车图标样式 */
     .cart-icon {
       font-size: 1.5rem;
       display: flex;
       align-items: center;
     }
-    .search-cart .icon { font-size:1.5rem; cursor:pointer; }
     .auth-buttons { display:flex; gap:1rem; }
-    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
+    .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; transition:.25s; }
     .auth-buttons .login { background:transparent; border:1px solid #1A1F36; color:#1A1F36; }
     .auth-buttons .register { background:#FF6B6B; border:none; color:#fff; }
     .auth-buttons .btn:hover { opacity:.85; }
@@ -86,86 +84,62 @@
     .footer-col li { margin-bottom:.5rem; font-size:.9rem; }
     footer p { text-align:center; color:#6b7280; margin-top:1rem; }
 
-    /* Modal & Form Styles */
+    /* Modal & Form Styles (copied from homepage) */
     .modal {
-      position:fixed; 
-      top:0; 
-      left:0; 
-      width:100%; 
-      height:100%;
-      background:rgba(0,0,0,0.5); 
-      display:none; 
-      align-items:center; 
-      justify-content:center; 
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:rgba(0,0,0,0.5);
+      display:none;
+      align-items:center; justify-content:center;
       z-index:200;
     }
     .modal.active { display:flex; }
     .modal-content {
-      background:#fff; 
-      border-radius:12px; 
-      width:90%; 
-      max-width:400px; 
-      padding:2rem; 
-      position:relative;
+      background:#fff; border-radius:12px;
+      width:90%; max-width:400px; padding:2rem; position:relative;
       box-shadow:0 8px 24px rgba(0,0,0,0.2);
     }
-    .modal-content h2 { 
-      text-align:center; 
-      margin-bottom:1.5rem; 
-      color:#333; 
-    }
+    .modal-content h2 { text-align:center; margin-bottom:1.5rem; color:#333; }
     .modal-content .close-btn {
-      position:absolute; 
-      top:1rem; 
-      right:1rem; 
-      font-size:1.5rem; 
-      cursor:pointer; 
-      color:#666;
+      position:absolute; top:1rem; right:1rem;
+      font-size:1.5rem; cursor:pointer; color:#666;
     }
-    .form-group { 
-      margin-bottom:1.2rem; 
-    }
-    .form-group label { 
-      display:block; 
-      margin-bottom:.5rem; 
-      color:#333; 
-      font-weight:500; 
-    }
+    .form-group { margin-bottom:1.2rem; }
+    .form-group label { display:block; margin-bottom:.5rem; color:#333; font-weight:500; }
     .form-group input {
-      width:100%; 
-      padding:.8rem; 
-      border:2px solid #e1e1e1; 
-      border-radius:6px;
-      font-size:1rem; 
-      transition:border-color .3s;
+      width:100%; padding:.8rem;
+      border:2px solid #e1e1e1; border-radius:6px;
+      font-size:1rem; transition:border-color .3s;
     }
-    .form-group input:focus { 
-      border-color:#F64601; 
-      outline:none; 
+    .form-group input:focus { border-color:#F64601; outline:none; }
+    .password-requirements { font-size:.8rem; color:#666; margin-top:.5rem; }
+    .password-strength {
+      display:flex; height:5px; margin-top:5px;
+      border-radius:3px; overflow:hidden;
     }
+    .password-strength div {
+      height:100%; width:25%; transition:all .3s ease; background:#e9ecef;
+    }
+    .strength-weak { background:#dc3545; }
+    .strength-medium { background:#ffc107; }
+    .strength-strong { background:#28a745; }
+    .password-match-message { font-size:.8rem; margin-top:.3rem; }
+    .match { color:#28a745; }
+    .not-match { color:#dc3545; }
+    .send-code-btn {
+      padding:0 .8rem; background:#F64601; color:#fff;
+      border:none; border-radius:6px; cursor:pointer; font-size:.9rem; transition:background .3s; white-space:nowrap;
+    }
+    .send-code-btn:disabled { background:#ccc; cursor:not-allowed; }
+    .send-code-btn.countdown { background:#6c757d; }
     button.submit-btn {
-      width:100%; 
-      padding:.8rem; 
-      background:#F64601; 
-      color:#fff; 
-      border:none; 
-      border-radius:6px;
-      font-size:1rem; 
-      font-weight:600; 
-      cursor:pointer; 
-      transition:background .3s; 
-      margin-top:1rem;
+      width:100%; padding:.8rem; background:#F64601; color:#fff;
+      border:none; border-radius:6px; font-size:1rem; font-weight:600; cursor:pointer; transition:background .3s; margin-top:1rem;
     }
-    button.submit-btn:hover { 
-      background:#D03800; 
-    }
-    .error-message { 
-      color:#dc3545; 
-      text-align:center; 
-      margin-top:1rem; 
-      font-size:.9rem; 
-    }
-    
+    button.submit-btn:hover { background:#D03800; }
+    .error-message { color:#dc3545; text-align:center; margin-top:1rem; font-size:.9rem; }
+    .success-message { color:#28a745; text-align:center; margin-top:1rem; font-size:.9rem; }
   </style>
 </head>
 <body>
@@ -175,60 +149,18 @@
       <div class="search-cart">
         <input type="text" id="searchInput" placeholder="Search…">
         <button onclick="redirectToSearch()">Search</button>
-        <div class="auth-buttons">
-          <div id="auth-status">
-            <button class="btn login" id="openLogin">Login</button>
-            <button class="btn register" id="openRegister">Register</button>
-          </div>
-          <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
+      </div>
+      <div class="auth-buttons">
+        <div id="auth-status">
+          <button class="btn login" id="openLogin">Login</button>
+          <button class="btn register" id="openRegister">Register</button>
         </div>
+        <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
+      </div>
     </div>
   </header>
-  
 
-  <main class="container">
-    <div class="product-detail">
-      <div class="gallery">
-        <img id="mainImg" class="main-img" src="" alt="Main image">
-        <div class="thumbs" id="thumbs"></div>
-      </div>
-      <div class="info">
-        <h1 id="prodName">Loading...</h1>
-        <div class="price" id="prodPrice">HK$0.00</div>
-        <div class="stock" id="prodStock"></div>
-        <div class="description" id="prodDesc"></div>
-        <div class="actions">
-          <input id="qty" type="number" value="1" min="1">
-          <button id="btnAdd">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <section class="reviews">
-      <h2>Customer Reviews</h2>
-      <div id="reviewList">Loading reviews…</div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container footer-cols">
-      <div class="footer-col">
-        <h4>Support</h4>
-        <ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul>
-      </div>
-      <div class="footer-col">
-        <h4>Company</h4>
-        <ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul>
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul>
-      </div>
-    </div>
-    <p>&copy; 2025 Buyzu. All rights reserved.</p>
-  </footer>
-
-    <!-- Login Modal -->
+  <!-- Login Modal -->
   <div class="modal" id="loginModal">
     <div class="modal-content">
       <span class="close-btn" data-close="loginModal">&times;</span>
@@ -255,22 +187,78 @@
       <h2>Register</h2>
       <form id="registerForm">
         <div class="form-group">
-          <label for="regUsername">Username</label>
-          <input type="text" id="regUsername" required>
+          <label for="registerUsername">Username</label>
+          <input type="text" id="registerUsername" required>
         </div>
         <div class="form-group">
-          <label for="regPassword">Password</label>
-          <input type="password" id="regPassword" required>
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" required>
+          <div class="password-requirements">
+            At least 8 chars, 1 uppercase, 1 lowercase, 1 number
+          </div>
+          <div class="password-strength">
+            <div id="str1"></div><div id="str2"></div><div id="str3"></div><div id="str4"></div>
+          </div>
         </div>
         <div class="form-group">
-          <label for="regConfirmPassword">Confirm Password</label>
-          <input type="password" id="regConfirmPassword" required>
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" required>
+          <div id="passwordMatchMessage" class="password-match-message"></div>
         </div>
-        <button type="submit" class="submit-btn">Register</button>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <div style="display:flex;gap:8px;">
+            <input type="email" id="registerEmail" required style="flex:3;">
+            <button type="button" id="sendCodeBtn" class="send-code-btn">Send Code</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="verificationCode">Verification Code</label>
+          <input type="text" id="verificationCode" maxlength="6" placeholder="6-digit" required>
+        </div>
+        <button type="submit" class="submit-btn" id="registerButton" disabled>Register</button>
         <div class="error-message" id="registerError"></div>
+        <div class="success-message" id="registerSuccess"></div>
       </form>
     </div>
   </div>
+
+  <main class="container">
+    <div class="product-detail">
+      <div class="gallery">
+        <img id="mainImg" class="main-img" src="" alt="Main image">
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+      <div class="info">
+        <h1 id="prodName">Loading...</h1>
+        <div class="price" id="prodPrice">HK$0.00</div>
+        <div class="stock" id="prodStock"></div>
+        <div class="description" id="prodDesc"></div>
+        <div class="actions">
+          <input id="qty" type="number" value="1" min="1">
+          <button id="btnAdd">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-cols">
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul><li><a href="#">FAQ</a></li><li><a href="#">Contact Us</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul><li><a href="#">Terms of Use</a></li><li><a href="#">Privacy Policy</a></li></ul>
+      </div>
+    </div>
+    <p>&copy; 2025 Buyzu. All rights reserved.</p>
+  </footer>
 
   <script>
     // Helper: 获取 URL query 参数
@@ -278,16 +266,7 @@
       const params = new URLSearchParams(window.location.search);
       return params.get(name);
     }
-
-    // 1. 验证登录、取用户 
-    /*
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!currentUser.id) {
-      window.location.href = '/login.html';
-      throw new Error('Not logged in');
-    }
-   const USER_ID = String(currentUser.id);
-    */
+    // 获取用户信息但不强制跳转
     let USER_ID = null;
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     if (currentUser.id) {
@@ -300,30 +279,24 @@
       const userStr = localStorage.getItem('user');
       if (userStr) {
         const user = JSON.parse(userStr);
-        // 检查用户是否有管理员信息
         const isAdmin = user.is_admin === true;
-        
         authStatus.innerHTML = `
           <div style="display: flex; align-items: center; gap: 1rem;">
-          <span style="color: #1A1F36;">Welcome, ${user.username}</span>
-          ${isAdmin ? '<button class="btn register-btn" onclick="goToAdmin()">Admin Panel</button>' : ''}
-          <button class="btn login-btn" onclick="logout()">Logout</button>
+            <span style="color: #1A1F36;">Welcome, ${user.username}</span>
+            ${isAdmin ? '<button class="btn register" onclick="goToAdmin()">Admin Panel</button>' : ''}
+            <button class="btn login" onclick="logout()">Logout</button>
           </div>
         `;
       }
     }
 
-    // 登出功能
     function logout() {
       localStorage.removeItem('user');
       window.location.reload();
     }
-
-    // 管理员面板导航
     function goToAdmin() {
       window.location.href = '/static/admin_user.html';
     }
-
 
     // 2. 拉商品详情
     async function loadProduct() {
@@ -334,13 +307,11 @@
         const res = await fetch(`/api/product?id=${id}`);
         if (!res.ok) throw new Error(await res.text());
         const p = await res.json();
-        // 填数据
         document.getElementById('prodName').innerText = p.productName;
         document.getElementById('prodPrice').innerText = `HK$${p.price.toFixed(2)}`;
         document.getElementById('prodStock').innerText =
           p.stock > 0 ? `In stock: ${p.stock}` : 'Out of stock';
         document.getElementById('prodDesc').innerText = p.description;
-        // 图库
         const mainImg = document.getElementById('mainImg'),
               thumbs  = document.getElementById('thumbs');
         mainImg.src = `/images/${p.images[0]}`;
@@ -356,15 +327,6 @@
           };
           thumbs.appendChild(t);
         });
-        // Reviews
-        const rv = document.getElementById('reviewList');
-        rv.innerHTML = '';
-        (p.reviews||[]).forEach(r=>{
-          const d = document.createElement('div');
-          d.className = 'review';
-          d.innerHTML = `<div class="user">${r.user}</div><div class="text">${r.text}</div>`;
-          rv.appendChild(d);
-        });
       } catch(e) {
         console.error(e);
         alert('Failed to load product.');
@@ -373,13 +335,11 @@
 
     // 3. Add to Cart
     document.getElementById('btnAdd').addEventListener('click', async ()=> {
-      // 检查是否已登录
       if (!USER_ID) {
-        // 未登录时重定向到登录页面，并设置返回URL
+        // redirect to login with return URL
         window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
         return;
       }
-      
       const id = getQueryParam('id'),
             qty = Math.max(1, parseInt(document.getElementById('qty').value)||1);
       try {
@@ -398,36 +358,173 @@
         alert('Failed to add to cart: '+e.message);
       }
     });
-    
 
     // 搜索功能
-  function redirectToSearch() {
-    const query = document.getElementById('searchInput').value.trim();
-    if (query) {
-      window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
-    } else {
-      alert("Please enter a search term!");
+    function redirectToSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
+      } else {
+        alert("Please enter a search term!");
+      }
     }
-  }
 
-  // 购物车处理
-  function handleCartClick() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      window.location.href = 'cart.html';
-    } else {
-      // 保存当前URL作为重定向目标
-      window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+    // 购物车处理
+    function handleCartClick() {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        window.location.href = 'cart.html';
+      } else {
+        document.getElementById('loginModal').classList.add('active');
+      }
     }
-}
 
+    /***** LOGIN & REGISTER MODAL LOGIC *****/
+    function clearMessages() {
+      ['loginError','registerError','registerSuccess'].forEach(id => {
+        document.getElementById(id).textContent = '';
+      });
+    }
 
+    // open modals
+    document.querySelectorAll('#openLogin, #openRegister').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.id === 'openLogin' ? 'loginModal' : 'registerModal';
+        document.getElementById(id).classList.add('active');
+        clearMessages();
+      });
+    });
+    // close buttons
+    document.querySelectorAll('.close-btn').forEach(span => {
+      span.addEventListener('click', () => {
+        document.getElementById(span.dataset.close).classList.remove('active');
+      });
+    });
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadProduct();  // 加载产品信息
-    checkLoginStatus();  // 检查并更新登录状态
-  });
+    // LOGIN submit
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value;
+      const p = document.getElementById('loginPassword').value;
+      const err = document.getElementById('loginError');
+      err.textContent = '';
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({ username:u, password:p })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error||'Login failed');
+        localStorage.setItem('user', JSON.stringify(data.user));
+        document.getElementById('loginModal').classList.remove('active');
+        checkLoginStatus();
+        alert('Login successful');
+      } catch(err) {
+        document.getElementById('loginError').textContent = err.message;
+      }
+    });
 
+    // REGISTER password strength & match
+    const pw   = document.getElementById('registerPassword'),
+          cpw  = document.getElementById('confirmPassword'),
+          msgM = document.getElementById('passwordMatchMessage'),
+          btnR = document.getElementById('registerButton');
+
+    function updateStrength() {
+      let s = 0;
+      const checks = {
+        length: pw.value.length >= 8,
+        upper: /[A-Z]/.test(pw.value),
+        lower: /[a-z]/.test(pw.value),
+        number: /[0-9]/.test(pw.value)
+      };
+      s = Object.values(checks).filter(v=>v).length;
+      ['str1','str2','str3','str4'].forEach((id,i) => {
+        const d = document.getElementById(id);
+        d.className = i < s ? (s < 4 ? 'strength-medium' : 'strength-strong') : '';
+      });
+    }
+    function checkMatch() {
+      if (!pw.value || !cpw.value) {
+        msgM.textContent=''; btnR.disabled=true; return;
+      }
+      if (pw.value !== cpw.value) {
+        msgM.textContent='Passwords do not match'; msgM.className='password-match-message not-match'; btnR.disabled=true;
+      } else if (pw.value.length>=8 && /[A-Z]/.test(pw.value) && /[a-z]/.test(pw.value) && /[0-9]/.test(pw.value)) {
+        msgM.textContent='Passwords match'; msgM.className='password-match-message match'; btnR.disabled=false;
+      } else {
+        msgM.textContent='Password does not meet requirements'; msgM.className='password-match-message not-match'; btnR.disabled=true;
+      }
+    }
+    pw.addEventListener('input', ()=>{ updateStrength(); checkMatch(); });
+    cpw.addEventListener('input', checkMatch);
+
+    // Send verification code
+    document.getElementById('sendCodeBtn').addEventListener('click', async () => {
+      const email = document.getElementById('registerEmail').value;
+      const err   = document.getElementById('registerError');
+      err.textContent = '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        err.textContent = 'Enter a valid email'; return;
+      }
+      const btn = document.getElementById('sendCodeBtn');
+      btn.disabled = true; btn.classList.add('countdown');
+      try {
+        const res = await fetch('/api/send-verification', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error||'Failed to send code');
+        let c=60; btn.textContent=`Resend (${c}s)`;
+        const t = setInterval(()=>{
+          c--;
+          if (c<0) {
+            clearInterval(t);
+            btn.disabled=false; btn.classList.remove('countdown'); btn.textContent='Send Code';
+          } else btn.textContent=`Resend (${c}s)`;
+        },1000);
+      } catch(e) {
+        err.textContent = e.message;
+        btn.disabled=false; btn.classList.remove('countdown'); btn.textContent='Send Code';
+      }
+    });
+
+    // REGISTER submit
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const u = document.getElementById('registerUsername').value;
+      const pwv = pw.value;
+      const em = document.getElementById('registerEmail').value;
+      const code = document.getElementById('verificationCode').value;
+      const err = document.getElementById('registerError');
+      const suc = document.getElementById('registerSuccess');
+      err.textContent=''; suc.textContent='';
+      try {
+        const res = await fetch('/api/register', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ username:u, password:pwv, email:em, verificationCode:code })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error||'Registration failed');
+        suc.textContent='Registration successful';
+        setTimeout(()=>{
+          document.getElementById('registerModal').classList.remove('active');
+          checkLoginStatus();
+        },1000);
+      } catch(e) {
+        err.textContent = e.message;
+      }
+    });
+
+    // INIT
+    document.addEventListener('DOMContentLoaded', () => {
+      checkLoginStatus();
+      loadProduct();
+    });
   </script>
 </body>
 </html>

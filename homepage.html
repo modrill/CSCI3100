@@ -672,60 +672,7 @@
       </div>
     </section>
 
-    <!-- Categories -->
-    <section class="categories container">
-      <h2>Shop by Category</h2>
-      <div class="cat-grid">
-        <a href="cart.html" class="cat-card cat-1">
-          <img src="/images/cat-electronics.jpeg" alt="Electronics">
-          <div class="cat-label">Electronics</div>
-        </a>
-        <a href="#" class="cat-card cat-2">
-          <img src="/images/cat-apparel.jpeg" alt="Apparel">
-          <div class="cat-label">Apparel</div>
-        </a>
-        <a href="#" class="cat-card cat-3">
-          <img src="/images/cat-beauty.jpeg" alt="Beauty">
-          <div class="cat-label">Beauty</div>
-        </a>
-        <a href="#" class="cat-card cat-4">
-          <img src="/images/cat-home.jpeg" alt="Home">
-          <div class="cat-label">Home</div>
-        </a>
-        <a href="#" class="cat-card cat-5">
-          <img src="/images/cat-grocery.jpeg" alt="Grocery">
-          <div class="cat-label">Grocery</div>
-        </a>
-        <a href="#" class="cat-card cat-6">
-          <img src="/images/cat-toys.jpeg" alt="Toys">
-          <div class="cat-label">Toys</div>
-        </a>
-        <a href="#" class="cat-card cat-7">
-          <img src="/images/cat-sports.jpeg" alt="Sports">
-          <div class="cat-label">Sports</div>
-        </a>
-        <a href="#" class="cat-card cat-8">
-          <img src="/images/cat-automotive.jpeg" alt="Automotive">
-          <div class="cat-label">Automotive</div>
-        </a>
-        <a href="#" class="cat-card cat-9">
-          <img src="/images/cat-books.jpeg" alt="Books">
-          <div class="cat-label">Books</div>
-        </a>
-        <a href="#" class="cat-card cat-10">
-          <img src="/images/cat-health.jpeg" alt="Health">
-          <div class="cat-label">Health</div>
-        </a>
-        <a href="#" class="cat-card cat-11">
-          <img src="/images/cat-luxury.jpeg" alt="Luxury">
-          <div class="cat-label">Luxury</div>
-        </a>
-        <a href="#" class="cat-card cat-12">
-          <img src="/images/cat-tools.jpeg" alt="Tools">
-          <div class="cat-label">Tools</div>
-        </a>
-      </div>
-    </section>
+    
 
     <!-- Hot Sellers -->
     <section class="featured container">
@@ -788,7 +735,7 @@
 
     // Add function to navigate to admin page
 function goToAdmin() {
-  window.location.href = '/static/admin_user.html';
+  window.location.href = '/static/admin.html';
 }
 
     function logout() {
@@ -802,7 +749,8 @@ function goToAdmin() {
       if (userStr) {
         window.location.href = 'cart.html';
       } else {
-        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+        
+    document.getElementById('loginModal').classList.add('active');
       }
     }
 
@@ -1051,6 +999,7 @@ function goToAdmin() {
     async function loadReco() {
       renderSkeleton();
       uid = localStorage.getItem('userID') || getCookie('SESSIONID');
+      uid = 2
       if (!uid) {
         uid = genAnon();
         localStorage.setItem('userID', uid);
@@ -1148,5 +1097,6 @@ function goToAdmin() {
       loadReco();
     });
   </script>
+  
 </body>
 </html>
