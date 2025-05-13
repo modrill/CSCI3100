@@ -5,7 +5,7 @@ This is GroupE7's software engineering project for CSCI3100.The project Buyzu is
 
 # Features
 
-* *admin* *
+* *Admin* *
 
 Manage Products
 
