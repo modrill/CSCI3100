@@ -16,8 +16,36 @@
     header { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.8); backdrop-filter:blur(8px); }
     .nav-wrapper { display:flex; align-items:center; justify-content:space-between; padding:1rem 0; }
     .logo { font-size:1.5rem; font-weight:bold; color:#FF6B6B; }
-    .search-cart { display:flex; align-items:center; gap:2rem; }
-    .search-cart input { padding:.5rem 1rem; border:none; border-radius:20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .search-cart {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-grow: 1;
+      max-width: 600px;
+    }
+    .search-cart input {
+      flex-grow: 1;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .search-cart button {
+      padding: 0.3rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #FF6B6B;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    /* 购物车图标样式 */
+    .cart-icon {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
     .search-cart .icon { font-size:1.5rem; cursor:pointer; }
     .auth-buttons { display:flex; gap:1rem; }
     .auth-buttons .btn { padding:.4rem .8rem; border-radius:20px; font-size:.9rem; cursor:pointer; transition:.25s; }
@@ -64,15 +92,17 @@
     <div class="nav-wrapper container">
       <a href="homepage.html" class="logo">Buyzu</a>
       <div class="search-cart">
-        <input type="text" placeholder="Search…">
-        <a href="cart.html" class="icon">🛒</a>
+        <input type="text" id="searchInput" placeholder="Search…">
+        <button onclick="redirectToSearch()">Search</button>
       </div>
       <div class="auth-buttons">
         <button class="btn login">Login</button>
         <button class="btn register">Register</button>
+        <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
       </div>
     </div>
   </header>
+  
 
   <main class="container">
     <div class="product-detail">
@@ -123,13 +153,14 @@
       return params.get(name);
     }
 
-    // 1. 验证登录、取用户 ID
+    // 1. 验证登录、取用户 
+    
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     if (!currentUser.id) {
       window.location.href = '/login.html';
       throw new Error('Not logged in');
     }
-    const USER_ID = String(currentUser.id);
+   const USER_ID = String(currentUser.id);
 
     // 2. 拉商品详情
     async function loadProduct() {
@@ -197,6 +228,27 @@
         alert('Failed to add to cart: '+e.message);
       }
     });
+
+    // 搜索功能
+  function redirectToSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (query) {
+      window.location.href = `searchpage.html?keyword=${encodeURIComponent(query)}`;
+    } else {
+      alert("Please enter a search term!");
+    }
+  }
+
+  // 购物车处理
+  function handleCartClick() {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      window.location.href = 'cart.html';
+    } else {
+      window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+    }
+  }
+
 
     document.addEventListener('DOMContentLoaded', loadProduct);
   </script>

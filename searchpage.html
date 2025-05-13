@@ -6,6 +6,163 @@
   <title>Buyzu · Search</title>
   <style>
     /* … 保持原有样式 … */
+    /* Header 样式 */
+  header { 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    background: rgba(255,255,255,0.8); 
+    backdrop-filter: blur(8px);
+  }
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    padding: 1rem 0;
+  }
+  .logo { 
+    font-size: 1.5rem; 
+    font-weight: bold; 
+    color: #FF6B6B;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  /* 搜索框和购物车样式 */
+  .search-cart {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-grow: 1;
+    max-width: 600px;
+  }
+  .search-cart input {
+    flex-grow: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .search-cart button {
+    padding: 0.3rem 1rem;
+    border: none;
+    border-radius: 20px;
+    background: #FF6B6B;
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* 登录注册按钮样式 */
+  .auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+  .auth-buttons .btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+  .login {
+    background: transparent;
+    border: 1px solid #1A1F36;
+    color: #1A1F36;
+  }
+  .register {
+    background: #FF6B6B;
+    border: none;
+    color: #fff;
+  }
+  .auth-buttons .btn:hover { opacity: 0.85; }
+  .cart-icon {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  /* Filter 样式 */
+.filter-container {
+  position: relative;
+  margin: 1rem 0;
+  width: fit-content;
+}
+
+.filter-button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 20px;
+  background: #FF6B6B;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-button:after {
+  content: "▼";
+  font-size: 0.7rem;
+}
+
+.filter-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  display: none;
+  width: max-content;
+  overflow: hidden;
+}
+
+.filter-options button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.filter-options button:hover {
+  background: #f5f5f5;
+}
+
+.filter-options button:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .nav-wrapper { 
+      flex-wrap: wrap; 
+    }
+    .search-cart { 
+      order: 2; 
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .auth-buttons { 
+      order: 1;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
   </style>
 </head>
 <body>
@@ -13,29 +170,29 @@
     <div class="nav-wrapper container">
       <a href="homepage.html" class="logo">Buyzu</a>
       <div class="search-cart">
-        <input type="text" id="searchInput" placeholder="Search for products…" />
-        <button id="btnSearch">Search</button>
+        <input type="text" id="searchInput" placeholder="Search…" value="">
+        <button onclick="performSearch()">Search</button>
       </div>
       <div class="auth-buttons">
-        <div id="auth-status">
-          <!-- 登录/注册按钮 -->
-        </div>
+        <button class="btn login" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href)">Login</button>
+        <button class="btn register" onclick="window.location.href='login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href) + '#register'">Register</button>
         <a href="javascript:void(0)" onclick="handleCartClick()" class="cart-icon">🛒</a>
       </div>
     </div>
   </header>
+  
 
   <main class="container">
-    <div class="filter-dropdown">
+    <div class="filter-container">
       <button class="filter-button" onclick="toggleFilter()">Filter</button>
       <div class="filter-options" id="filterOptions">
-        <button data-sort="sales_desc">销量：高到低</button>
-        <button data-sort="price_asc">价格：低到高</button>
-        <button data-sort="price_desc">价格：高到低</button>
-        <button data-sort="rating_desc">评分：高到低</button>
+        <button data-sort="sales_desc">Sales: High to Low</button>
+        <button data-sort="price_asc">Price: Low to High</button>
+        <button data-sort="price_desc">Price: High to Low</button>
+        <button data-sort="rating_desc">Rating: High to Low</button>
       </div>
     </div>
-
+  
     <div id="searchResults" class="results"></div>
     <p id="noResults" class="no-results" style="display:none;">No products found.</p>
   </main>
@@ -49,7 +206,7 @@
 
     document.getElementById("btnSearch").onclick = () => {
       const kw = document.getElementById("searchInput").value.trim();
-      if (!kw) return showNoResults("请输入搜索关键词");
+      if (!kw) return showNoResults("Please enter search keywords");
       // 更新 URL
       const url = new URL(window.location);
       url.searchParams.set("keyword", kw);
@@ -70,7 +227,11 @@
     // 切换过滤菜单
     function toggleFilter() {
       const opt = document.getElementById("filterOptions");
-      opt.style.display = opt.style.display==="block"?"none":"block";
+      if (opt.style.display === "block") {
+        opt.style.display = "none";
+      } else {
+        opt.style.display = "block";
+      }
     }
 
     // 读取 URL 中的 keyword
@@ -93,10 +254,49 @@
           renderResults(list);
         }
       } catch (e) {
-        console.error("搜索失败:", e);
-        showNoResults("搜索失败，请稍后重试");
+        console.error("Search fails:", e);
+        showNoResults("Search fails， please try again later.");
       }
     }
+
+    function searchProducts(keyword) {
+      doSearch(keyword, currentSort);
+    }
+
+      // 搜索功能
+    function performSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        // 保留现有的搜索逻辑，但更新URL
+        window.history.pushState({}, '', `searchpage.html?keyword=${encodeURIComponent(query)}`);
+        // 调用您现有的搜索函数
+        searchProducts(query);
+      } else {
+        alert("Please input key words!");
+      }
+    }
+
+    // 购物车处理
+    function handleCartClick() {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        window.location.href = 'cart.html';
+      } else {
+        window.location.href = 'login/frontend.html?redirect_url=' + encodeURIComponent(window.location.href);
+      }
+    }
+
+    // 页面加载时从URL获取搜索关键词
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const keyword = urlParams.get('keyword');
+      if (keyword) {
+        document.getElementById('searchInput').value = keyword;
+        // 调用您现有的搜索函数
+        searchProducts(keyword);
+      }
+    });
+
 
     function showNoResults(msg) {
       const p = document.getElementById("noResults");
@@ -123,14 +323,15 @@
     }
 
     // 初始化：页面加载时读取 keyword 并自动搜索
-    document.addEventListener("DOMContentLoaded", () => {
-      const kw = getQueryParam("keyword");
-      if (kw) {
-        document.getElementById("searchInput").value = kw;
-        doSearch(kw, currentSort);
+    document.addEventListener('click', function(event) {
+      const filterContainer = document.querySelector('.filter-container');
+      const filterOptions = document.getElementById('filterOptions');
+      
+      if (!filterContainer.contains(event.target) && filterOptions.style.display === 'block') {
+        filterOptions.style.display = 'none';
       }
-      // 登录状态检查、购物车跳转同之前…
     });
+    
   </script>
 </body>
 </html>
