@@ -1,9 +1,9 @@
-**BuyZu**
+# BuyZu
 
 This is GroupE's software engineering project for CSCI3100.The project Buyzu is a powerful online shopping platform.
 
 
-**Features**
+# Features
 
 * *admin* *
 
@@ -21,7 +21,7 @@ Search Products
 Shopping Cart
 Checkout
 
-**How to Run**
+# How to Run
 
 * *Requirements:* *
 
@@ -41,7 +41,7 @@ Create a new database named "buyzu"
 Import the SQL file provided in the project
 
 
-**Project dependencies**
+# Project dependencies
 
 * *Web Framework* *
 fastapi>=0.95.0
@@ -66,17 +66,17 @@ pandas>=2.0.1
 pydantic[email]>=2.0.0
 
 
-**Start the application:**
+# Start the application:
 
 uvicorn reco_api_tt:app --reload --port 8000
 
-**Access the application in your browser:**
+# Access the application in your browser:
 
 Main page: http://localhost:8000/homepage.html
 Search page: http://localhost:8000/searchpage.html
 Admin dashboard: http://localhost:8000/admin
 
-**Project Structure**
+# Project Structure
 
 project_root/
 ├── images/          # Product images directory
@@ -87,7 +87,7 @@ project_root/
 │   └── cart.html...
 └── item_vec.npy     # Auto-generated when running demo.py
 
-**Technology**
+# echnology
 
 * *Database* *
 
@@ -103,7 +103,7 @@ Starlette: Used for session middleware and request handling (comes with FastAPI)
 
 Werkzeug: Used for password hashing and verification
 
-**Python Libraries**
+# Python Libraries
 
 * *Data Processing* *
 NumPy: Used for numerical operations and array handling
