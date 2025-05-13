@@ -1,2 +1,0 @@
-用到的py包请写于此
-mysql-connector-python
