@@ -1,6 +1,6 @@
 # BuyZu
 
-This is GroupE's software engineering project for CSCI3100.The project Buyzu is a powerful online shopping platform.
+This is GroupE7's software engineering project for CSCI3100.The project Buyzu is a powerful online shopping platform.
 
 
 # Features
